@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:peng_smart/core/resources/icon_data_json_converter.dart';
+
+
 part 'room_entity.freezed.dart';
 part 'room_entity.g.dart';
 
@@ -12,6 +14,7 @@ class RoomEntity with _$RoomEntity {
     @Default("") String? description,
     @IconDataJsonConverter() @Default(Icons.error_outline) IconData? icon,
     @Default("") String? image,
+    @JsonKey(ignore: true) VoidCallback? onPressed,
   }) = _RoomEntity;
 
   factory RoomEntity.fromJson(Map<String, dynamic> json) =>

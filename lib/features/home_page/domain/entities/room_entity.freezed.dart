@@ -26,6 +26,8 @@ mixin _$RoomEntity {
   @IconDataJsonConverter()
   IconData? get icon => throw _privateConstructorUsedError;
   String? get image => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  VoidCallback? get onPressed => throw _privateConstructorUsedError;
 
   /// Serializes this RoomEntity to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -48,7 +50,8 @@ abstract class $RoomEntityCopyWith<$Res> {
       String? name,
       String? description,
       @IconDataJsonConverter() IconData? icon,
-      String? image});
+      String? image,
+      @JsonKey(ignore: true) VoidCallback? onPressed});
 }
 
 /// @nodoc
@@ -71,6 +74,7 @@ class _$RoomEntityCopyWithImpl<$Res, $Val extends RoomEntity>
     Object? description = freezed,
     Object? icon = freezed,
     Object? image = freezed,
+    Object? onPressed = freezed,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -93,6 +97,10 @@ class _$RoomEntityCopyWithImpl<$Res, $Val extends RoomEntity>
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
               as String?,
+      onPressed: freezed == onPressed
+          ? _value.onPressed
+          : onPressed // ignore: cast_nullable_to_non_nullable
+              as VoidCallback?,
     ) as $Val);
   }
 }
@@ -110,7 +118,8 @@ abstract class _$$RoomEntityImplCopyWith<$Res>
       String? name,
       String? description,
       @IconDataJsonConverter() IconData? icon,
-      String? image});
+      String? image,
+      @JsonKey(ignore: true) VoidCallback? onPressed});
 }
 
 /// @nodoc
@@ -131,6 +140,7 @@ class __$$RoomEntityImplCopyWithImpl<$Res>
     Object? description = freezed,
     Object? icon = freezed,
     Object? image = freezed,
+    Object? onPressed = freezed,
   }) {
     return _then(_$RoomEntityImpl(
       id: freezed == id
@@ -153,6 +163,10 @@ class __$$RoomEntityImplCopyWithImpl<$Res>
           ? _value.image
           : image // ignore: cast_nullable_to_non_nullable
               as String?,
+      onPressed: freezed == onPressed
+          ? _value.onPressed
+          : onPressed // ignore: cast_nullable_to_non_nullable
+              as VoidCallback?,
     ));
   }
 }
@@ -165,7 +179,8 @@ class _$RoomEntityImpl implements _RoomEntity {
       this.name = "",
       this.description = "",
       @IconDataJsonConverter() this.icon = Icons.error_outline,
-      this.image = ""});
+      this.image = "",
+      @JsonKey(ignore: true) this.onPressed});
 
   factory _$RoomEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$RoomEntityImplFromJson(json);
@@ -186,10 +201,13 @@ class _$RoomEntityImpl implements _RoomEntity {
   @override
   @JsonKey()
   final String? image;
+  @override
+  @JsonKey(ignore: true)
+  final VoidCallback? onPressed;
 
   @override
   String toString() {
-    return 'RoomEntity(id: $id, name: $name, description: $description, icon: $icon, image: $image)';
+    return 'RoomEntity(id: $id, name: $name, description: $description, icon: $icon, image: $image, onPressed: $onPressed)';
   }
 
   @override
@@ -202,13 +220,15 @@ class _$RoomEntityImpl implements _RoomEntity {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.icon, icon) || other.icon == icon) &&
-            (identical(other.image, image) || other.image == image));
+            (identical(other.image, image) || other.image == image) &&
+            (identical(other.onPressed, onPressed) ||
+                other.onPressed == onPressed));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
-      Object.hash(runtimeType, id, name, description, icon, image);
+      Object.hash(runtimeType, id, name, description, icon, image, onPressed);
 
   /// Create a copy of RoomEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -232,7 +252,8 @@ abstract class _RoomEntity implements RoomEntity {
       final String? name,
       final String? description,
       @IconDataJsonConverter() final IconData? icon,
-      final String? image}) = _$RoomEntityImpl;
+      final String? image,
+      @JsonKey(ignore: true) final VoidCallback? onPressed}) = _$RoomEntityImpl;
 
   factory _RoomEntity.fromJson(Map<String, dynamic> json) =
       _$RoomEntityImpl.fromJson;
@@ -248,6 +269,9 @@ abstract class _RoomEntity implements RoomEntity {
   IconData? get icon;
   @override
   String? get image;
+  @override
+  @JsonKey(ignore: true)
+  VoidCallback? get onPressed;
 
   /// Create a copy of RoomEntity
   /// with the given fields replaced by the non-null parameter values.

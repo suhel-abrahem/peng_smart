@@ -41,3 +41,7 @@ class FailedToGetRuleGroupsName<T> extends DataState<T> {
 class FailedToSetRulesGroupName<T> extends DataState<T> {
   FailedToSetRulesGroupName({super.message});
 }
+
+class NoRoomsFounded<T> extends DataState<T> {
+  NoRoomsFounded({super.message});
+}

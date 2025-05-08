@@ -1,19 +1,29 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-class IconDataJsonConverter implements JsonConverter<IconData?, IconData?> {
+class IconDataJsonConverter
+    implements JsonConverter<IconData?, Map<String, dynamic>?> {
   const IconDataJsonConverter();
 
   @override
-  @override
-  IconData? toJson(IconData? object) {
-    return object;
+  IconData? fromJson(Map<String, dynamic>? json) {
+    if (json == null) return null;
+    return IconData(
+      json['codePoint'] as int,
+      fontFamily: json['fontFamily'] as String?,
+      fontPackage: json['fontPackage'] as String?,
+      matchTextDirection: json['matchTextDirection'] as bool? ?? false,
+    );
   }
 
   @override
-  IconData? fromJson(IconData? json) {
-    return json;
+  Map<String, dynamic>? toJson(IconData? object) {
+    if (object == null) return null;
+    return {
+      'codePoint': object.codePoint,
+      'fontFamily': object.fontFamily,
+      'fontPackage': object.fontPackage,
+      'matchTextDirection': object.matchTextDirection,
+    };
   }
 }

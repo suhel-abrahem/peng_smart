@@ -13,7 +13,8 @@ _$RoomEntityImpl _$$RoomEntityImplFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String? ?? "",
       icon: json['icon'] == null
           ? Icons.error_outline
-          : const IconDataJsonConverter().fromJson(json['icon'] as IconData?),
+          : const IconDataJsonConverter()
+              .fromJson(json['icon'] as Map<String, dynamic>?),
       image: json['image'] as String? ?? "",
     );
 

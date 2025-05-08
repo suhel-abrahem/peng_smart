@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../features/get_started/presentation/pages/get_started_page.dart';
 import '../../../features/sign_up/presentation/pages/sign_up_page.dart';
 import '../../core/injection_container.dart';
-import '../../core/resources/common_features/map/presentation/pages/map_page.dart';
 import '../../features/content_center/presentation/pages/content_center_page.dart';
 import '../../features/first_use/presentation/pages/first_use_page.dart';
 import '../../features/home_page/presentation/pages/home_page_page.dart';
@@ -20,22 +19,13 @@ class RoutesNames {
   static const String loginRoute = 'login';
 
   static const String contentCenterRoute = 'contentCenter';
-  static const String servicesManagerRoute = 'servicesManger';
-
-  static const String deliveryManagerRoute = 'deliveryManager';
-  static const String deliveryLocationRoute = 'deliveryLocation';
-  static const String lastOrderRoute = 'lastOrder';
-  static const String monitorRoute = 'monitor';
-  static const String settingRoute = 'setting';
-
-  static const String servicesManagement = "servicesManagement";
-  static const String categoryPage = "categoryPage";
+  
   static const String firstUsePage = "firstUsePage";
   static const String getStarted = "getStarted";
   static const String signUp = "signUp";
   static const String itemPage = "itemPage";
-  static const String cartPage = "cartPage";
-  static const String mapPage = "mapPage";
+  
+ 
 }
 
 class RoutesPaths {
@@ -43,22 +33,12 @@ class RoutesPaths {
   static const String loginRoute = '/login';
 
   static const String contentCenterRoute = '/contentCenter';
-  static const String servicesManagerRoute = '/servicesManager';
-
-  static const String deliveryManagerRoute = '/deliveryManager';
-  static const String deliveryLocationRoute = '/deliveryLocation';
-  static const String lastOrderRoute = '/lastOrder';
-  static const String monitorRoute = '/monitor';
-  static const String settingRoute = '/setting';
-  static const String services = "/services";
-  static const String servicesManagement = "/servicesManagement";
-  static const String categoryPage = "/categoryPage";
+  
   static const String firstUsePage = "/firstUsePage";
   static const String getStarted = "/getStarted";
   static const String signUp = "/signUp";
   static const String itemPage = "/itemPage";
-  static const String cartPage = "/cartPage";
-  static const String mapPage = "/mapPage";
+  
 }
 
 // Widget? getPage({required String path, dynamic params}) {
@@ -115,14 +95,7 @@ final GoRouter appRouter = GoRouter(
             context: context, state: state, child: const ContentCenterPage());
       },
     ),
-    GoRoute(
-      name: RoutesNames.monitorRoute,
-      path: RoutesPaths.monitorRoute,
-      pageBuilder: (context, state) {
-        return buildPageWithDefaultTransition(
-            context: context, state: state, child: const MonitorPage());
-      },
-    ),
+    
     GoRoute(
       name: RoutesNames.firstUsePage,
       path: RoutesPaths.firstUsePage,
@@ -147,14 +120,7 @@ final GoRouter appRouter = GoRouter(
             context: context, state: state, child: const SignUpPage());
       },
     ),
-    GoRoute(
-      name: RoutesNames.mapPage,
-      path: RoutesPaths.mapPage,
-      pageBuilder: (context, state) {
-        return buildPageWithDefaultTransition(
-            context: context, state: state, child: MapPage());
-      },
-    ),
+   
   ],
 );
 

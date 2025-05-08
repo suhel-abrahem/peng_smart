@@ -9,10 +9,7 @@ import 'config/app/app.dart';
 import 'config/app/app_preferences.dart';
 import 'core/constants/language_constants.dart';
 import 'core/injection_container.dart';
-import 'core/resources/common_features/warehouse/bloc/items_bloc.dart';
-import 'core/resources/common_features/warehouse/bloc/services_categories_bloc.dart';
 import 'features/login/presentations/bloc/login_bloc.dart';
-import 'features/setting/presentation/bloc/sync_setting_page/bloc/sync_setting_bloc_bloc.dart';
 import 'firebase_options.dart';
 
 main() async {
@@ -26,8 +23,7 @@ main() async {
   // FirebaseFirestore.instance.settings =
   //     const Settings(persistenceEnabled: true, sslEnabled: true);
   await EasyLocalization.ensureInitialized();
-  await getItInstance<AppPreferences>().checkDateToSync();
-
+  
   runApp(
     EasyLocalization(
         supportedLocales: LanguageConstant.supportedLanguages,
@@ -35,7 +31,7 @@ main() async {
         fallbackLocale: LanguageConstant.ARABIC_LOCAL,
         startLocale: getItInstance<AppPreferences>().getAppLanguageLocale(),
         child: MultiBlocProvider(providers: [
-          BlocProvider(create: (_) => SyncSettingBlocBloc()),
+          
           BlocProvider(
             create: (context) =>
                 BlocProvider.of<LoginBloc>(context)..add(LoginEventStarted()),
