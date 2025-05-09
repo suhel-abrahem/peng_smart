@@ -44,7 +44,9 @@ class _HomePagePageState extends State<HomePagePage> {
 
   void changeAddRoomPagePosition() {
     setState(() {
-      addRoomPagePosition = isAddRoomShow ? 0 : 600.h;
+      isAddRoomShow = !isAddRoomShow;
+      addRoomPagePosition = !isAddRoomShow ? -600.h : 0.h;
+      print("he:$addRoomPagePosition");
     });
   }
 
@@ -64,10 +66,19 @@ class _HomePagePageState extends State<HomePagePage> {
             height: double.maxFinite,
             child: ListView(
               children: [
-                Text(
-                    LocaleKeys.homePage_hi
-                        .tr(namedArgs: {"userName": "Ibrahim"}),
-                    style: Theme.of(context).textTheme.headlineLarge),
+                Padding(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+                  child: Text(
+                      LocaleKeys.homePage_hi
+                          .tr(namedArgs: {"userName": "Ibrahim"}),
+                      style: Theme.of(context).textTheme.headlineLarge),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  child: Text("Your Rooms:",
+                      style: Theme.of(context).textTheme.headlineMedium),
+                ),
                 BlocProvider<RoomsBloc>(
                   create: (_) =>
                       getItInstance<RoomsBloc>()..add(RoomsEvent.getRooms()),
@@ -93,6 +104,9 @@ class _HomePagePageState extends State<HomePagePage> {
                         itemBuilder: (context, index) {
                           return SizedBox(
                             child: AppBarButton(
+                                onPressed: index == (rooms?.length ?? 1) - 1
+                                    ? () => changeAddRoomPagePosition()
+                                    : null,
                                 title: rooms?[index]?.name ?? '',
                                 icon:
                                     rooms?[index]?.icon ?? Icons.error_outline),
@@ -109,7 +123,9 @@ class _HomePagePageState extends State<HomePagePage> {
           ),
         ),
         PositionedDirectional(
-          bottom: 0,
+          bottom: addRoomPagePosition,
+          start: 0,
+          end: 0,
           child: AddRoomPage(),
         ),
       ],

@@ -15,6 +15,8 @@ class _AddRoomPageState extends State<AddRoomPage> {
     return Container(
       width: double.maxFinite,
       height: 600.h,
+      decoration:
+          BoxDecoration(color: Theme.of(context).colorScheme.primaryContainer),
       child: ListView(
         children: [
           const SizedBox(height: 20),
