@@ -39,9 +39,9 @@ class ColorManager {
 
   // Text Colors
   static const Color textColor =
-      Color.fromARGB(255, 223, 223, 223); // Main text
+      Color.fromARGB(255, 200, 199, 199); // Main text
   static const Color secondaryTextColor =
-      Color.fromARGB(255, 206, 206, 206); // Subdued text
+      Color.fromARGB(255, 165, 165, 165); // Subdued text
 
   // Functional Colors
   static const Color successColor = Color(0xFF4CAF50); // Standard green

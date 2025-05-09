@@ -40,12 +40,12 @@ class _HomePagePageState extends State<HomePagePage> {
   GoRouteInformationParser routeStack = appRouter.routeInformationParser;
   int bypass = 0;
   bool isAddRoomShow = false;
-  double addRoomPagePosition = 0;
+  double addRoomPagePosition = -600;
 
   void changeAddRoomPagePosition() {
     setState(() {
       isAddRoomShow = !isAddRoomShow;
-      addRoomPagePosition = !isAddRoomShow ? -600.h : 0.h;
+      addRoomPagePosition = isAddRoomShow ? 0.h : -600.h;
       print("he:$addRoomPagePosition");
     });
   }
@@ -126,7 +126,35 @@ class _HomePagePageState extends State<HomePagePage> {
           bottom: addRoomPagePosition,
           start: 0,
           end: 0,
-          child: AddRoomPage(),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: GestureDetector(
+                onVerticalDragUpdate: (details) {
+                  print("details.delta.dy: ${details.delta.dy}");
+                  setState(() {
+                    if (addRoomPagePosition <= 0.h) {
+                      addRoomPagePosition -= details.delta.dy.h;
+                    }
+                    if (addRoomPagePosition > 0) {
+                      addRoomPagePosition = 0;
+                      isAddRoomShow = true;
+                    }
+                    if (addRoomPagePosition < -300.h && details.delta.dy > 0) {
+                      addRoomPagePosition = -600.h;
+                      isAddRoomShow = false;
+                    }
+                  });
+                },
+                onVerticalDragEnd: (details) {
+                  setState(() {
+                    if (addRoomPagePosition > -290.h) {
+                      addRoomPagePosition = 0;
+                      isAddRoomShow = true;
+                    }
+                  });
+                },
+                child: AddRoomPage()),
+          ),
         ),
       ],
     ));

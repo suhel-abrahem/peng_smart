@@ -1,0 +1,15 @@
+enum RoomsTypeEnum {
+  kitchen,
+  livingRoom,
+  bedroom,
+  bathroom,
+  diningRoom,
+  office,
+  garage,
+  laundryRoom,
+  basement,
+  attic,
+  hallway,
+  storageRoom,
+  tunel,
+}

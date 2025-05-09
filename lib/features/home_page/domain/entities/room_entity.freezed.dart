@@ -20,6 +20,7 @@ RoomEntity _$RoomEntityFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$RoomEntity {
+  RoomsTypeEnum? get type => throw _privateConstructorUsedError;
   String? get id => throw _privateConstructorUsedError;
   String? get name => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
@@ -46,7 +47,8 @@ abstract class $RoomEntityCopyWith<$Res> {
       _$RoomEntityCopyWithImpl<$Res, RoomEntity>;
   @useResult
   $Res call(
-      {String? id,
+      {RoomsTypeEnum? type,
+      String? id,
       String? name,
       String? description,
       @IconDataJsonConverter() IconData? icon,
@@ -69,6 +71,7 @@ class _$RoomEntityCopyWithImpl<$Res, $Val extends RoomEntity>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? type = freezed,
     Object? id = freezed,
     Object? name = freezed,
     Object? description = freezed,
@@ -77,6 +80,10 @@ class _$RoomEntityCopyWithImpl<$Res, $Val extends RoomEntity>
     Object? onPressed = freezed,
   }) {
     return _then(_value.copyWith(
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as RoomsTypeEnum?,
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -114,7 +121,8 @@ abstract class _$$RoomEntityImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? id,
+      {RoomsTypeEnum? type,
+      String? id,
       String? name,
       String? description,
       @IconDataJsonConverter() IconData? icon,
@@ -135,6 +143,7 @@ class __$$RoomEntityImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? type = freezed,
     Object? id = freezed,
     Object? name = freezed,
     Object? description = freezed,
@@ -143,6 +152,10 @@ class __$$RoomEntityImplCopyWithImpl<$Res>
     Object? onPressed = freezed,
   }) {
     return _then(_$RoomEntityImpl(
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as RoomsTypeEnum?,
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -175,7 +188,8 @@ class __$$RoomEntityImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$RoomEntityImpl implements _RoomEntity {
   const _$RoomEntityImpl(
-      {this.id = "",
+      {this.type = RoomsTypeEnum.kitchen,
+      this.id = "",
       this.name = "",
       this.description = "",
       @IconDataJsonConverter() this.icon = Icons.error_outline,
@@ -185,6 +199,9 @@ class _$RoomEntityImpl implements _RoomEntity {
   factory _$RoomEntityImpl.fromJson(Map<String, dynamic> json) =>
       _$$RoomEntityImplFromJson(json);
 
+  @override
+  @JsonKey()
+  final RoomsTypeEnum? type;
   @override
   @JsonKey()
   final String? id;
@@ -207,7 +224,7 @@ class _$RoomEntityImpl implements _RoomEntity {
 
   @override
   String toString() {
-    return 'RoomEntity(id: $id, name: $name, description: $description, icon: $icon, image: $image, onPressed: $onPressed)';
+    return 'RoomEntity(type: $type, id: $id, name: $name, description: $description, icon: $icon, image: $image, onPressed: $onPressed)';
   }
 
   @override
@@ -215,6 +232,7 @@ class _$RoomEntityImpl implements _RoomEntity {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RoomEntityImpl &&
+            (identical(other.type, type) || other.type == type) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
@@ -227,8 +245,8 @@ class _$RoomEntityImpl implements _RoomEntity {
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, name, description, icon, image, onPressed);
+  int get hashCode => Object.hash(
+      runtimeType, type, id, name, description, icon, image, onPressed);
 
   /// Create a copy of RoomEntity
   /// with the given fields replaced by the non-null parameter values.
@@ -248,7 +266,8 @@ class _$RoomEntityImpl implements _RoomEntity {
 
 abstract class _RoomEntity implements RoomEntity {
   const factory _RoomEntity(
-      {final String? id,
+      {final RoomsTypeEnum? type,
+      final String? id,
       final String? name,
       final String? description,
       @IconDataJsonConverter() final IconData? icon,
@@ -258,6 +277,8 @@ abstract class _RoomEntity implements RoomEntity {
   factory _RoomEntity.fromJson(Map<String, dynamic> json) =
       _$RoomEntityImpl.fromJson;
 
+  @override
+  RoomsTypeEnum? get type;
   @override
   String? get id;
   @override
