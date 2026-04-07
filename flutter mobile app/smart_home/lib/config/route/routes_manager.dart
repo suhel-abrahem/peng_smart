@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/add_device/presentions/page/add_device_page.dart';
 import '../../features/setting_page/presentation/pages/setting_page.dart';
 import '../app/app_preferences.dart';
 import 'route_tracker.dart';
@@ -21,12 +22,14 @@ class RoutesName {
   static String homePage = "homePage";
 
   static String settingPage = "settingPage";
+  static String addDevicePage = "addDevicePage";
 }
 
 class RoutesPath {
   static String homePage = '/';
 
   static String settingPage = '/setting';
+  static String addDevicePage = '/addDevice';
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -77,6 +80,12 @@ GoRouter goRouter = GoRouter(
                 );
               },
             ),
+            GoRoute(path: RoutesPath.addDevicePage, name: RoutesName.addDevicePage, pageBuilder: (context, state) {
+              return _customTransitionPage(
+                child: AddDevicePage(),
+                state: state,
+              );
+            }),
           ],
         ),
 
