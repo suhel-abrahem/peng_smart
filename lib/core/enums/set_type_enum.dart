@@ -1,4 +1,0 @@
-enum SetTypeEnum{
-  set,
-  delete
-}

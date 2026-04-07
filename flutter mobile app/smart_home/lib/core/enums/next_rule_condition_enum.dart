@@ -1,0 +1,1 @@
+enum NextRuleConditionEnum { and, or }

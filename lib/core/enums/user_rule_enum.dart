@@ -1,1 +1,0 @@
-enum UserRule { admin, warehouseAdmin }

@@ -1,2 +1,0 @@
-# peng_smart
-

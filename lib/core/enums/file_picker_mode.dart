@@ -1,1 +1,0 @@
-enum FilePickerMode { once, multi }
