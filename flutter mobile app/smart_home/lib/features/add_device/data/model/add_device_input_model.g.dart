@@ -13,6 +13,7 @@ _AddDeviceInputModel _$AddDeviceInputModelFromJson(Map<String, dynamic> json) =>
       homeWifiSsid: json['homeWifiSsid'] as String? ?? '',
       homeWifiPassword: json['homeWifiPassword'] as String? ?? '',
       homeId: json['homeId'] as String? ?? '',
+      homeName: json['homeName'] as String? ?? '',
     );
 
 Map<String, dynamic> _$AddDeviceInputModelToJson(
@@ -23,4 +24,5 @@ Map<String, dynamic> _$AddDeviceInputModelToJson(
   'homeWifiSsid': instance.homeWifiSsid,
   'homeWifiPassword': instance.homeWifiPassword,
   'homeId': instance.homeId,
+  'homeName': instance.homeName,
 };

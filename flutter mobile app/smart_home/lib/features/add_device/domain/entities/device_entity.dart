@@ -13,7 +13,7 @@ abstract class DeviceEntity with _$DeviceEntity {
     @Default("") String name,
     @Default("") String type,
     @Default("") String room,
-    @Default(0) int homeId,
+    @Default("") String homeId,
     @Default("") String homeName,
     @Default("") String deviceMacAddress,
     RulesEntity? rules,

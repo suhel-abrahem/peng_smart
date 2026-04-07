@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AddDeviceInputModel {
 
- String get deviceName; String get room; String get homeWifiSsid; String get homeWifiPassword; String get homeId;
+ String get deviceName; String get room; String get homeWifiSsid; String get homeWifiPassword; String get homeId; String get homeName;
 /// Create a copy of AddDeviceInputModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AddDeviceInputModelCopyWith<AddDeviceInputModel> get copyWith => _$AddDeviceInp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddDeviceInputModel&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeWifiSsid, homeWifiSsid) || other.homeWifiSsid == homeWifiSsid)&&(identical(other.homeWifiPassword, homeWifiPassword) || other.homeWifiPassword == homeWifiPassword)&&(identical(other.homeId, homeId) || other.homeId == homeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AddDeviceInputModel&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeWifiSsid, homeWifiSsid) || other.homeWifiSsid == homeWifiSsid)&&(identical(other.homeWifiPassword, homeWifiPassword) || other.homeWifiPassword == homeWifiPassword)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceName,room,homeWifiSsid,homeWifiPassword,homeId);
+int get hashCode => Object.hash(runtimeType,deviceName,room,homeWifiSsid,homeWifiPassword,homeId,homeName);
 
 @override
 String toString() {
-  return 'AddDeviceInputModel(deviceName: $deviceName, room: $room, homeWifiSsid: $homeWifiSsid, homeWifiPassword: $homeWifiPassword, homeId: $homeId)';
+  return 'AddDeviceInputModel(deviceName: $deviceName, room: $room, homeWifiSsid: $homeWifiSsid, homeWifiPassword: $homeWifiPassword, homeId: $homeId, homeName: $homeName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AddDeviceInputModelCopyWith<$Res>  {
   factory $AddDeviceInputModelCopyWith(AddDeviceInputModel value, $Res Function(AddDeviceInputModel) _then) = _$AddDeviceInputModelCopyWithImpl;
 @useResult
 $Res call({
- String deviceName, String room, String homeWifiSsid, String homeWifiPassword, String homeId
+ String deviceName, String room, String homeWifiSsid, String homeWifiPassword, String homeId, String homeName
 });
 
 
@@ -65,13 +65,14 @@ class _$AddDeviceInputModelCopyWithImpl<$Res>
 
 /// Create a copy of AddDeviceInputModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? deviceName = null,Object? room = null,Object? homeWifiSsid = null,Object? homeWifiPassword = null,Object? homeId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? deviceName = null,Object? room = null,Object? homeWifiSsid = null,Object? homeWifiPassword = null,Object? homeId = null,Object? homeName = null,}) {
   return _then(_self.copyWith(
 deviceName: null == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
 as String,room: null == room ? _self.room : room // ignore: cast_nullable_to_non_nullable
 as String,homeWifiSsid: null == homeWifiSsid ? _self.homeWifiSsid : homeWifiSsid // ignore: cast_nullable_to_non_nullable
 as String,homeWifiPassword: null == homeWifiPassword ? _self.homeWifiPassword : homeWifiPassword // ignore: cast_nullable_to_non_nullable
 as String,homeId: null == homeId ? _self.homeId : homeId // ignore: cast_nullable_to_non_nullable
+as String,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId,  String homeName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AddDeviceInputModel() when $default != null:
-return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId);case _:
+return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId,_that.homeName);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId,  String homeName)  $default,) {final _that = this;
 switch (_that) {
 case _AddDeviceInputModel():
-return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId);case _:
+return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId,_that.homeName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceName,  String room,  String homeWifiSsid,  String homeWifiPassword,  String homeId,  String homeName)?  $default,) {final _that = this;
 switch (_that) {
 case _AddDeviceInputModel() when $default != null:
-return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId);case _:
+return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPassword,_that.homeId,_that.homeName);case _:
   return null;
 
 }
@@ -213,7 +214,7 @@ return $default(_that.deviceName,_that.room,_that.homeWifiSsid,_that.homeWifiPas
 @JsonSerializable()
 
 class _AddDeviceInputModel implements AddDeviceInputModel {
-  const _AddDeviceInputModel({this.deviceName = '', this.room = '', this.homeWifiSsid = '', this.homeWifiPassword = '', this.homeId = ''});
+  const _AddDeviceInputModel({this.deviceName = '', this.room = '', this.homeWifiSsid = '', this.homeWifiPassword = '', this.homeId = '', this.homeName = ''});
   factory _AddDeviceInputModel.fromJson(Map<String, dynamic> json) => _$AddDeviceInputModelFromJson(json);
 
 @override@JsonKey() final  String deviceName;
@@ -221,6 +222,7 @@ class _AddDeviceInputModel implements AddDeviceInputModel {
 @override@JsonKey() final  String homeWifiSsid;
 @override@JsonKey() final  String homeWifiPassword;
 @override@JsonKey() final  String homeId;
+@override@JsonKey() final  String homeName;
 
 /// Create a copy of AddDeviceInputModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddDeviceInputModel&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeWifiSsid, homeWifiSsid) || other.homeWifiSsid == homeWifiSsid)&&(identical(other.homeWifiPassword, homeWifiPassword) || other.homeWifiPassword == homeWifiPassword)&&(identical(other.homeId, homeId) || other.homeId == homeId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AddDeviceInputModel&&(identical(other.deviceName, deviceName) || other.deviceName == deviceName)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeWifiSsid, homeWifiSsid) || other.homeWifiSsid == homeWifiSsid)&&(identical(other.homeWifiPassword, homeWifiPassword) || other.homeWifiPassword == homeWifiPassword)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceName,room,homeWifiSsid,homeWifiPassword,homeId);
+int get hashCode => Object.hash(runtimeType,deviceName,room,homeWifiSsid,homeWifiPassword,homeId,homeName);
 
 @override
 String toString() {
-  return 'AddDeviceInputModel(deviceName: $deviceName, room: $room, homeWifiSsid: $homeWifiSsid, homeWifiPassword: $homeWifiPassword, homeId: $homeId)';
+  return 'AddDeviceInputModel(deviceName: $deviceName, room: $room, homeWifiSsid: $homeWifiSsid, homeWifiPassword: $homeWifiPassword, homeId: $homeId, homeName: $homeName)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$AddDeviceInputModelCopyWith<$Res> implements $AddDeviceIn
   factory _$AddDeviceInputModelCopyWith(_AddDeviceInputModel value, $Res Function(_AddDeviceInputModel) _then) = __$AddDeviceInputModelCopyWithImpl;
 @override @useResult
 $Res call({
- String deviceName, String room, String homeWifiSsid, String homeWifiPassword, String homeId
+ String deviceName, String room, String homeWifiSsid, String homeWifiPassword, String homeId, String homeName
 });
 
 
@@ -272,13 +274,14 @@ class __$AddDeviceInputModelCopyWithImpl<$Res>
 
 /// Create a copy of AddDeviceInputModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? deviceName = null,Object? room = null,Object? homeWifiSsid = null,Object? homeWifiPassword = null,Object? homeId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? deviceName = null,Object? room = null,Object? homeWifiSsid = null,Object? homeWifiPassword = null,Object? homeId = null,Object? homeName = null,}) {
   return _then(_AddDeviceInputModel(
 deviceName: null == deviceName ? _self.deviceName : deviceName // ignore: cast_nullable_to_non_nullable
 as String,room: null == room ? _self.room : room // ignore: cast_nullable_to_non_nullable
 as String,homeWifiSsid: null == homeWifiSsid ? _self.homeWifiSsid : homeWifiSsid // ignore: cast_nullable_to_non_nullable
 as String,homeWifiPassword: null == homeWifiPassword ? _self.homeWifiPassword : homeWifiPassword // ignore: cast_nullable_to_non_nullable
 as String,homeId: null == homeId ? _self.homeId : homeId // ignore: cast_nullable_to_non_nullable
+as String,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

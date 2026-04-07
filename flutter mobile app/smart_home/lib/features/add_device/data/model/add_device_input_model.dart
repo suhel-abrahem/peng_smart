@@ -11,6 +11,7 @@ abstract class AddDeviceInputModel with _$AddDeviceInputModel {
     @Default('') String homeWifiSsid,
     @Default('') String homeWifiPassword,
     @Default('') String homeId,
+    @Default('') String homeName,
   }) = _AddDeviceInputModel;
 
   factory AddDeviceInputModel.fromJson(Map<String, dynamic> json) =>

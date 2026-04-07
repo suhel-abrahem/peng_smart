@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DeviceEntity {
 
- String get id; String get name; String get type; String get room; int get homeId; String get homeName; String get deviceMacAddress; RulesEntity? get rules; DeviceStatusEnum get status; List<DeviceComponentEntity> get components;
+ String get id; String get name; String get type; String get room; String get homeId; String get homeName; String get deviceMacAddress; RulesEntity? get rules; DeviceStatusEnum get status; List<DeviceComponentEntity> get components;
 /// Create a copy of DeviceEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $DeviceEntityCopyWith<$Res>  {
   factory $DeviceEntityCopyWith(DeviceEntity value, $Res Function(DeviceEntity) _then) = _$DeviceEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String type, String room, int homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
+ String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
 });
 
 
@@ -72,7 +72,7 @@ as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,room: null == room ? _self.room : room // ignore: cast_nullable_to_non_nullable
 as String,homeId: null == homeId ? _self.homeId : homeId // ignore: cast_nullable_to_non_nullable
-as int,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
+as String,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
 as String,deviceMacAddress: null == deviceMacAddress ? _self.deviceMacAddress : deviceMacAddress // ignore: cast_nullable_to_non_nullable
 as String,rules: freezed == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
 as RulesEntity?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
@@ -174,7 +174,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  int homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceEntity() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
@@ -195,7 +195,7 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  int homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceEntity():
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
@@ -215,7 +215,7 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  String room,  int homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceEntity() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
@@ -230,14 +230,14 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 @JsonSerializable()
 
 class _DeviceEntity implements DeviceEntity {
-  const _DeviceEntity({this.id = "", this.name = "", this.type = "", this.room = "", this.homeId = 0, this.homeName = "", this.deviceMacAddress = "", this.rules, this.status = DeviceStatusEnum.offline, final  List<DeviceComponentEntity> components = const []}): _components = components;
+  const _DeviceEntity({this.id = "", this.name = "", this.type = "", this.room = "", this.homeId = "", this.homeName = "", this.deviceMacAddress = "", this.rules, this.status = DeviceStatusEnum.offline, final  List<DeviceComponentEntity> components = const []}): _components = components;
   factory _DeviceEntity.fromJson(Map<String, dynamic> json) => _$DeviceEntityFromJson(json);
 
 @override@JsonKey() final  String id;
 @override@JsonKey() final  String name;
 @override@JsonKey() final  String type;
 @override@JsonKey() final  String room;
-@override@JsonKey() final  int homeId;
+@override@JsonKey() final  String homeId;
 @override@JsonKey() final  String homeName;
 @override@JsonKey() final  String deviceMacAddress;
 @override final  RulesEntity? rules;
@@ -283,7 +283,7 @@ abstract mixin class _$DeviceEntityCopyWith<$Res> implements $DeviceEntityCopyWi
   factory _$DeviceEntityCopyWith(_DeviceEntity value, $Res Function(_DeviceEntity) _then) = __$DeviceEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String type, String room, int homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
+ String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
 });
 
 
@@ -307,7 +307,7 @@ as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,room: null == room ? _self.room : room // ignore: cast_nullable_to_non_nullable
 as String,homeId: null == homeId ? _self.homeId : homeId // ignore: cast_nullable_to_non_nullable
-as int,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
+as String,homeName: null == homeName ? _self.homeName : homeName // ignore: cast_nullable_to_non_nullable
 as String,deviceMacAddress: null == deviceMacAddress ? _self.deviceMacAddress : deviceMacAddress // ignore: cast_nullable_to_non_nullable
 as String,rules: freezed == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
 as RulesEntity?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable

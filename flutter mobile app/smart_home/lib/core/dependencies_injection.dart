@@ -6,7 +6,15 @@ import 'package:smart_home/core/network/common_service.dart';
 
 import '../config/app/app_preferences.dart';
 
+import '../features/add_device/data/data_sources/add_device_local_data_source.dart';
+import '../features/add_device/data/data_sources/add_device_remote_data_source.dart';
 import '../features/add_device/data/data_sources/esp_provision_remote_data_source.dart';
+import '../features/add_device/data/repository/add_device_repository_impl.dart';
+import '../features/add_device/domain/repository/add_device_repository.dart';
+import '../features/add_device/domain/usecase/check_esp_device_usecase.dart';
+import '../features/add_device/domain/usecase/provision_device_wifi_usecase.dart';
+import '../features/add_device/domain/usecase/register_device_usecase.dart';
+import '../features/add_device/domain/usecase/save_device_locally_usecase.dart';
 import 'constants/api_constant.dart';
 import 'network/token_manager.dart';
 
@@ -50,12 +58,14 @@ Future<void> initDependencies() async {
   getItInstance.registerLazySingleton(() => CommonService(mainDio));
   final espDio = Dio(
     BaseOptions(
-      baseUrl: 'http://192.168.4.1',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 5),
+      baseUrl: ApiConstant.espProvisionBaseUrl,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
     ),
   );
 
+  getItInstance.registerSingleton<CheckConnectivity>(CheckConnectivity());
+  // add device
   getItInstance.registerLazySingleton<CommonService>(
     () => CommonService(espDio),
     instanceName: 'esp',
@@ -66,8 +76,29 @@ Future<void> initDependencies() async {
       getItInstance<CommonService>(instanceName: 'esp'),
     ),
   );
-  getItInstance.registerSingleton<CheckConnectivity>(CheckConnectivity());
+  getItInstance.registerLazySingleton<AddDeviceRepository>(
+    () => AddDeviceRepositoryImpl(
+      getItInstance<EspProvisionRemoteDataSource>(),
+      getItInstance<AddDeviceRemoteDataSource>(),
+      getItInstance<AddDeviceLocalDataSource>(),
+    ),
+  );
 
+  getItInstance.registerLazySingleton(
+    () => CheckEspDeviceUseCase(getItInstance<AddDeviceRepository>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => ProvisionDeviceWifiUseCase(getItInstance<AddDeviceRepository>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => RegisterDeviceUseCase(getItInstance<AddDeviceRepository>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => SaveDeviceLocallyUseCase(getItInstance<AddDeviceRepository>()),
+  );
   // home page
   //entities and models
 

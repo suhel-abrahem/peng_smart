@@ -12,7 +12,7 @@ _DeviceEntity _$DeviceEntityFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String? ?? "",
       type: json['type'] as String? ?? "",
       room: json['room'] as String? ?? "",
-      homeId: (json['homeId'] as num?)?.toInt() ?? 0,
+      homeId: json['homeId'] as String? ?? "",
       homeName: json['homeName'] as String? ?? "",
       deviceMacAddress: json['deviceMacAddress'] as String? ?? "",
       rules: json['rules'] == null
