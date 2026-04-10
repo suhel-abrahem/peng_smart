@@ -64,21 +64,33 @@ model Room {
 }
 
 model Device {
-  id             String   @id @default(uuid())
-  name           String
-  type           String
-  macAddress     String   @unique
-  status         String   @default("offline")
-  componentsJson Json?
-  rulesJson      Json?
-  homeId         String
-  roomId         String?
-  createdAt      DateTime @default(now())
+  id                String   @id @default(uuid())
+  name              String
+  type              String
+  macAddress        String   @unique
+  status            String   @default("offline")
+  componentsJson    Json?
+  rulesJson         Json?
+  lastTelemetryJson Json?
+  pendingCommandJson Json?
+  homeId            String
+  roomId            String?
+  createdAt         DateTime @default(now())
 
-  home           Home     @relation(fields: [homeId], references: [id])
-  room           Room?    @relation(fields: [roomId], references: [id])
+  home              Home     @relation(fields: [homeId], references: [id])
+  room              Room?    @relation(fields: [roomId], references: [id])
+
+  telemetryLogs     DeviceTelemetry[]
 }
+model DeviceTelemetry {
+  id           String   @id @default(uuid())
+  deviceId     String
+  temperature  Float?
+  payloadJson  Json?
+  createdAt    DateTime @default(now())
 
+  device       Device   @relation(fields: [deviceId], references: [id])
+}
 model RefreshToken {
   id        String   @id @default(uuid())
   token     String   @unique

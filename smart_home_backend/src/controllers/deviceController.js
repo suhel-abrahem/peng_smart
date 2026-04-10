@@ -285,11 +285,186 @@ async function updateDeviceRules(req, res) {
     });
   }
 }
+async function getDeviceTelemetry(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { deviceId } = req.params;
+    const limit = Number(req.query.limit || 50);
 
+    const device = await prisma.device.findUnique({
+      where: {
+        id: deviceId,
+      },
+    });
+
+    if (!device) {
+      return res.status(404).json({
+        message: "Device not found",
+      });
+    }
+
+    const membership = await prisma.homeMember.findFirst({
+      where: {
+        userId,
+        homeId: device.homeId,
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        message: "You do not have access to this device",
+      });
+    }
+
+    const telemetry = await prisma.deviceTelemetry.findMany({
+      where: {
+        deviceId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: limit,
+    });
+
+    return res.status(200).json({
+      message: "Device telemetry fetched successfully",
+      data: telemetry,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: e.message,
+    });
+  }
+}
+
+async function getDeviceCurrentState(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { deviceId } = req.params;
+
+    const device = await prisma.device.findUnique({
+      where: {
+        id: deviceId,
+      },
+      include: {
+        room: true,
+      },
+    });
+
+    if (!device) {
+      return res.status(404).json({
+        message: "Device not found",
+      });
+    }
+
+    const membership = await prisma.homeMember.findFirst({
+      where: {
+        userId,
+        homeId: device.homeId,
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        message: "You do not have access to this device",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Device current state fetched successfully",
+      data: {
+        id: device.id,
+        name: device.name,
+        type: device.type,
+        macAddress: device.macAddress,
+        status: device.status,
+        roomId: device.roomId,
+        room: device.room,
+        components: device.componentsJson ?? [],
+        rules: device.rulesJson ?? { groups: [] },
+        lastTelemetry: device.lastTelemetryJson ?? {},
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: e.message,
+    });
+  }
+}
+async function controlDevice(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { deviceId } = req.params;
+    const { action, targetType, targetComponentId, value } = req.body;
+
+    if (!action) {
+      return res.status(400).json({
+        message: "action is required",
+      });
+    }
+
+    const device = await prisma.device.findUnique({
+      where: {
+        id: deviceId,
+      },
+    });
+
+    if (!device) {
+      return res.status(404).json({
+        message: "Device not found",
+      });
+    }
+
+    const membership = await prisma.homeMember.findFirst({
+      where: {
+        userId,
+        homeId: device.homeId,
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        message: "You do not have access to this device",
+      });
+    }
+
+    const command = {
+      action,
+      targetType: targetType || "device",
+      targetComponentId: targetComponentId || null,
+      value: value ?? null,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedDevice = await prisma.device.update({
+      where: {
+        id: deviceId,
+      },
+      data: {
+        pendingCommandJson: command,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Command queued successfully",
+      data: {
+        id: updatedDevice.id,
+        pendingCommand: updatedDevice.pendingCommandJson,
+      },
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: e.message,
+    });
+  }
+}
 module.exports = {
   registerDevice,
   getHomeDevices,
   getDeviceById,
   getDevicesByRoomId,
   updateDeviceRules,
+  getDeviceTelemetry,
+  getDeviceCurrentState,
+  controlDevice,
 };

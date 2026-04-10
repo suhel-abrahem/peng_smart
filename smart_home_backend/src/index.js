@@ -8,6 +8,7 @@ const homeRoutes = require("./routes/homeRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const invitationRoutes = require("./routes/invitationRoutes");
 const deviceRoutes = require("./routes/deviceRoutes");
+const iotRoutes = require("./routes/iotRoutes");
 const app = express();
 
 app.use(cors());
@@ -18,6 +19,7 @@ app.use("/homes", homeRoutes);
 app.use("/rooms", roomRoutes);
 app.use("/invitations", invitationRoutes);
 app.use("/devices", deviceRoutes);
+app.use("/iot", iotRoutes);
 app.get("/", (req, res) => {
   res.send("API Running 🚀");
 });
