@@ -83,7 +83,9 @@ Future<void> initDependencies() async {
     ),
   );
   getItInstance.registerLazySingleton<AddDeviceRemoteDataSource>(
-    () => AddDeviceRemoteDataSourceImpl(getItInstance<CommonService>()),
+    () => AddDeviceRemoteDataSourceImpl(
+      getItInstance<CommonService>(instanceName: 'esp'),
+    ),
   );
 
   getItInstance.registerLazySingleton<AddDeviceLocalDataSource>(

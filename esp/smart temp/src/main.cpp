@@ -209,7 +209,7 @@ void handleSaveWiFi() {
   res["deviceType"] = "water_heater_controller";
   sendJson(200, res);
 
-  delay(1000);
+  delay(30000);
   ESP.restart();
 }
 void handleNotFound() {

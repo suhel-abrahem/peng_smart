@@ -7,6 +7,7 @@ import 'package:smart_home/features/add_device/domain/usecase/provision_device_w
 import 'package:smart_home/features/add_device/domain/usecase/register_device_usecase.dart';
 import 'package:smart_home/features/add_device/domain/usecase/save_device_locally_usecase.dart';
 
+import '../../../../core/location_permissions/location_permissions.dart';
 import '../../domain/usecase/connect_to_esp_wifi_usecase.dart';
 import 'add_device_event.dart';
 import 'add_device_state.dart';
@@ -179,11 +180,12 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
     emit(const AddDeviceState.loading());
 
     try {
+      await requestPermissions();
       await _connectToEspWifiUseCase.call(
         params: ConnectToEspWifiParams(
           ssid: 'ESP_TEMP_SETUP',
           password: '12345678',
-          isOpen: true,
+          isOpen: false,
         ),
       );
 

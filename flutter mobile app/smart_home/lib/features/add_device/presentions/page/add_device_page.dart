@@ -3,11 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_home/core/dependencies_injection.dart';
 
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
+import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 
 import '../bloc/add_device_bloc.dart';
 import '../bloc/add_device_event.dart';
 import '../bloc/add_device_state.dart';
-
 
 class AddDevicePage extends StatefulWidget {
   const AddDevicePage({super.key});
@@ -22,7 +22,9 @@ class _AddDevicePageState extends State<AddDevicePage> {
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool _espWifiConnected = false;
   bool _espChecked = false;
+  DeviceEntity? _checkedDevice;
 
   @override
   void dispose() {
@@ -47,19 +49,18 @@ class _AddDevicePageState extends State<AddDevicePage> {
       _showMessage('Please enter device name');
       return false;
     }
-
     if (_ssidController.text.trim().isEmpty) {
       _showMessage('Please enter home Wi-Fi name');
       return false;
     }
-
     return true;
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -69,20 +70,37 @@ class _AddDevicePageState extends State<AddDevicePage> {
       child: BlocConsumer<AddDeviceBloc, AddDeviceState>(
         listener: (context, state) {
           state.whenOrNull(
+            espWifiConnected: () {
+              _espWifiConnected = true;
+              _showMessage('Connected to ESP network');
+              context.read<AddDeviceBloc>().add(
+                const AddDeviceEvent.checkEspDevice(),
+              );
+            },
             espChecked: (device) {
               setState(() {
                 _espChecked = true;
+                _checkedDevice = device;
               });
               _showMessage(
                 'ESP found: ${device.type ?? ''} (${device.deviceMacAddress ?? ''})',
               );
             },
-            error: (message) {
-              _showMessage(message);
+            wifiProvisioned: (device) {
+              _showMessage('Wi-Fi sent to device');
+            },
+            deviceRegistered: (device) {
+              _showMessage('Device registered');
+            },
+            deviceSavedLocally: (device) {
+              _showMessage('Device saved locally');
             },
             success: (device) {
               _showMessage('Device added successfully');
               Navigator.pop(context, device);
+            },
+            error: (message) {
+              _showMessage(message);
             },
           );
         },
@@ -93,9 +111,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
           );
 
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Add Device'),
-            ),
+            appBar: AppBar(title: const Text('Add Device')),
             body: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16),
@@ -111,7 +127,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                     ),
                     const SizedBox(height: 8),
                     const Text(
-                      'Hold the ESP button for 10 seconds until it enters hotspot mode, then connect your phone to ESP_TEMP_SETUP.',
+                      'Hold the ESP button for 10 seconds until it enters hotspot mode.',
                     ),
                     const SizedBox(height: 16),
                     SizedBox(
@@ -121,10 +137,16 @@ class _AddDevicePageState extends State<AddDevicePage> {
                             ? null
                             : () {
                                 context.read<AddDeviceBloc>().add(
-                                      const AddDeviceEvent.checkEspDevice(),
-                                    );
+                                  const AddDeviceEvent.connectToEspWifi(),
+                                );
                               },
-                        child: const Text('Check ESP Device'),
+                        child: Text(
+                          isLoading
+                              ? 'Please wait...'
+                              : _espWifiConnected
+                              ? 'Reconnect to ESP'
+                              : 'Connect To ESP',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -135,27 +157,26 @@ class _AddDevicePageState extends State<AddDevicePage> {
                         border: Border.all(color: Colors.grey.shade300),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: state.maybeWhen(
-                        espChecked: (device) => Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Device Found',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'ESP Status',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Wi-Fi connected: ${_espWifiConnected ? "Yes" : "No"}',
+                          ),
+                          Text('Device checked: ${_espChecked ? "Yes" : "No"}'),
+                          if (_checkedDevice != null) ...[
                             const SizedBox(height: 8),
-                            Text('Type: ${device.type ?? ''}'),
-                            Text('MAC: ${device.deviceMacAddress ?? ''}'),
+                            Text('Type: ${_checkedDevice?.type ?? ''}'),
+                            Text(
+                              'MAC: ${_checkedDevice?.deviceMacAddress ?? ''}',
+                            ),
                           ],
-                        ),
-                        loading: () => const Text('Checking device...'),
-                        orElse: () => Text(
-                          _espChecked
-                              ? 'ESP checked successfully'
-                              : 'No device checked yet',
-                        ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -167,9 +188,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Fill the device information and your home Wi-Fi.',
-                    ),
+                    const Text('Fill device info and home Wi-Fi credentials.'),
                     const SizedBox(height: 16),
                     TextField(
                       controller: _deviceNameController,
@@ -210,20 +229,23 @@ class _AddDevicePageState extends State<AddDevicePage> {
                         onPressed: isLoading
                             ? null
                             : () {
+                                if (!_espWifiConnected) {
+                                  _showMessage('Please connect to ESP first');
+                                  return;
+                                }
                                 if (!_espChecked) {
                                   _showMessage('Please check ESP device first');
                                   return;
                                 }
-
                                 if (!_validateForm()) {
                                   return;
                                 }
 
                                 context.read<AddDeviceBloc>().add(
-                                      AddDeviceEvent.completeAddDevice(
-                                        input: _buildInputModel(),
-                                      ),
-                                    );
+                                  AddDeviceEvent.completeAddDevice(
+                                    input: _buildInputModel(),
+                                  ),
+                                );
                               },
                         child: Text(
                           isLoading ? 'Please wait...' : 'Add Device',

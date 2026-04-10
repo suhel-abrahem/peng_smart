@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id @default(uuid())
+  name          String
+  email         String       @unique
+  passwordHash  String
+  createdAt     DateTime     @default(now())
+
+  ownedHomes    Home[]       @relation("HomeOwner")
+  memberships   HomeMember[]
+  refreshTokens RefreshToken[]
+  createdInvitations Invitation[] @relation("InvitationCreator")
+}
+
+model Home {
+  id         String       @id @default(uuid())
+  name       String
+  ownerId    String
+  createdAt  DateTime     @default(now())
+
+  owner      User         @relation("HomeOwner", fields: [ownerId], references: [id])
+  members    HomeMember[]
+  rooms      Room[]
+  devices    Device[]
+  invitations Invitation[]
+}
+
+model HomeMember {
+  id        String   @id @default(uuid())
+  homeId    String
+  userId    String
+  role      String
+  createdAt DateTime @default(now())
+
+  home      Home     @relation(fields: [homeId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([homeId, userId])
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String
+  homeId    String
+  createdAt DateTime @default(now())
+
+  home      Home     @relation(fields: [homeId], references: [id])
+  devices   Device[]
+
+  @@unique([homeId, name])
+}
+
+model Device {
+  id             String   @id @default(uuid())
+  name           String
+  type           String
+  macAddress     String   @unique
+  status         String   @default("offline")
+  componentsJson Json?
+  rulesJson      Json?
+  homeId         String
+  roomId         String?
+  createdAt      DateTime @default(now())
+
+  home           Home     @relation(fields: [homeId], references: [id])
+  room           Room?    @relation(fields: [roomId], references: [id])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+model Invitation {
+  id              String   @id @default(uuid())
+  homeId          String
+  invitedEmail    String
+  role            String
+  status          String   @default("pending")
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime
+
+  home            Home     @relation(fields: [homeId], references: [id])
+  createdBy       User     @relation("InvitationCreator", fields: [createdByUserId], references: [id])
+
+  @@index([invitedEmail])
+}
