@@ -31,6 +31,8 @@ class AuthRepositoryImpl implements AuthRepository {
         email: result.user.email,
         token: result.accessToken,
         refreshToken: result.refreshToken,
+        accessTokenExpiresAt: result.accessTokenExpiresAt,
+        refreshTokenExpiresAt: result.refreshTokenExpiresAt,
         loginState: LoginStateEnum.login,
       );
       await getItInstance<AppPreferences>().setUserInfo(userInfo);

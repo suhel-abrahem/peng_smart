@@ -11,6 +11,8 @@ _AuthResponseModel _$AuthResponseModelFromJson(Map<String, dynamic> json) =>
       user: UserModel.fromJson(json['user'] as Map<String, dynamic>),
       accessToken: json['token'] as String? ?? '',
       refreshToken: json['refreshToken'] as String? ?? '',
+      accessTokenExpiresAt: json['accessTokenExpiresAt'] as String? ?? '',
+      refreshTokenExpiresAt: json['refreshTokenExpiresAt'] as String? ?? '',
     );
 
 Map<String, dynamic> _$AuthResponseModelToJson(_AuthResponseModel instance) =>
@@ -18,4 +20,6 @@ Map<String, dynamic> _$AuthResponseModelToJson(_AuthResponseModel instance) =>
       'user': instance.user,
       'token': instance.accessToken,
       'refreshToken': instance.refreshToken,
+      'accessTokenExpiresAt': instance.accessTokenExpiresAt,
+      'refreshTokenExpiresAt': instance.refreshTokenExpiresAt,
     };

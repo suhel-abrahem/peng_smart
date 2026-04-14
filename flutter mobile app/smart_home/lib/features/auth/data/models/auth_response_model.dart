@@ -12,6 +12,8 @@ abstract class AuthResponseModel with _$AuthResponseModel {
     required UserModel user,
     @JsonKey(name: 'token') @Default('') String accessToken,
     @Default('') String refreshToken,
+    @Default('') String accessTokenExpiresAt,
+    @Default('') String refreshTokenExpiresAt,
   }) = _AuthResponseModel;
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) =>
@@ -24,6 +26,8 @@ extension AuthResponseModelMapper on AuthResponseModel {
       user: user.toEntity(),
       accessToken: accessToken,
       refreshToken: refreshToken,
+      accessTokenExpiresAt: accessTokenExpiresAt,
+      refreshTokenExpiresAt: refreshTokenExpiresAt,
     );
   }
 }

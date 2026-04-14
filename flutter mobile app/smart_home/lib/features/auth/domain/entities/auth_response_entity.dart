@@ -10,6 +10,8 @@ abstract class AuthResponseEntity with _$AuthResponseEntity {
     required UserEntity user,
     @Default('') String accessToken,
     @Default('') String refreshToken,
+    @Default('') String accessTokenExpiresAt,
+    @Default('') String refreshTokenExpiresAt,
   }) = _AuthResponseEntity;
 
   factory AuthResponseEntity.fromJson(Map<String, dynamic> json) =>
