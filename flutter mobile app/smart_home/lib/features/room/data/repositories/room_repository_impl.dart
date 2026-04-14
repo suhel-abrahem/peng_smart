@@ -6,7 +6,7 @@ import 'package:smart_home/features/room/data/models/room_model.dart';
 import '../../domain/entities/room_entity.dart';
 import '../../domain/repositories/room_repository.dart';
 import '../datasources/room_remote_data_source.dart';
-
+import '../models/create_room_input_model.dart';
 
 class RoomRepositoryImpl implements RoomRepository {
   final RoomRemoteDataSource _remoteDataSource;
@@ -24,6 +24,20 @@ class RoomRepositoryImpl implements RoomRepository {
       );
     } on DioException catch (e) {
       return mapDioExceptionToDataState<List<RoomEntity>>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<RoomEntity>> createRoom({
+    required CreateRoomInputModel input,
+  }) async {
+    try {
+      final result = await _remoteDataSource.createRoom(input: input);
+      return DataSuccess(data: result.toEntity());
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<RoomEntity>(e);
     } catch (e) {
       return DataFailed(error: e.toString());
     }

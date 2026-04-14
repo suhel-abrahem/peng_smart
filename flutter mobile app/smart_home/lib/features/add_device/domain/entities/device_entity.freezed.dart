@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DeviceEntity {
 
- String get id; String get name; String get type; String get room; String get homeId; String get homeName; String get deviceMacAddress; RulesEntity? get rules; DeviceStatusEnum get status; List<DeviceComponentEntity> get components;
+ String get id; String get name; String get type; String get room; String get homeId; String get homeName; String get deviceMacAddress; RulesEntity? get rules; DeviceStatusEnum get status; List<DeviceComponentEntity> get components; DeviceTelemetryEntity? get telemetry;
 /// Create a copy of DeviceEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $DeviceEntityCopyWith<DeviceEntity> get copyWith => _$DeviceEntityCopyWithImpl<D
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName)&&(identical(other.deviceMacAddress, deviceMacAddress) || other.deviceMacAddress == deviceMacAddress)&&(identical(other.rules, rules) || other.rules == rules)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.components, components));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeviceEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName)&&(identical(other.deviceMacAddress, deviceMacAddress) || other.deviceMacAddress == deviceMacAddress)&&(identical(other.rules, rules) || other.rules == rules)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.components, components)&&(identical(other.telemetry, telemetry) || other.telemetry == telemetry));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,room,homeId,homeName,deviceMacAddress,rules,status,const DeepCollectionEquality().hash(components));
+int get hashCode => Object.hash(runtimeType,id,name,type,room,homeId,homeName,deviceMacAddress,rules,status,const DeepCollectionEquality().hash(components),telemetry);
 
 @override
 String toString() {
-  return 'DeviceEntity(id: $id, name: $name, type: $type, room: $room, homeId: $homeId, homeName: $homeName, deviceMacAddress: $deviceMacAddress, rules: $rules, status: $status, components: $components)';
+  return 'DeviceEntity(id: $id, name: $name, type: $type, room: $room, homeId: $homeId, homeName: $homeName, deviceMacAddress: $deviceMacAddress, rules: $rules, status: $status, components: $components, telemetry: $telemetry)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $DeviceEntityCopyWith<$Res>  {
   factory $DeviceEntityCopyWith(DeviceEntity value, $Res Function(DeviceEntity) _then) = _$DeviceEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
+ String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components, DeviceTelemetryEntity? telemetry
 });
 
 
-$RulesEntityCopyWith<$Res>? get rules;
+$RulesEntityCopyWith<$Res>? get rules;$DeviceTelemetryEntityCopyWith<$Res>? get telemetry;
 
 }
 /// @nodoc
@@ -65,7 +65,7 @@ class _$DeviceEntityCopyWithImpl<$Res>
 
 /// Create a copy of DeviceEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? room = null,Object? homeId = null,Object? homeName = null,Object? deviceMacAddress = null,Object? rules = freezed,Object? status = null,Object? components = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? room = null,Object? homeId = null,Object? homeName = null,Object? deviceMacAddress = null,Object? rules = freezed,Object? status = null,Object? components = null,Object? telemetry = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -77,7 +77,8 @@ as String,deviceMacAddress: null == deviceMacAddress ? _self.deviceMacAddress : 
 as String,rules: freezed == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
 as RulesEntity?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeviceStatusEnum,components: null == components ? _self.components : components // ignore: cast_nullable_to_non_nullable
-as List<DeviceComponentEntity>,
+as List<DeviceComponentEntity>,telemetry: freezed == telemetry ? _self.telemetry : telemetry // ignore: cast_nullable_to_non_nullable
+as DeviceTelemetryEntity?,
   ));
 }
 /// Create a copy of DeviceEntity
@@ -91,6 +92,18 @@ $RulesEntityCopyWith<$Res>? get rules {
 
   return $RulesEntityCopyWith<$Res>(_self.rules!, (value) {
     return _then(_self.copyWith(rules: value));
+  });
+}/// Create a copy of DeviceEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceTelemetryEntityCopyWith<$Res>? get telemetry {
+    if (_self.telemetry == null) {
+    return null;
+  }
+
+  return $DeviceTelemetryEntityCopyWith<$Res>(_self.telemetry!, (value) {
+    return _then(_self.copyWith(telemetry: value));
   });
 }
 }
@@ -174,10 +187,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components,  DeviceTelemetryEntity? telemetry)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceEntity() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
+return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
   return orElse();
 
 }
@@ -195,10 +208,10 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components,  DeviceTelemetryEntity? telemetry)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceEntity():
-return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
+return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +228,10 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  String room,  String homeId,  String homeName,  String deviceMacAddress,  RulesEntity? rules,  DeviceStatusEnum status,  List<DeviceComponentEntity> components,  DeviceTelemetryEntity? telemetry)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceEntity() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components);case _:
+return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
   return null;
 
 }
@@ -230,7 +243,7 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 @JsonSerializable()
 
 class _DeviceEntity implements DeviceEntity {
-  const _DeviceEntity({this.id = "", this.name = "", this.type = "", this.room = "", this.homeId = "", this.homeName = "", this.deviceMacAddress = "", this.rules, this.status = DeviceStatusEnum.offline, final  List<DeviceComponentEntity> components = const []}): _components = components;
+  const _DeviceEntity({this.id = "", this.name = "", this.type = "", this.room = "", this.homeId = "", this.homeName = "", this.deviceMacAddress = "", this.rules, this.status = DeviceStatusEnum.offline, final  List<DeviceComponentEntity> components = const [], this.telemetry = null}): _components = components;
   factory _DeviceEntity.fromJson(Map<String, dynamic> json) => _$DeviceEntityFromJson(json);
 
 @override@JsonKey() final  String id;
@@ -249,6 +262,7 @@ class _DeviceEntity implements DeviceEntity {
   return EqualUnmodifiableListView(_components);
 }
 
+@override@JsonKey() final  DeviceTelemetryEntity? telemetry;
 
 /// Create a copy of DeviceEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -263,16 +277,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName)&&(identical(other.deviceMacAddress, deviceMacAddress) || other.deviceMacAddress == deviceMacAddress)&&(identical(other.rules, rules) || other.rules == rules)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._components, _components));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeviceEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.room, room) || other.room == room)&&(identical(other.homeId, homeId) || other.homeId == homeId)&&(identical(other.homeName, homeName) || other.homeName == homeName)&&(identical(other.deviceMacAddress, deviceMacAddress) || other.deviceMacAddress == deviceMacAddress)&&(identical(other.rules, rules) || other.rules == rules)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._components, _components)&&(identical(other.telemetry, telemetry) || other.telemetry == telemetry));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,room,homeId,homeName,deviceMacAddress,rules,status,const DeepCollectionEquality().hash(_components));
+int get hashCode => Object.hash(runtimeType,id,name,type,room,homeId,homeName,deviceMacAddress,rules,status,const DeepCollectionEquality().hash(_components),telemetry);
 
 @override
 String toString() {
-  return 'DeviceEntity(id: $id, name: $name, type: $type, room: $room, homeId: $homeId, homeName: $homeName, deviceMacAddress: $deviceMacAddress, rules: $rules, status: $status, components: $components)';
+  return 'DeviceEntity(id: $id, name: $name, type: $type, room: $room, homeId: $homeId, homeName: $homeName, deviceMacAddress: $deviceMacAddress, rules: $rules, status: $status, components: $components, telemetry: $telemetry)';
 }
 
 
@@ -283,11 +297,11 @@ abstract mixin class _$DeviceEntityCopyWith<$Res> implements $DeviceEntityCopyWi
   factory _$DeviceEntityCopyWith(_DeviceEntity value, $Res Function(_DeviceEntity) _then) = __$DeviceEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components
+ String id, String name, String type, String room, String homeId, String homeName, String deviceMacAddress, RulesEntity? rules, DeviceStatusEnum status, List<DeviceComponentEntity> components, DeviceTelemetryEntity? telemetry
 });
 
 
-@override $RulesEntityCopyWith<$Res>? get rules;
+@override $RulesEntityCopyWith<$Res>? get rules;@override $DeviceTelemetryEntityCopyWith<$Res>? get telemetry;
 
 }
 /// @nodoc
@@ -300,7 +314,7 @@ class __$DeviceEntityCopyWithImpl<$Res>
 
 /// Create a copy of DeviceEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? room = null,Object? homeId = null,Object? homeName = null,Object? deviceMacAddress = null,Object? rules = freezed,Object? status = null,Object? components = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? room = null,Object? homeId = null,Object? homeName = null,Object? deviceMacAddress = null,Object? rules = freezed,Object? status = null,Object? components = null,Object? telemetry = freezed,}) {
   return _then(_DeviceEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -312,7 +326,8 @@ as String,deviceMacAddress: null == deviceMacAddress ? _self.deviceMacAddress : 
 as String,rules: freezed == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
 as RulesEntity?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeviceStatusEnum,components: null == components ? _self._components : components // ignore: cast_nullable_to_non_nullable
-as List<DeviceComponentEntity>,
+as List<DeviceComponentEntity>,telemetry: freezed == telemetry ? _self.telemetry : telemetry // ignore: cast_nullable_to_non_nullable
+as DeviceTelemetryEntity?,
   ));
 }
 
@@ -327,6 +342,18 @@ $RulesEntityCopyWith<$Res>? get rules {
 
   return $RulesEntityCopyWith<$Res>(_self.rules!, (value) {
     return _then(_self.copyWith(rules: value));
+  });
+}/// Create a copy of DeviceEntity
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceTelemetryEntityCopyWith<$Res>? get telemetry {
+    if (_self.telemetry == null) {
+    return null;
+  }
+
+  return $DeviceTelemetryEntityCopyWith<$Res>(_self.telemetry!, (value) {
+    return _then(_self.copyWith(telemetry: value));
   });
 }
 }

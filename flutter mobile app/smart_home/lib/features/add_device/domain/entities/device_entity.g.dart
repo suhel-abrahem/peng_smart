@@ -29,6 +29,11 @@ _DeviceEntity _$DeviceEntityFromJson(Map<String, dynamic> json) =>
               )
               .toList() ??
           const [],
+      telemetry: json['telemetry'] == null
+          ? null
+          : DeviceTelemetryEntity.fromJson(
+              json['telemetry'] as Map<String, dynamic>,
+            ),
     );
 
 Map<String, dynamic> _$DeviceEntityToJson(_DeviceEntity instance) =>
@@ -43,6 +48,7 @@ Map<String, dynamic> _$DeviceEntityToJson(_DeviceEntity instance) =>
       'rules': instance.rules,
       'status': _$DeviceStatusEnumEnumMap[instance.status]!,
       'components': instance.components,
+      'telemetry': instance.telemetry,
     };
 
 const _$DeviceStatusEnumEnumMap = {

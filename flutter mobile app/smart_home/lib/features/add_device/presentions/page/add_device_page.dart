@@ -38,7 +38,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
   AddDeviceInputModel _buildInputModel() {
     return AddDeviceInputModel(
       deviceName: _deviceNameController.text.trim(),
-      room: _roomController.text.trim(),
+      roomName: _roomController.text.trim(),
       homeWifiSsid: _ssidController.text.trim(),
       homeWifiPassword: _passwordController.text.trim(),
     );

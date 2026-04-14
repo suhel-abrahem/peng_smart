@@ -13,20 +13,25 @@ _DeviceModel _$DeviceModelFromJson(Map<String, dynamic> json) => _DeviceModel(
   room: json['room'] as String? ?? '',
   homeId: json['homeId'] as String? ?? '',
   homeName: json['homeName'] as String? ?? '',
-  deviceMacAddress: json['deviceMacAddress'] as String? ?? '',
-  rules: json['rules'] == null
+  deviceMacAddress: json['macAddress'] as String? ?? '',
+  rules: json['rulesJson'] == null
       ? null
-      : RulesEntity.fromJson(json['rules'] as Map<String, dynamic>),
+      : RulesEntity.fromJson(json['rulesJson'] as Map<String, dynamic>),
   status:
       $enumDecodeNullable(_$DeviceStatusEnumEnumMap, json['status']) ??
       DeviceStatusEnum.offline,
   components:
-      (json['components'] as List<dynamic>?)
+      (json['componentsJson'] as List<dynamic>?)
           ?.map(
             (e) => DeviceComponentEntity.fromJson(e as Map<String, dynamic>),
           )
           .toList() ??
       const [],
+  telemetry: json['lastTelemetryJson'] == null
+      ? null
+      : DeviceTelemetryEntity.fromJson(
+          json['lastTelemetryJson'] as Map<String, dynamic>,
+        ),
 );
 
 Map<String, dynamic> _$DeviceModelToJson(_DeviceModel instance) =>
@@ -37,10 +42,11 @@ Map<String, dynamic> _$DeviceModelToJson(_DeviceModel instance) =>
       'room': instance.room,
       'homeId': instance.homeId,
       'homeName': instance.homeName,
-      'deviceMacAddress': instance.deviceMacAddress,
-      'rules': instance.rules,
+      'macAddress': instance.deviceMacAddress,
+      'rulesJson': instance.rules,
       'status': _$DeviceStatusEnumEnumMap[instance.status]!,
-      'components': instance.components,
+      'componentsJson': instance.components,
+      'lastTelemetryJson': instance.telemetry,
     };
 
 const _$DeviceStatusEnumEnumMap = {

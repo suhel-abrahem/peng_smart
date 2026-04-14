@@ -99,11 +99,47 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
         deviceMacAddress: device.deviceMacAddress,
         rules: device.rules ?? const RulesEntity(),
         status: device.status,
+        components: device.components,
+        telemetry: device.telemetry,
       );
 
       await _addDeviceLocalDataSource.saveDevice(model);
 
       return DataSuccess(data: model.toEntity());
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<List<DeviceEntity>>> getDevicesByHomeId({
+    required String homeId,
+  }) async {
+    try {
+      final result = await _addDeviceRemoteDataSource.getDevicesByHomeId(
+        homeId: homeId,
+      );
+
+      return DataSuccess(data: result.map((e) => e.toEntity()).toList());
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<List<DeviceEntity>>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<List<DeviceEntity>>> getDevicesByRoomId({
+    required String roomId,
+  }) async {
+    try {
+      final result = await _addDeviceRemoteDataSource.getDevicesByRoomId(
+        roomId: roomId,
+      );
+
+      return DataSuccess(data: result.map((e) => e.toEntity()).toList());
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<List<DeviceEntity>>(e);
     } catch (e) {
       return DataFailed(error: e.toString());
     }
@@ -129,6 +165,7 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
       deviceMacAddress: status.macAddress,
       rules: const RulesEntity(),
       status: DeviceStatusEnum.offline,
+      components: status.components,
     );
   }
 }

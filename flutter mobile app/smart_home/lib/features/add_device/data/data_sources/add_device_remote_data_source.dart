@@ -7,4 +7,8 @@ abstract class AddDeviceRemoteDataSource {
     required AddDeviceInputModel input,
     required DeviceEntity device,
   });
+
+  Future<List<DeviceModel>> getDevicesByHomeId({required String homeId});
+
+  Future<List<DeviceModel>> getDevicesByRoomId({required String roomId});
 }

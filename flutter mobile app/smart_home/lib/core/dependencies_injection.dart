@@ -15,6 +15,8 @@ import '../features/add_device/data/repository/add_device_repository_impl.dart';
 import '../features/add_device/domain/repository/add_device_repository.dart';
 import '../features/add_device/domain/usecase/check_esp_device_usecase.dart';
 import '../features/add_device/domain/usecase/connect_to_esp_wifi_usecase.dart';
+import '../features/add_device/domain/usecase/get_devices_by_home_id_usecase.dart';
+import '../features/add_device/domain/usecase/get_devices_by_room_id_usecase.dart';
 import '../features/add_device/domain/usecase/provision_device_wifi_usecase.dart';
 import '../features/add_device/domain/usecase/register_device_usecase.dart';
 import '../features/add_device/domain/usecase/save_device_locally_usecase.dart';
@@ -26,6 +28,7 @@ import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/home_page/presentation/bloc/dashboard_bloc.dart';
 import '../features/homes/data/datasources/home_remote_data_source.dart'
     show HomeRemoteDataSource;
 import '../features/homes/data/datasources/home_remote_data_source_impl.dart';
@@ -34,6 +37,13 @@ import '../features/homes/domain/repositories/home_repository.dart';
 import '../features/homes/domain/usecases/create_home_usecase.dart';
 import '../features/homes/domain/usecases/get_my_homes_usecase.dart';
 import '../features/homes/presentation/bloc/home_bloc.dart';
+import '../features/room/data/datasources/room_remote_data_source.dart';
+import '../features/room/data/datasources/room_remote_data_source_impl.dart';
+import '../features/room/data/repositories/room_repository_impl.dart';
+import '../features/room/domain/repositories/room_repository.dart';
+import '../features/room/domain/usecases/create_room_usecase.dart';
+import '../features/room/domain/usecases/get_rooms_by_home_id_usecase.dart';
+import '../features/room/presentation/bloc/add_room_bloc.dart';
 import 'constants/api_constant.dart';
 import 'network/token_manager.dart';
 
@@ -196,6 +206,38 @@ Future<void> initDependencies() async {
       getItInstance<CreateHomeUseCase>(),
     ),
   );
+  getItInstance.registerLazySingleton(
+    () => GetDevicesByHomeIdUseCase(getItInstance<AddDeviceRepository>()),
+  );
 
+  getItInstance.registerLazySingleton(
+    () => GetDevicesByRoomIdUseCase(getItInstance<AddDeviceRepository>()),
+  );
+
+  getItInstance.registerFactory(
+    () => DashboardBloc(
+      getItInstance<GetMyHomesUseCase>(),
+      getItInstance<GetRoomsByHomeIdUseCase>(),
+      getItInstance<GetDevicesByHomeIdUseCase>(),
+    ),
+  );
   // end of home page
+  //room
+  getItInstance.registerLazySingleton<RoomRemoteDataSource>(
+    () => RoomRemoteDataSourceImpl(getItInstance<CommonService>()),
+  );
+  getItInstance.registerLazySingleton<RoomRepository>(
+    () => RoomRepositoryImpl(getItInstance<RoomRemoteDataSource>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => GetRoomsByHomeIdUseCase(getItInstance<RoomRepository>()),
+  );
+  getItInstance.registerLazySingleton(
+    () => CreateRoomUseCase(getItInstance<RoomRepository>()),
+  );
+
+  getItInstance.registerFactory(
+    () => AddRoomBloc(getItInstance<CreateRoomUseCase>()),
+  );
 }

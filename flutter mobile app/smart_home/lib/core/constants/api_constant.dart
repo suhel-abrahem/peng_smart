@@ -12,6 +12,7 @@ class ApiConstant {
   static const String getHomesEndpoint = "/homes/my";
   static const String createRoomEndpoint = "/rooms";
   static const String getRoomsEndpoint = "/rooms/my";
+  static const String getRoomByHomeIdEndpoint = "/rooms/home";
   static const String registerDeviceEndpoint = "/devices/register";
   static const String getDevicesEndpoint = "/devices/home";
   static const String getDevicesByRoomIdEndpoint = "/devices/room";

@@ -4,6 +4,8 @@ import 'package:smart_home/features/add_device/domain/entities/device_component_
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
 
+import '../../domain/entities/device_telemetry_entity.dart';
+
 part 'device_model.freezed.dart';
 part 'device_model.g.dart';
 
@@ -16,31 +18,22 @@ abstract class DeviceModel with _$DeviceModel {
     @Default('') String room,
     @Default('') String homeId,
     @Default('') String homeName,
-    @Default('') String deviceMacAddress,
-    RulesEntity? rules,
+
+    @JsonKey(name: 'macAddress') @Default('') String deviceMacAddress,
+
+    @JsonKey(name: 'rulesJson') RulesEntity? rules,
+
     @Default(DeviceStatusEnum.offline) DeviceStatusEnum status,
-    @Default([]) List<DeviceComponentEntity> components,
+
+    @JsonKey(name: 'componentsJson')
+    @Default([])
+    List<DeviceComponentEntity> components,
+
+    @JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry,
   }) = _DeviceModel;
 
   factory DeviceModel.fromJson(Map<String, dynamic> json) =>
       _$DeviceModelFromJson(json);
-}
-
-extension DeviceModelMapper on DeviceModel {
-  DeviceEntity toEntity() {
-    return DeviceEntity(
-      id: id,
-      name: name,
-      type: type,
-      room: room,
-      homeId: homeId,
-      homeName: homeName,
-      deviceMacAddress: deviceMacAddress,
-      rules: rules,
-      status: status,
-      components: components,
-    );
-  }
 }
 
 extension DeviceEntityMapper on DeviceEntity {
@@ -56,6 +49,24 @@ extension DeviceEntityMapper on DeviceEntity {
       rules: rules,
       status: status,
       components: components,
+    );
+  }
+}
+
+extension DeviceModelMapper on DeviceModel {
+  DeviceEntity toEntity() {
+    return DeviceEntity(
+      id: id,
+      name: name,
+      type: type,
+      room: room,
+      homeId: homeId,
+      homeName: homeName,
+      deviceMacAddress: deviceMacAddress,
+      rules: rules,
+      status: status,
+      components: components,
+      telemetry: telemetry,
     );
   }
 }

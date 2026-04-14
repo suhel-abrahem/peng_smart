@@ -6,11 +6,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_home/features/auth/presentation/pages/login_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/register_page.dart';
-import 'package:smart_home/features/home_page/presentation/pages/home_page.dart';
+import 'package:smart_home/features/home_page/presentation/pages/home_page_page.dart';
 import 'package:smart_home/features/homes/presentation/pages/home_gate_page.dart';
 
 import '../../features/add_device/presentions/page/add_device_page.dart';
+import '../../features/homes/domain/entities/home_entity.dart';
 import '../../features/homes/presentation/pages/create_home_page.dart';
+import '../../features/room/presentation/pages/add_room_page.dart';
 import '../../features/setting_page/presentation/pages/setting_page.dart';
 import '../app/app_preferences.dart';
 import 'route_tracker.dart';
@@ -31,6 +33,7 @@ class RoutesName {
   static String signupPage = "signupPage";
   static String otpPage = "otpPage";
   static String resetPasswordPage = "resetPasswordPage";
+  static String addRoomPage = "addRoomPage";
 }
 
 class RoutesPath {
@@ -43,6 +46,7 @@ class RoutesPath {
   static String signupPage = '/signup';
   static String otpPage = '/otp';
   static String resetPasswordPage = '/reset-password';
+  static String addRoomPage = '/addRoom';
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -94,7 +98,21 @@ GoRouter goRouter = GoRouter(
               path: RoutesPath.homePage,
               name: RoutesName.homePage,
               pageBuilder: (context, state) {
-                return _customTransitionPage(child: HomePage(), state: state);
+                return _customTransitionPage(
+                  child: HomePagePage(),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.addRoomPage,
+              name: RoutesName.addRoomPage,
+              pageBuilder: (context, state) {
+                final home = state.extra as HomeEntity;
+                return _customTransitionPage(
+                  child: AddRoomPage(home: home),
+                  state: state,
+                );
               },
             ),
             GoRoute(
