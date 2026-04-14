@@ -6,15 +6,16 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_home/features/auth/presentation/pages/login_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/register_page.dart';
+import 'package:smart_home/features/home_page/presentation/pages/home_page.dart';
+import 'package:smart_home/features/homes/presentation/pages/home_gate_page.dart';
 
 import '../../features/add_device/presentions/page/add_device_page.dart';
+import '../../features/homes/presentation/pages/create_home_page.dart';
 import '../../features/setting_page/presentation/pages/setting_page.dart';
 import '../app/app_preferences.dart';
 import 'route_tracker.dart';
 import '../../core/dependencies_injection.dart';
 import '../../core/enums/login_state_enum.dart';
-
-import '../../features/home_page/presentation/pages/home_page_page.dart';
 
 import '../../core/resource/main_page/main_bottom_bar.dart';
 
@@ -22,7 +23,8 @@ String? currentPath = RoutesPath.homePage;
 
 class RoutesName {
   static String homePage = "homePage";
-
+  static String homeGatePage = "homeGatePage";
+  static String addHomePage = "addHomePage";
   static String settingPage = "settingPage";
   static String addDevicePage = "addDevicePage";
   static String loginPage = "loginPage";
@@ -33,7 +35,8 @@ class RoutesName {
 
 class RoutesPath {
   static String homePage = '/';
-
+  static String homeGatePage = '/homeGate';
+  static String addHomePage = '/createHome';
   static String settingPage = '/setting';
   static String addDevicePage = '/addDevice';
   static String loginPage = '/login';
@@ -48,32 +51,28 @@ GoRouter goRouter = GoRouter(
   observers: [RouteTracker()],
   redirect: (context, state) {
     currentPath = state.uri.toString();
-    print(
-      "login state: ${getItInstance<AppPreferences>().getUserInfo()?.loginState}",
-    );
-    if ((getItInstance<AppPreferences>().getUserInfo()?.loginState ==
-            LoginStateEnum.logout) &&
-        !(state.uri.toString().endsWith(RoutesPath.loginPage) ||
-            state.uri.toString().endsWith(RoutesPath.otpPage) ||
-            state.uri.toString().endsWith(RoutesPath.resetPasswordPage) ||
-            state.uri.toString().endsWith(RoutesPath.signupPage))) {
+
+    final user = getItInstance<AppPreferences>().getUserInfo();
+
+    final isLoggedIn = user?.loginState == LoginStateEnum.login;
+
+    final isAuthPage =
+        state.uri.toString().endsWith(RoutesPath.loginPage) ||
+        state.uri.toString().endsWith(RoutesPath.signupPage);
+
+    // ❌ Not logged in → go login
+    if (!isLoggedIn && !isAuthPage) {
       return RoutesPath.loginPage;
     }
-    // if (currentPath?.endsWith(lastPath ?? "") == false) {
-    //   return lastPath;
-    // }
-    // if (getItInstance<AppPreferences>().isFirstUse() == false) {
-    //   return RoutesPath.firstUsePage;
-    // } else if (getItInstance<AppPreferences>().getUserInfo()?.loginStateEnum ==
-    //         LoginStateEnum.unlogined &&
-    //     !(state.uri.toString().endsWith(RoutesPath.signupPage) ||
-    //         state.uri.toString().endsWith(RoutesPath.otpPage) ||
-    //         state.uri.toString().endsWith(RoutesPath.resetPasswordPage))) {
-    //   return RoutesPath.loginPage;
-    // }
+
+    // ✅ Logged in → always go to homeGate first
+    if (isLoggedIn && state.uri.toString() == RoutesPath.loginPage) {
+      return RoutesPath.homeGatePage;
+    }
+
     return null;
   },
-  initialLocation: RoutesPath.homePage,
+  initialLocation: RoutesPath.homeGatePage,
   navigatorKey: navigatorKey,
   routes: [
     StatefulShellRoute.indexedStack(
@@ -95,8 +94,25 @@ GoRouter goRouter = GoRouter(
               path: RoutesPath.homePage,
               name: RoutesName.homePage,
               pageBuilder: (context, state) {
+                return _customTransitionPage(child: HomePage(), state: state);
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.homeGatePage,
+              name: RoutesName.homeGatePage,
+              pageBuilder: (context, state) {
                 return _customTransitionPage(
-                  child: HomePagePage(),
+                  child: HomeGatePage(),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.addHomePage,
+              name: RoutesName.addHomePage,
+              pageBuilder: (context, state) {
+                return _customTransitionPage(
+                  child: CreateHomePage(),
                   state: state,
                 );
               },

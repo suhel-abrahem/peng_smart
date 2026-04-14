@@ -7,7 +7,8 @@ part 'add_device_input_model.g.dart';
 abstract class AddDeviceInputModel with _$AddDeviceInputModel {
   const factory AddDeviceInputModel({
     @Default('') String deviceName,
-    @Default('') String room,
+    @Default('') String roomName,
+    @Default('') String roomId,
     @Default('') String homeWifiSsid,
     @Default('') String homeWifiPassword,
     @Default('') String homeId,

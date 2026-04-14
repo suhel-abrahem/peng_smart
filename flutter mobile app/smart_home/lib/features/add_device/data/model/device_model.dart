@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_home/core/enums/device_status_enum.dart';
+import 'package:smart_home/features/add_device/domain/entities/device_component_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
 
@@ -18,6 +19,7 @@ abstract class DeviceModel with _$DeviceModel {
     @Default('') String deviceMacAddress,
     RulesEntity? rules,
     @Default(DeviceStatusEnum.offline) DeviceStatusEnum status,
+    @Default([]) List<DeviceComponentEntity> components,
   }) = _DeviceModel;
 
   factory DeviceModel.fromJson(Map<String, dynamic> json) =>
@@ -36,6 +38,7 @@ extension DeviceModelMapper on DeviceModel {
       deviceMacAddress: deviceMacAddress,
       rules: rules,
       status: status,
+      components: components,
     );
   }
 }
@@ -51,7 +54,8 @@ extension DeviceEntityMapper on DeviceEntity {
       homeName: homeName,
       deviceMacAddress: deviceMacAddress,
       rules: rules,
-      status: status ?? DeviceStatusEnum.offline,
+      status: status,
+      components: components,
     );
   }
 }

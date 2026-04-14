@@ -7,12 +7,12 @@ import 'package:smart_home/core/resource/user_info_entity/user_info_entity.dart'
 
 class TokenManager {
   final Dio _refreshDio;
-  final AppPreferences _appPreferences;
+  final AppPreferences appPreferences;
 
-  const TokenManager(this._refreshDio, this._appPreferences);
+  const TokenManager(this._refreshDio, this.appPreferences);
 
   Future<String?> getValidToken() async {
-    final userInfo = _appPreferences.getUserInfo();
+    final userInfo = appPreferences.getUserInfo();
     if (userInfo == null) {
       return null;
     }
@@ -82,7 +82,7 @@ class TokenManager {
           refreshTokenExpiresAt: newToken.refreshTokenExpiresAt,
         );
 
-        await _appPreferences.setUserInfo(updatedUserInfo);
+        await appPreferences.setUserInfo(updatedUserInfo);
         return newToken.token;
       }
     } catch (e) {
@@ -96,6 +96,6 @@ class TokenManager {
   }
 
   Future<void> clearSession() async {
-    await _appPreferences.clearSession();
+    await appPreferences.clearSession();
   }
 }

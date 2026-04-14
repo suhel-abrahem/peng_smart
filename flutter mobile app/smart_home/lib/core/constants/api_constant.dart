@@ -1,9 +1,10 @@
 class ApiConstant {
-  static const String baseUrl = "http://192.168.1.193:3000";
+  static const String baseUrl = "http://192.168.1.93:3000";
   static const String espProvisionBaseUrl = "http://192.168.4.1";
-  static const String refreshToken = "/auth/refresh";
+  static const String refreshToken = "/auth/refresh-token";
   static const String signupEndpoint = "/auth/register";
   static const String loginEndpoint = "/auth/login";
+  static const String logoutEndpoint = "/auth/logout";
   static const String createInvitationEndpoint = "/invitations";
   static const String acceptInvitationEndpoint = "/invitations/accept";
   static const String getInvitationsEndpoint = "/invitations/my";

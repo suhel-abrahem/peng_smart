@@ -17,7 +17,10 @@ _EspStatusModel _$EspStatusModelFromJson(Map<String, dynamic> json) =>
       temperature: (json['temperature'] as num?)?.toDouble(),
       components:
           (json['components'] as List<dynamic>?)
-              ?.map((e) => e as String)
+              ?.map(
+                (e) =>
+                    DeviceComponentEntity.fromJson(e as Map<String, dynamic>),
+              )
               .toList() ??
           const [],
       relay1: json['relay1'] as bool? ?? false,

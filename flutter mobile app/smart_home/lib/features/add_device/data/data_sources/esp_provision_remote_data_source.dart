@@ -44,7 +44,10 @@ class EspProvisionRemoteDataSourceImpl
         "ssid": input.homeWifiSsid,
         "password": input.homeWifiPassword,
         "deviceName": input.deviceName,
-        "room": input.room,
+        "room": input.roomName,
+        "homeId": input.homeId,
+        "homeName": input.homeName,
+        "roomId": input.roomId,
       },
       options: Options(
         extra: {"auth-free": true}, // IMPORTANT

@@ -20,6 +20,13 @@ _DeviceModel _$DeviceModelFromJson(Map<String, dynamic> json) => _DeviceModel(
   status:
       $enumDecodeNullable(_$DeviceStatusEnumEnumMap, json['status']) ??
       DeviceStatusEnum.offline,
+  components:
+      (json['components'] as List<dynamic>?)
+          ?.map(
+            (e) => DeviceComponentEntity.fromJson(e as Map<String, dynamic>),
+          )
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$DeviceModelToJson(_DeviceModel instance) =>
@@ -33,6 +40,7 @@ Map<String, dynamic> _$DeviceModelToJson(_DeviceModel instance) =>
       'deviceMacAddress': instance.deviceMacAddress,
       'rules': instance.rules,
       'status': _$DeviceStatusEnumEnumMap[instance.status]!,
+      'components': instance.components,
     };
 
 const _$DeviceStatusEnumEnumMap = {

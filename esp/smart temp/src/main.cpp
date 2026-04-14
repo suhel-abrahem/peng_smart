@@ -40,7 +40,7 @@ String savedSsid;
 String savedPass;
 
 // ---------------- BACKEND ----------------
-// CHANGE THIS TO YOUR COMPUTER / SERVER LOCAL IP
+
 String backendBaseUrl = "http://192.168.1.193:3000";
 
 String registeredDeviceId = "";

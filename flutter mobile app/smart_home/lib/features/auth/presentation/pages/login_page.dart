@@ -41,8 +41,7 @@ class _LoginPageState extends State<LoginPage> {
           state.whenOrNull(
             success: (response) {
               _showMessage('Login success');
-              // save token here later
-              // navigate to home gate page
+              context.goNamed(RoutesName.homePage);
             },
             error: (message) {
               _showMessage(message);

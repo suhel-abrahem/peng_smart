@@ -22,15 +22,23 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
       ApiConstant.registerDeviceEndpoint,
       data: {
         'name': input.deviceName,
-        'room': input.room,
+        'room': input.roomName,
+        'roomId': input.roomId,
         'homeId': input.homeId,
         'homeName': input.homeName,
         'macAddress': device.deviceMacAddress,
         'type': device.type,
+        'components': device.components
+            .map(
+              (component) => {
+                'name': component.name,
+                'type': component.type,
+                "id": component.id,
+              },
+            )
+            .toList(),
       },
-      options: Options(
-        extra: {'auth-free': false},
-      ),
+      options: Options(extra: {'auth-free': false}),
     );
 
     if (response == null || response.data == null) {

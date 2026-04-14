@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:smart_home/features/add_device/domain/entities/device_component_entity.dart';
 
 part 'esp_status_model.freezed.dart';
 part 'esp_status_model.g.dart';
@@ -13,7 +14,7 @@ abstract class EspStatusModel with _$EspStatusModel {
     @Default('') String macAddress,
     @Default('') String deviceType,
     double? temperature,
-    @Default([]) List<String> components,
+    @Default([]) List<DeviceComponentEntity> components,
     @Default(false) bool relay1,
     @Default(false) bool relay2,
   }) = _EspStatusModel;

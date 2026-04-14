@@ -52,7 +52,8 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
         data: _mapEspStatusToEntity(
           espStatus,
           customName: input.deviceName,
-          customRoom: input.room,
+          customRoom: input.roomName,
+          customRoomId: input.roomId,
           customHomeId: input.homeId,
           customHomeName: input.homeName,
         ),
@@ -112,6 +113,7 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
     EspStatusModel status, {
     String? customName,
     String? customRoom,
+    String? customRoomId,
     String? customHomeId,
     String? customHomeName,
   }) {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smart_home/core/dependencies_injection.dart';
 
 import 'package:smart_home/features/auth/presentation/bloc/auth_bloc.dart';
 
+import '../../../../config/route/routes_manager.dart';
 import '../../data/models/register_input_model.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -41,7 +43,7 @@ class _RegisterPageState extends State<RegisterPage> {
           state.whenOrNull(
             success: (response) {
               _showMessage('Register success');
-              Navigator.pop(context);
+              context.goNamed(RoutesName.loginPage);
             },
             error: (message) {
               _showMessage(message);

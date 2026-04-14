@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$EspStatusModel {
 
- bool get ok; String get mode;@JsonKey(name: 'ap_ssid') String get apSsid; String get ip; String get macAddress; String get deviceType; double? get temperature; List<String> get components; bool get relay1; bool get relay2;
+ bool get ok; String get mode;@JsonKey(name: 'ap_ssid') String get apSsid; String get ip; String get macAddress; String get deviceType; double? get temperature; List<DeviceComponentEntity> get components; bool get relay1; bool get relay2;
 /// Create a copy of EspStatusModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $EspStatusModelCopyWith<$Res>  {
   factory $EspStatusModelCopyWith(EspStatusModel value, $Res Function(EspStatusModel) _then) = _$EspStatusModelCopyWithImpl;
 @useResult
 $Res call({
- bool ok, String mode,@JsonKey(name: 'ap_ssid') String apSsid, String ip, String macAddress, String deviceType, double? temperature, List<String> components, bool relay1, bool relay2
+ bool ok, String mode,@JsonKey(name: 'ap_ssid') String apSsid, String ip, String macAddress, String deviceType, double? temperature, List<DeviceComponentEntity> components, bool relay1, bool relay2
 });
 
 
@@ -75,7 +75,7 @@ as String,macAddress: null == macAddress ? _self.macAddress : macAddress // igno
 as String,deviceType: null == deviceType ? _self.deviceType : deviceType // ignore: cast_nullable_to_non_nullable
 as String,temperature: freezed == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
 as double?,components: null == components ? _self.components : components // ignore: cast_nullable_to_non_nullable
-as List<String>,relay1: null == relay1 ? _self.relay1 : relay1 // ignore: cast_nullable_to_non_nullable
+as List<DeviceComponentEntity>,relay1: null == relay1 ? _self.relay1 : relay1 // ignore: cast_nullable_to_non_nullable
 as bool,relay2: null == relay2 ? _self.relay2 : relay2 // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -162,7 +162,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<String> components,  bool relay1,  bool relay2)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<DeviceComponentEntity> components,  bool relay1,  bool relay2)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _EspStatusModel() when $default != null:
 return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that.deviceType,_that.temperature,_that.components,_that.relay1,_that.relay2);case _:
@@ -183,7 +183,7 @@ return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<String> components,  bool relay1,  bool relay2)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<DeviceComponentEntity> components,  bool relay1,  bool relay2)  $default,) {final _that = this;
 switch (_that) {
 case _EspStatusModel():
 return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that.deviceType,_that.temperature,_that.components,_that.relay1,_that.relay2);case _:
@@ -203,7 +203,7 @@ return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<String> components,  bool relay1,  bool relay2)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool ok,  String mode, @JsonKey(name: 'ap_ssid')  String apSsid,  String ip,  String macAddress,  String deviceType,  double? temperature,  List<DeviceComponentEntity> components,  bool relay1,  bool relay2)?  $default,) {final _that = this;
 switch (_that) {
 case _EspStatusModel() when $default != null:
 return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that.deviceType,_that.temperature,_that.components,_that.relay1,_that.relay2);case _:
@@ -218,7 +218,7 @@ return $default(_that.ok,_that.mode,_that.apSsid,_that.ip,_that.macAddress,_that
 @JsonSerializable()
 
 class _EspStatusModel implements EspStatusModel {
-  const _EspStatusModel({this.ok = false, this.mode = '', @JsonKey(name: 'ap_ssid') this.apSsid = '', this.ip = '', this.macAddress = '', this.deviceType = '', this.temperature, final  List<String> components = const [], this.relay1 = false, this.relay2 = false}): _components = components;
+  const _EspStatusModel({this.ok = false, this.mode = '', @JsonKey(name: 'ap_ssid') this.apSsid = '', this.ip = '', this.macAddress = '', this.deviceType = '', this.temperature, final  List<DeviceComponentEntity> components = const [], this.relay1 = false, this.relay2 = false}): _components = components;
   factory _EspStatusModel.fromJson(Map<String, dynamic> json) => _$EspStatusModelFromJson(json);
 
 @override@JsonKey() final  bool ok;
@@ -228,8 +228,8 @@ class _EspStatusModel implements EspStatusModel {
 @override@JsonKey() final  String macAddress;
 @override@JsonKey() final  String deviceType;
 @override final  double? temperature;
- final  List<String> _components;
-@override@JsonKey() List<String> get components {
+ final  List<DeviceComponentEntity> _components;
+@override@JsonKey() List<DeviceComponentEntity> get components {
   if (_components is EqualUnmodifiableListView) return _components;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_components);
@@ -271,7 +271,7 @@ abstract mixin class _$EspStatusModelCopyWith<$Res> implements $EspStatusModelCo
   factory _$EspStatusModelCopyWith(_EspStatusModel value, $Res Function(_EspStatusModel) _then) = __$EspStatusModelCopyWithImpl;
 @override @useResult
 $Res call({
- bool ok, String mode,@JsonKey(name: 'ap_ssid') String apSsid, String ip, String macAddress, String deviceType, double? temperature, List<String> components, bool relay1, bool relay2
+ bool ok, String mode,@JsonKey(name: 'ap_ssid') String apSsid, String ip, String macAddress, String deviceType, double? temperature, List<DeviceComponentEntity> components, bool relay1, bool relay2
 });
 
 
@@ -298,7 +298,7 @@ as String,macAddress: null == macAddress ? _self.macAddress : macAddress // igno
 as String,deviceType: null == deviceType ? _self.deviceType : deviceType // ignore: cast_nullable_to_non_nullable
 as String,temperature: freezed == temperature ? _self.temperature : temperature // ignore: cast_nullable_to_non_nullable
 as double?,components: null == components ? _self._components : components // ignore: cast_nullable_to_non_nullable
-as List<String>,relay1: null == relay1 ? _self.relay1 : relay1 // ignore: cast_nullable_to_non_nullable
+as List<DeviceComponentEntity>,relay1: null == relay1 ? _self.relay1 : relay1 // ignore: cast_nullable_to_non_nullable
 as bool,relay2: null == relay2 ? _self.relay2 : relay2 // ignore: cast_nullable_to_non_nullable
 as bool,
   ));

@@ -26,6 +26,14 @@ import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/auth/domain/usecases/login_usecase.dart';
 import '../features/auth/domain/usecases/register_usecase.dart';
 import '../features/auth/presentation/bloc/auth_bloc.dart';
+import '../features/homes/data/datasources/home_remote_data_source.dart'
+    show HomeRemoteDataSource;
+import '../features/homes/data/datasources/home_remote_data_source_impl.dart';
+import '../features/homes/data/repositories/home_repository_impl.dart';
+import '../features/homes/domain/repositories/home_repository.dart';
+import '../features/homes/domain/usecases/create_home_usecase.dart';
+import '../features/homes/domain/usecases/get_my_homes_usecase.dart';
+import '../features/homes/presentation/bloc/home_bloc.dart';
 import 'constants/api_constant.dart';
 import 'network/token_manager.dart';
 
@@ -166,7 +174,28 @@ Future<void> initDependencies() async {
   );
   // end of auth
   // home page
-  //entities and models
+  getItInstance.registerLazySingleton<HomeRemoteDataSource>(
+    () => HomeRemoteDataSourceImpl(getItInstance<CommonService>()),
+  );
+
+  getItInstance.registerLazySingleton<HomeRepository>(
+    () => HomeRepositoryImpl(getItInstance<HomeRemoteDataSource>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => GetMyHomesUseCase(getItInstance<HomeRepository>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => CreateHomeUseCase(getItInstance<HomeRepository>()),
+  );
+
+  getItInstance.registerFactory(
+    () => HomeBloc(
+      getItInstance<GetMyHomesUseCase>(),
+      getItInstance<CreateHomeUseCase>(),
+    ),
+  );
 
   // end of home page
 }
