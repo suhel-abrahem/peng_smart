@@ -1,4 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../enums/login_state_enum.dart';
 part 'user_info_entity.freezed.dart';
 part 'user_info_entity.g.dart';
 
@@ -12,7 +14,8 @@ abstract class UserInfoEntity with _$UserInfoEntity {
     @Default("") String? avatarUrl,
     @Default("") String? token,
     @Default("") String? refreshToken,
-    @Default(0) int? expiresIn,
+    @Default(0) int expiresIn,
+    @Default(LoginStateEnum.logout) LoginStateEnum? loginState,
   }) = _UserInfoEntity;
 
   factory UserInfoEntity.fromJson(Map<String, dynamic> json) =>

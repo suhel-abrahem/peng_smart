@@ -4,6 +4,8 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_home/features/auth/presentation/pages/login_page.dart';
+import 'package:smart_home/features/auth/presentation/pages/register_page.dart';
 
 import '../../features/add_device/presentions/page/add_device_page.dart';
 import '../../features/setting_page/presentation/pages/setting_page.dart';
@@ -23,6 +25,10 @@ class RoutesName {
 
   static String settingPage = "settingPage";
   static String addDevicePage = "addDevicePage";
+  static String loginPage = "loginPage";
+  static String signupPage = "signupPage";
+  static String otpPage = "otpPage";
+  static String resetPasswordPage = "resetPasswordPage";
 }
 
 class RoutesPath {
@@ -30,6 +36,10 @@ class RoutesPath {
 
   static String settingPage = '/setting';
   static String addDevicePage = '/addDevice';
+  static String loginPage = '/login';
+  static String signupPage = '/signup';
+  static String otpPage = '/otp';
+  static String resetPasswordPage = '/reset-password';
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -38,6 +48,17 @@ GoRouter goRouter = GoRouter(
   observers: [RouteTracker()],
   redirect: (context, state) {
     currentPath = state.uri.toString();
+    print(
+      "login state: ${getItInstance<AppPreferences>().getUserInfo()?.loginState}",
+    );
+    if ((getItInstance<AppPreferences>().getUserInfo()?.loginState ==
+            LoginStateEnum.logout) &&
+        !(state.uri.toString().endsWith(RoutesPath.loginPage) ||
+            state.uri.toString().endsWith(RoutesPath.otpPage) ||
+            state.uri.toString().endsWith(RoutesPath.resetPasswordPage) ||
+            state.uri.toString().endsWith(RoutesPath.signupPage))) {
+      return RoutesPath.loginPage;
+    }
     // if (currentPath?.endsWith(lastPath ?? "") == false) {
     //   return lastPath;
     // }
@@ -80,12 +101,16 @@ GoRouter goRouter = GoRouter(
                 );
               },
             ),
-            GoRoute(path: RoutesPath.addDevicePage, name: RoutesName.addDevicePage, pageBuilder: (context, state) {
-              return _customTransitionPage(
-                child: AddDevicePage(),
-                state: state,
-              );
-            }),
+            GoRoute(
+              path: RoutesPath.addDevicePage,
+              name: RoutesName.addDevicePage,
+              pageBuilder: (context, state) {
+                return _customTransitionPage(
+                  child: AddDevicePage(),
+                  state: state,
+                );
+              },
+            ),
           ],
         ),
 
@@ -98,6 +123,23 @@ GoRouter goRouter = GoRouter(
               pageBuilder: (context, state) {
                 return _customTransitionPage(
                   child: SettingPage(),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.loginPage,
+              name: RoutesName.loginPage,
+              pageBuilder: (context, state) {
+                return _customTransitionPage(child: LoginPage(), state: state);
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.signupPage,
+              name: RoutesName.signupPage,
+              pageBuilder: (context, state) {
+                return _customTransitionPage(
+                  child: RegisterPage(),
                   state: state,
                 );
               },

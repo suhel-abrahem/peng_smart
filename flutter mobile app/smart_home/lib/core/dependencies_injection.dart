@@ -19,6 +19,13 @@ import '../features/add_device/domain/usecase/provision_device_wifi_usecase.dart
 import '../features/add_device/domain/usecase/register_device_usecase.dart';
 import '../features/add_device/domain/usecase/save_device_locally_usecase.dart';
 import '../features/add_device/presentions/bloc/add_device_bloc.dart';
+import '../features/auth/data/datasources/auth_remote_data_source.dart';
+import '../features/auth/data/datasources/auth_remote_data_source_impl.dart';
+import '../features/auth/data/repositories/auth_repository_impl.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
+import '../features/auth/domain/usecases/login_usecase.dart';
+import '../features/auth/domain/usecases/register_usecase.dart';
+import '../features/auth/presentation/bloc/auth_bloc.dart';
 import 'constants/api_constant.dart';
 import 'network/token_manager.dart';
 
@@ -131,6 +138,33 @@ Future<void> initDependencies() async {
       getItInstance<ConnectToEspWifiUseCase>(),
     ),
   );
+  // end of add device
+  // auth
+  // data sources
+  getItInstance.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(getItInstance<CommonService>()),
+  );
+  // repositories
+  getItInstance.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(getItInstance<AuthRemoteDataSource>()),
+  );
+
+  // usecases
+  getItInstance.registerLazySingleton(
+    () => LoginUseCase(getItInstance<AuthRepository>()),
+  );
+
+  getItInstance.registerLazySingleton(
+    () => RegisterUseCase(getItInstance<AuthRepository>()),
+  );
+  // presentation bloc
+  getItInstance.registerFactory(
+    () => AuthBloc(
+      getItInstance<LoginUseCase>(),
+      getItInstance<RegisterUseCase>(),
+    ),
+  );
+  // end of auth
   // home page
   //entities and models
 

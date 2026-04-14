@@ -75,6 +75,10 @@ class AppPreferences {
     final userInfoJson = _sharedPreferences.getString(
       SharedPreferencesKeys.userInfoKey,
     );
+    print("UserInfo JSON: $userInfoJson");
+    print(
+      "UserInfo : ${UserInfoEntity.fromJson(jsonDecode(userInfoJson ?? "{}"))}",
+    );
     return UserInfoEntity.fromJson(jsonDecode(userInfoJson ?? "{}"));
   }
 }

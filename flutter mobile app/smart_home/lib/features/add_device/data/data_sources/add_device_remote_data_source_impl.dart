@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:smart_home/core/constants/api_constant.dart';
 
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
 import 'package:smart_home/features/add_device/data/model/device_model.dart';
@@ -18,7 +19,7 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     required DeviceEntity device,
   }) async {
     final response = await _commonService.post(
-      '/devices/register',
+      ApiConstant.registerDeviceEndpoint,
       data: {
         'name': input.deviceName,
         'room': input.room,

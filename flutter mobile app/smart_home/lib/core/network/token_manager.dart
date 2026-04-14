@@ -21,7 +21,7 @@ class TokenManager {
   }
 
   bool isTokenExpired(UserInfoEntity userInfo) {
-    final expiresIn = userInfo.expiresIn ?? 0;
+    final expiresIn = userInfo.expiresIn;
     if (expiresIn <= 0) {
       return true;
     }
@@ -49,7 +49,7 @@ class TokenManager {
         final updatedUserInfo = userInfo.copyWith(
           token: newToken.token,
           refreshToken: newToken.refreshToken,
-          expiresIn: newToken.expiresIn,
+          expiresIn: newToken.expiresIn ?? 0,
         );
         await _appPreferences.setUserInfo(updatedUserInfo);
         return newToken.token;

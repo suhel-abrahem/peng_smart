@@ -16,6 +16,9 @@ _UserInfoEntity _$UserInfoEntityFromJson(Map<String, dynamic> json) =>
       token: json['token'] as String? ?? "",
       refreshToken: json['refreshToken'] as String? ?? "",
       expiresIn: (json['expiresIn'] as num?)?.toInt() ?? 0,
+      loginState:
+          $enumDecodeNullable(_$LoginStateEnumEnumMap, json['loginState']) ??
+          LoginStateEnum.logout,
     );
 
 Map<String, dynamic> _$UserInfoEntityToJson(_UserInfoEntity instance) =>
@@ -28,4 +31,11 @@ Map<String, dynamic> _$UserInfoEntityToJson(_UserInfoEntity instance) =>
       'token': instance.token,
       'refreshToken': instance.refreshToken,
       'expiresIn': instance.expiresIn,
+      'loginState': _$LoginStateEnumEnumMap[instance.loginState],
     };
+
+const _$LoginStateEnumEnumMap = {
+  LoginStateEnum.login: 'login',
+  LoginStateEnum.logout: 'logout',
+  LoginStateEnum.guest: 'guest',
+};
