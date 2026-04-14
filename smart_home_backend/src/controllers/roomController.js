@@ -54,7 +54,45 @@ async function createRoom(req, res) {
     });
   }
 }
+async function getRoomsByHomeId(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { homeId } = req.params;
+
+    const membership = await prisma.homeMember.findFirst({
+      where: {
+        userId,
+        homeId,
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        message: "You do not have access to this home",
+      });
+    }
+
+    const rooms = await prisma.room.findMany({
+      where: {
+        homeId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.status(200).json({
+      message: "Rooms fetched successfully",
+      data: rooms,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: e.message,
+    });
+  }
+}
 
 module.exports = {
   createRoom,
+  getRoomsByHomeId,
 };

@@ -14,7 +14,8 @@ abstract class UserInfoEntity with _$UserInfoEntity {
     @Default("") String? avatarUrl,
     @Default("") String? token,
     @Default("") String? refreshToken,
-    @Default(0) int expiresIn,
+    @Default("") String? accessTokenExpiresAt,
+    @Default("") String? refreshTokenExpiresAt,
     @Default(LoginStateEnum.logout) LoginStateEnum? loginState,
   }) = _UserInfoEntity;
 

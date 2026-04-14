@@ -7,7 +7,8 @@ abstract class TokenEntity with _$TokenEntity {
   const factory TokenEntity({
     @Default("") String? token,
     @Default("") String? refreshToken,
-    @Default(0) int? expiresIn,
+    @Default("") String? accessTokenExpiresAt,
+    @Default("") String? refreshTokenExpiresAt,
   }) = _TokenEntity;
 
   factory TokenEntity.fromJson(Map<String, dynamic> json) =>

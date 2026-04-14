@@ -15,7 +15,8 @@ _UserInfoEntity _$UserInfoEntityFromJson(Map<String, dynamic> json) =>
       avatarUrl: json['avatarUrl'] as String? ?? "",
       token: json['token'] as String? ?? "",
       refreshToken: json['refreshToken'] as String? ?? "",
-      expiresIn: (json['expiresIn'] as num?)?.toInt() ?? 0,
+      accessTokenExpiresAt: json['accessTokenExpiresAt'] as String? ?? "",
+      refreshTokenExpiresAt: json['refreshTokenExpiresAt'] as String? ?? "",
       loginState:
           $enumDecodeNullable(_$LoginStateEnumEnumMap, json['loginState']) ??
           LoginStateEnum.logout,
@@ -30,7 +31,8 @@ Map<String, dynamic> _$UserInfoEntityToJson(_UserInfoEntity instance) =>
       'avatarUrl': instance.avatarUrl,
       'token': instance.token,
       'refreshToken': instance.refreshToken,
-      'expiresIn': instance.expiresIn,
+      'accessTokenExpiresAt': instance.accessTokenExpiresAt,
+      'refreshTokenExpiresAt': instance.refreshTokenExpiresAt,
       'loginState': _$LoginStateEnumEnumMap[instance.loginState],
     };
 
