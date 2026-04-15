@@ -50,11 +50,18 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
 
   @override
   Future<List<DeviceModel>> getDevicesByHomeId({required String homeId}) async {
+    print('Base URL: ${ApiConstant.baseUrl}');
+    print('Fetching devices for homeId: $homeId');
     final response = await _commonService.get(
       "${ApiConstant.getDevicesEndpoint}/$homeId",
     );
-
+    print(
+      'Devices response: ${response?.realUri}',
+    ); // Debug print to check the response
     if (response == null || response.data == null) {
+      print(
+        'Empty devices response for homeId: $homeId',
+      ); // Debug print to check the homeId and response5
       throw Exception('Empty devices response');
     }
 
@@ -69,6 +76,9 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
 
   @override
   Future<List<DeviceModel>> getDevicesByRoomId({required String roomId}) async {
+    print(
+      'Fetching devices for roomId: $roomId',
+    ); // Debug print to check the roomId
     final response = await _commonService.get(
       "${ApiConstant.getDevicesByRoomIdEndpoint}/$roomId",
     );
@@ -78,7 +88,9 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     }
 
     final List<dynamic> rawList = response.data['data'] ?? [];
-
+    print(
+      'Raw room devices data: $rawList',
+    ); // Debug print to check the raw data structure
     return rawList
         .map((e) => DeviceModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();

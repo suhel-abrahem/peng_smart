@@ -9,6 +9,7 @@ abstract class DashboardState with _$DashboardState {
     required HomeEntity selectedHome,
     required DataState<List<RoomEntity>> rooms,
     required DataState<List<DeviceEntity>> devices,
+    required String? selectedRoomId,
   }) = DashboardLoaded;
   const factory DashboardState.error({required String message}) =
       DashboardError;

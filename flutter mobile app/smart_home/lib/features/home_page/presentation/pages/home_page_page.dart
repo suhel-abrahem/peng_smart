@@ -32,7 +32,7 @@ class HomePagePage extends StatelessWidget {
                   final state = context.read<DashboardBloc>().state;
                   if (state is DashboardLoaded) {
                     final created = await context.push<bool>(
-                      '/addRoom',
+                      RoutesPath.addRoomPage,
                       extra: state.selectedHome,
                     );
 
@@ -60,7 +60,7 @@ class HomePagePage extends StatelessWidget {
               initial: () => const SizedBox(),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (message) => Center(child: Text(message)),
-              loaded: (homes, selectedHome, rooms, devices) {
+              loaded: (homes, selectedHome, rooms, devices, selectedRoom) {
                 return RefreshIndicator(
                   onRefresh: () async {
                     context.read<DashboardBloc>().add(
@@ -133,18 +133,21 @@ class HomePagePage extends StatelessWidget {
                                     const SizedBox(width: 8),
                                 itemBuilder: (context, index) {
                                   final room = rooms.data?[index];
-                                  return Chip(
-                                    label: Text(
-                                      room?.name ?? 'Unknown',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelMedium
-                                          ?.copyWith(
-                                            fontFamily:
-                                                FontConstants.fontFamily(
-                                                  context.locale,
-                                                ),
-                                          ),
+                                  final isSelected = room?.id == selectedRoom;
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      context.read<DashboardBloc>().add(
+                                        DashboardEvent.selectRoom(
+                                          roomId: room?.id,
+                                        ),
+                                      );
+                                    },
+                                    child: Chip(
+                                      label: Text(room?.name ?? 'Unknown'),
+                                      backgroundColor: isSelected
+                                          ? Colors.blue
+                                          : Colors.grey[300],
                                     ),
                                   );
                                 },

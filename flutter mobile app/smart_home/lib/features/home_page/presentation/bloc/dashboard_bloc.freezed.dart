@@ -55,12 +55,13 @@ extension DashboardEventPatterns on DashboardEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( LoadDashboardEvent value)?  load,TResult Function( SelectHomeEvent value)?  selectHome,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( LoadDashboardEvent value)?  load,TResult Function( SelectHomeEvent value)?  selectHome,TResult Function( SelectRoomEvent value)?  selectRoom,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case LoadDashboardEvent() when load != null:
 return load(_that);case SelectHomeEvent() when selectHome != null:
-return selectHome(_that);case _:
+return selectHome(_that);case SelectRoomEvent() when selectRoom != null:
+return selectRoom(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return selectHome(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( LoadDashboardEvent value)  load,required TResult Function( SelectHomeEvent value)  selectHome,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( LoadDashboardEvent value)  load,required TResult Function( SelectHomeEvent value)  selectHome,required TResult Function( SelectRoomEvent value)  selectRoom,}){
 final _that = this;
 switch (_that) {
 case LoadDashboardEvent():
 return load(_that);case SelectHomeEvent():
-return selectHome(_that);case _:
+return selectHome(_that);case SelectRoomEvent():
+return selectRoom(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +102,13 @@ return selectHome(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( LoadDashboardEvent value)?  load,TResult? Function( SelectHomeEvent value)?  selectHome,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( LoadDashboardEvent value)?  load,TResult? Function( SelectHomeEvent value)?  selectHome,TResult? Function( SelectRoomEvent value)?  selectRoom,}){
 final _that = this;
 switch (_that) {
 case LoadDashboardEvent() when load != null:
 return load(_that);case SelectHomeEvent() when selectHome != null:
-return selectHome(_that);case _:
+return selectHome(_that);case SelectRoomEvent() when selectRoom != null:
+return selectRoom(_that);case _:
   return null;
 
 }
@@ -122,11 +125,12 @@ return selectHome(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  load,TResult Function( HomeEntity home)?  selectHome,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  load,TResult Function( HomeEntity home)?  selectHome,TResult Function( String? roomId)?  selectRoom,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case LoadDashboardEvent() when load != null:
 return load();case SelectHomeEvent() when selectHome != null:
-return selectHome(_that.home);case _:
+return selectHome(_that.home);case SelectRoomEvent() when selectRoom != null:
+return selectRoom(_that.roomId);case _:
   return orElse();
 
 }
@@ -144,11 +148,12 @@ return selectHome(_that.home);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  load,required TResult Function( HomeEntity home)  selectHome,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  load,required TResult Function( HomeEntity home)  selectHome,required TResult Function( String? roomId)  selectRoom,}) {final _that = this;
 switch (_that) {
 case LoadDashboardEvent():
 return load();case SelectHomeEvent():
-return selectHome(_that.home);case _:
+return selectHome(_that.home);case SelectRoomEvent():
+return selectRoom(_that.roomId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +170,12 @@ return selectHome(_that.home);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  load,TResult? Function( HomeEntity home)?  selectHome,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  load,TResult? Function( HomeEntity home)?  selectHome,TResult? Function( String? roomId)?  selectRoom,}) {final _that = this;
 switch (_that) {
 case LoadDashboardEvent() when load != null:
 return load();case SelectHomeEvent() when selectHome != null:
-return selectHome(_that.home);case _:
+return selectHome(_that.home);case SelectRoomEvent() when selectRoom != null:
+return selectRoom(_that.roomId);case _:
   return null;
 
 }
@@ -282,6 +288,72 @@ $HomeEntityCopyWith<$Res> get home {
     return _then(_self.copyWith(home: value));
   });
 }
+}
+
+/// @nodoc
+
+
+class SelectRoomEvent implements DashboardEvent {
+  const SelectRoomEvent({required this.roomId});
+  
+
+ final  String? roomId;
+
+/// Create a copy of DashboardEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SelectRoomEventCopyWith<SelectRoomEvent> get copyWith => _$SelectRoomEventCopyWithImpl<SelectRoomEvent>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SelectRoomEvent&&(identical(other.roomId, roomId) || other.roomId == roomId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,roomId);
+
+@override
+String toString() {
+  return 'DashboardEvent.selectRoom(roomId: $roomId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SelectRoomEventCopyWith<$Res> implements $DashboardEventCopyWith<$Res> {
+  factory $SelectRoomEventCopyWith(SelectRoomEvent value, $Res Function(SelectRoomEvent) _then) = _$SelectRoomEventCopyWithImpl;
+@useResult
+$Res call({
+ String? roomId
+});
+
+
+
+
+}
+/// @nodoc
+class _$SelectRoomEventCopyWithImpl<$Res>
+    implements $SelectRoomEventCopyWith<$Res> {
+  _$SelectRoomEventCopyWithImpl(this._self, this._then);
+
+  final SelectRoomEvent _self;
+  final $Res Function(SelectRoomEvent) _then;
+
+/// Create a copy of DashboardEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? roomId = freezed,}) {
+  return _then(SelectRoomEvent(
+roomId: freezed == roomId ? _self.roomId : roomId // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
 }
 
 /// @nodoc
@@ -401,12 +473,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices,  String? selectedRoomId)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case DashboardInitial() when initial != null:
 return initial();case DashboardLoading() when loading != null:
 return loading();case DashboardLoaded() when loaded != null:
-return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices);case DashboardError() when error != null:
+return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices,_that.selectedRoomId);case DashboardError() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -425,12 +497,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices,  String? selectedRoomId)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case DashboardInitial():
 return initial();case DashboardLoading():
 return loading();case DashboardLoaded():
-return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices);case DashboardError():
+return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices,_that.selectedRoomId);case DashboardError():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -448,12 +520,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices,  String? selectedRoomId)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case DashboardInitial() when initial != null:
 return initial();case DashboardLoading() when loading != null:
 return loading();case DashboardLoaded() when loaded != null:
-return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices);case DashboardError() when error != null:
+return loaded(_that.homes,_that.selectedHome,_that.rooms,_that.devices,_that.selectedRoomId);case DashboardError() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -530,13 +602,14 @@ String toString() {
 
 
 class DashboardLoaded implements DashboardState {
-  const DashboardLoaded({required this.homes, required this.selectedHome, required this.rooms, required this.devices});
+  const DashboardLoaded({required this.homes, required this.selectedHome, required this.rooms, required this.devices, required this.selectedRoomId});
   
 
  final  DataState<List<HomeEntity>> homes;
  final  HomeEntity selectedHome;
  final  DataState<List<RoomEntity>> rooms;
  final  DataState<List<DeviceEntity>> devices;
+ final  String? selectedRoomId;
 
 /// Create a copy of DashboardState
 /// with the given fields replaced by the non-null parameter values.
@@ -548,16 +621,16 @@ $DashboardLoadedCopyWith<DashboardLoaded> get copyWith => _$DashboardLoadedCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardLoaded&&(identical(other.homes, homes) || other.homes == homes)&&(identical(other.selectedHome, selectedHome) || other.selectedHome == selectedHome)&&(identical(other.rooms, rooms) || other.rooms == rooms)&&(identical(other.devices, devices) || other.devices == devices));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardLoaded&&(identical(other.homes, homes) || other.homes == homes)&&(identical(other.selectedHome, selectedHome) || other.selectedHome == selectedHome)&&(identical(other.rooms, rooms) || other.rooms == rooms)&&(identical(other.devices, devices) || other.devices == devices)&&(identical(other.selectedRoomId, selectedRoomId) || other.selectedRoomId == selectedRoomId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,homes,selectedHome,rooms,devices);
+int get hashCode => Object.hash(runtimeType,homes,selectedHome,rooms,devices,selectedRoomId);
 
 @override
 String toString() {
-  return 'DashboardState.loaded(homes: $homes, selectedHome: $selectedHome, rooms: $rooms, devices: $devices)';
+  return 'DashboardState.loaded(homes: $homes, selectedHome: $selectedHome, rooms: $rooms, devices: $devices, selectedRoomId: $selectedRoomId)';
 }
 
 
@@ -568,7 +641,7 @@ abstract mixin class $DashboardLoadedCopyWith<$Res> implements $DashboardStateCo
   factory $DashboardLoadedCopyWith(DashboardLoaded value, $Res Function(DashboardLoaded) _then) = _$DashboardLoadedCopyWithImpl;
 @useResult
 $Res call({
- DataState<List<HomeEntity>> homes, HomeEntity selectedHome, DataState<List<RoomEntity>> rooms, DataState<List<DeviceEntity>> devices
+ DataState<List<HomeEntity>> homes, HomeEntity selectedHome, DataState<List<RoomEntity>> rooms, DataState<List<DeviceEntity>> devices, String? selectedRoomId
 });
 
 
@@ -585,13 +658,14 @@ class _$DashboardLoadedCopyWithImpl<$Res>
 
 /// Create a copy of DashboardState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? homes = null,Object? selectedHome = null,Object? rooms = null,Object? devices = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? homes = null,Object? selectedHome = null,Object? rooms = null,Object? devices = null,Object? selectedRoomId = freezed,}) {
   return _then(DashboardLoaded(
 homes: null == homes ? _self.homes : homes // ignore: cast_nullable_to_non_nullable
 as DataState<List<HomeEntity>>,selectedHome: null == selectedHome ? _self.selectedHome : selectedHome // ignore: cast_nullable_to_non_nullable
 as HomeEntity,rooms: null == rooms ? _self.rooms : rooms // ignore: cast_nullable_to_non_nullable
 as DataState<List<RoomEntity>>,devices: null == devices ? _self.devices : devices // ignore: cast_nullable_to_non_nullable
-as DataState<List<DeviceEntity>>,
+as DataState<List<DeviceEntity>>,selectedRoomId: freezed == selectedRoomId ? _self.selectedRoomId : selectedRoomId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

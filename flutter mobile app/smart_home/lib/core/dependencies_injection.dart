@@ -108,9 +108,7 @@ Future<void> initDependencies() async {
     ),
   );
   getItInstance.registerLazySingleton<AddDeviceRemoteDataSource>(
-    () => AddDeviceRemoteDataSourceImpl(
-      getItInstance<CommonService>(instanceName: 'esp'),
-    ),
+    () => AddDeviceRemoteDataSourceImpl(getItInstance<CommonService>()),
   );
 
   getItInstance.registerLazySingleton<AddDeviceLocalDataSource>(
@@ -219,6 +217,7 @@ Future<void> initDependencies() async {
       getItInstance<GetMyHomesUseCase>(),
       getItInstance<GetRoomsByHomeIdUseCase>(),
       getItInstance<GetDevicesByHomeIdUseCase>(),
+      getItInstance<GetDevicesByRoomIdUseCase>(),
     ),
   );
   // end of home page

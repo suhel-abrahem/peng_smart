@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:smart_home/features/add_device/domain/usecase/get_devices_by_room_id_usecase.dart';
 
 import '../../../../core/data_state/data_state.dart';
 import '../../../../core/usecase/usecase.dart';
@@ -20,14 +21,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final GetMyHomesUseCase _getMyHomesUseCase;
   final GetRoomsByHomeIdUseCase _getRoomsByHomeIdUseCase;
   final GetDevicesByHomeIdUseCase _getDevicesByHomeIdUseCase;
+  final GetDevicesByRoomIdUseCase _getDevicesByRoomIdUseCase;
 
   DashboardBloc(
     this._getMyHomesUseCase,
     this._getRoomsByHomeIdUseCase,
-    this._getDevicesByHomeIdUseCase,
+    this._getDevicesByHomeIdUseCase, this._getDevicesByRoomIdUseCase,
   ) : super(const DashboardState.initial()) {
     on<LoadDashboardEvent>(_onLoad);
     on<SelectHomeEvent>(_onSelectHome);
+    on<SelectRoomEvent>(_onSelectRoom);
   }
 
   Future<void> _onLoad(
@@ -112,7 +115,47 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         selectedHome: selectedHome,
         rooms: rooms,
         devices: devices,
+        selectedRoomId: null, // 🔥 reset
       ),
     );
+  }
+
+  Future<void> _onSelectRoom(
+    SelectRoomEvent event,
+    Emitter<DashboardState> emit,
+  ) async {
+    final currentState = state;
+
+    if (currentState is! DashboardLoaded) return;
+
+    emit(const DashboardState.loading());
+
+    DataState<List<DeviceEntity>> devices = LoadingDataState();
+
+    if (event.roomId == null) {
+      // 🔥 load all devices in home
+      final result = await _getDevicesByHomeIdUseCase.call(
+        params: currentState.selectedHome.id,
+      );
+
+      devices = result is DataSuccess<List<DeviceEntity>>
+          ? DataSuccess(data: result.data ?? [])
+          : DataFailed(
+              error: result.error?.toString() ?? 'Failed to load devices',
+            );
+    } else {
+      // 🔥 load devices by room
+      final result = await _getDevicesByRoomIdUseCase.call(
+        params: event.roomId,
+      );
+
+      devices = result is DataSuccess<List<DeviceEntity>>
+          ? DataSuccess(data: result.data ?? [])
+          : DataFailed(
+              error: result.error?.toString() ?? 'Failed to load devices',
+            );
+    }
+
+    emit(currentState.copyWith(devices: devices, selectedRoomId: event.roomId));
   }
 }

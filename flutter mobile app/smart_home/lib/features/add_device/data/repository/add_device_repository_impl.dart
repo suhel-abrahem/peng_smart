@@ -122,8 +122,14 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
 
       return DataSuccess(data: result.map((e) => e.toEntity()).toList());
     } on DioException catch (e) {
+      print(
+        'DioException in getDevicesByHomeId: ${e.message}, response: ${e.response?.data}',
+      ); // Debug print to check the DioException details
       return mapDioExceptionToDataState<List<DeviceEntity>>(e);
     } catch (e) {
+      print(
+        'Exception in getDevicesByHomeId: ${e.toString()}',
+      ); // Debug print to check the exception details
       return DataFailed(error: e.toString());
     }
   }
