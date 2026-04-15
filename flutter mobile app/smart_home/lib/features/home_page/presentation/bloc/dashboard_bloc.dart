@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -54,7 +56,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
     await _loadHomeData(
       emit: emit,
-      homes: homes,
+      homes: DataSuccess(data: homes),
       selectedHome: homes.first,
     );
   }
@@ -64,6 +66,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     Emitter<DashboardState> emit,
   ) async {
     final currentState = state;
+
     if (currentState is! DashboardLoaded) return;
 
     emit(const DashboardState.loading());
@@ -77,9 +80,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
   Future<void> _loadHomeData({
     required Emitter<DashboardState> emit,
-    required List<HomeEntity> homes,
+    required DataState<List<HomeEntity>> homes,
     required HomeEntity selectedHome,
   }) async {
+    DataState<List<RoomEntity>> rooms = LoadingDataState();
+    DataState<List<DeviceEntity>> devices = LoadingDataState();
+
     final roomsResult = await _getRoomsByHomeIdUseCase.call(
       params: selectedHome.id,
     );
@@ -88,30 +94,24 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       params: selectedHome.id,
     );
 
-    if (roomsResult is! DataSuccess<List<RoomEntity>>) {
-      emit(
-        DashboardState.error(
-          message: roomsResult.error?.toString() ?? 'Failed to load rooms',
-        ),
-      );
-      return;
-    }
+    rooms = roomsResult is DataSuccess<List<RoomEntity>>
+        ? DataSuccess(data: roomsResult.data ?? [])
+        : DataFailed(
+            error: roomsResult.error?.toString() ?? 'Failed to load rooms',
+          );
 
-    if (devicesResult is! DataSuccess<List<DeviceEntity>>) {
-      emit(
-        DashboardState.error(
-          message: devicesResult.error?.toString() ?? 'Failed to load devices',
-        ),
-      );
-      return;
-    }
+    devices = devicesResult is DataSuccess<List<DeviceEntity>>
+        ? DataSuccess(data: devicesResult.data ?? [])
+        : DataFailed(
+            error: devicesResult.error?.toString() ?? 'Failed to load devices',
+          );
 
     emit(
       DashboardState.loaded(
         homes: homes,
         selectedHome: selectedHome,
-        rooms: roomsResult.data ?? [],
-        devices: devicesResult.data ?? [],
+        rooms: rooms,
+        devices: devices,
       ),
     );
   }

@@ -51,3 +51,7 @@ class NotFoundDataState<T> extends DataState<T> {
 class TooManyRequestsDataState<T> extends DataState<T> {
   const TooManyRequestsDataState({required super.error, super.data});
 }
+
+class LoadingDataState<T> extends DataState<T> {
+  const LoadingDataState();
+}

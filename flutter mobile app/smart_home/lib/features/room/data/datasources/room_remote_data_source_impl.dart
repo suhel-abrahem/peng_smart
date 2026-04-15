@@ -21,7 +21,9 @@ class RoomRemoteDataSourceImpl implements RoomRemoteDataSource {
     }
 
     final List<dynamic> rawList = response.data['data'] ?? [];
-
+    print(
+      'Raw rooms data: $rawList',
+    ); // Debug print to check the raw data structure
     return rawList
         .map((e) => RoomModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();

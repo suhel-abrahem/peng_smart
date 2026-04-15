@@ -59,7 +59,9 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     }
 
     final List<dynamic> rawList = response.data['data'] ?? [];
-
+    print(
+      'Raw devices data: $rawList',
+    ); // Debug print to check the raw data structure
     return rawList
         .map((e) => DeviceModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();

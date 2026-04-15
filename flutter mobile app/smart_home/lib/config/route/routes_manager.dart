@@ -84,10 +84,14 @@ GoRouter goRouter = GoRouter(
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: navigationShell,
-          bottomNavigationBar: MainBottomBar(
-            key: ValueKey(currentPath),
-            navigationShell: navigationShell,
-          ).animate().scaleY(duration: 500.ms),
+          bottomNavigationBar:
+              currentPath == RoutesPath.loginPage ||
+                  currentPath == RoutesPath.signupPage
+              ? null
+              : MainBottomBar(
+                  key: ValueKey(currentPath),
+                  navigationShell: navigationShell,
+                ),
         ),
       ),
       branches: [

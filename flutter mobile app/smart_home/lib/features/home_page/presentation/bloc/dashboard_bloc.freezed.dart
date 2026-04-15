@@ -401,7 +401,7 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<HomeEntity> homes,  HomeEntity selectedHome,  List<RoomEntity> rooms,  List<DeviceEntity> devices)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case DashboardInitial() when initial != null:
 return initial();case DashboardLoading() when loading != null:
@@ -425,7 +425,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<HomeEntity> homes,  HomeEntity selectedHome,  List<RoomEntity> rooms,  List<DeviceEntity> devices)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)  loaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case DashboardInitial():
 return initial();case DashboardLoading():
@@ -448,7 +448,7 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<HomeEntity> homes,  HomeEntity selectedHome,  List<RoomEntity> rooms,  List<DeviceEntity> devices)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( DataState<List<HomeEntity>> homes,  HomeEntity selectedHome,  DataState<List<RoomEntity>> rooms,  DataState<List<DeviceEntity>> devices)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case DashboardInitial() when initial != null:
 return initial();case DashboardLoading() when loading != null:
@@ -530,31 +530,13 @@ String toString() {
 
 
 class DashboardLoaded implements DashboardState {
-  const DashboardLoaded({required final  List<HomeEntity> homes, required this.selectedHome, required final  List<RoomEntity> rooms, required final  List<DeviceEntity> devices}): _homes = homes,_rooms = rooms,_devices = devices;
+  const DashboardLoaded({required this.homes, required this.selectedHome, required this.rooms, required this.devices});
   
 
- final  List<HomeEntity> _homes;
- List<HomeEntity> get homes {
-  if (_homes is EqualUnmodifiableListView) return _homes;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_homes);
-}
-
+ final  DataState<List<HomeEntity>> homes;
  final  HomeEntity selectedHome;
- final  List<RoomEntity> _rooms;
- List<RoomEntity> get rooms {
-  if (_rooms is EqualUnmodifiableListView) return _rooms;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_rooms);
-}
-
- final  List<DeviceEntity> _devices;
- List<DeviceEntity> get devices {
-  if (_devices is EqualUnmodifiableListView) return _devices;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_devices);
-}
-
+ final  DataState<List<RoomEntity>> rooms;
+ final  DataState<List<DeviceEntity>> devices;
 
 /// Create a copy of DashboardState
 /// with the given fields replaced by the non-null parameter values.
@@ -566,12 +548,12 @@ $DashboardLoadedCopyWith<DashboardLoaded> get copyWith => _$DashboardLoadedCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardLoaded&&const DeepCollectionEquality().equals(other._homes, _homes)&&(identical(other.selectedHome, selectedHome) || other.selectedHome == selectedHome)&&const DeepCollectionEquality().equals(other._rooms, _rooms)&&const DeepCollectionEquality().equals(other._devices, _devices));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardLoaded&&(identical(other.homes, homes) || other.homes == homes)&&(identical(other.selectedHome, selectedHome) || other.selectedHome == selectedHome)&&(identical(other.rooms, rooms) || other.rooms == rooms)&&(identical(other.devices, devices) || other.devices == devices));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_homes),selectedHome,const DeepCollectionEquality().hash(_rooms),const DeepCollectionEquality().hash(_devices));
+int get hashCode => Object.hash(runtimeType,homes,selectedHome,rooms,devices);
 
 @override
 String toString() {
@@ -586,7 +568,7 @@ abstract mixin class $DashboardLoadedCopyWith<$Res> implements $DashboardStateCo
   factory $DashboardLoadedCopyWith(DashboardLoaded value, $Res Function(DashboardLoaded) _then) = _$DashboardLoadedCopyWithImpl;
 @useResult
 $Res call({
- List<HomeEntity> homes, HomeEntity selectedHome, List<RoomEntity> rooms, List<DeviceEntity> devices
+ DataState<List<HomeEntity>> homes, HomeEntity selectedHome, DataState<List<RoomEntity>> rooms, DataState<List<DeviceEntity>> devices
 });
 
 
@@ -605,11 +587,11 @@ class _$DashboardLoadedCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? homes = null,Object? selectedHome = null,Object? rooms = null,Object? devices = null,}) {
   return _then(DashboardLoaded(
-homes: null == homes ? _self._homes : homes // ignore: cast_nullable_to_non_nullable
-as List<HomeEntity>,selectedHome: null == selectedHome ? _self.selectedHome : selectedHome // ignore: cast_nullable_to_non_nullable
-as HomeEntity,rooms: null == rooms ? _self._rooms : rooms // ignore: cast_nullable_to_non_nullable
-as List<RoomEntity>,devices: null == devices ? _self._devices : devices // ignore: cast_nullable_to_non_nullable
-as List<DeviceEntity>,
+homes: null == homes ? _self.homes : homes // ignore: cast_nullable_to_non_nullable
+as DataState<List<HomeEntity>>,selectedHome: null == selectedHome ? _self.selectedHome : selectedHome // ignore: cast_nullable_to_non_nullable
+as HomeEntity,rooms: null == rooms ? _self.rooms : rooms // ignore: cast_nullable_to_non_nullable
+as DataState<List<RoomEntity>>,devices: null == devices ? _self.devices : devices // ignore: cast_nullable_to_non_nullable
+as DataState<List<DeviceEntity>>,
   ));
 }
 

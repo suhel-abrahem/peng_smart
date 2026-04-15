@@ -5,7 +5,6 @@ import 'package:smart_home/features/homes/data/datasources/home_remote_data_sour
 import '../models/create_home_input_model.dart';
 import '../models/home_model.dart';
 
-
 class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   final CommonService _commonService;
 
@@ -20,16 +19,16 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     }
 
     final List<dynamic> rawList = response.data['data'] ?? [];
-
+    print(
+      'Raw homes data: $rawList',
+    ); // Debug print to check the raw data structure
     return rawList
         .map((e) => HomeModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();
   }
 
   @override
-  Future<HomeModel> createHome({
-    required CreateHomeInputModel input,
-  }) async {
+  Future<HomeModel> createHome({required CreateHomeInputModel input}) async {
     final response = await _commonService.post(
       ApiConstant.addHomeEndpoint,
       data: input.toJson(),
