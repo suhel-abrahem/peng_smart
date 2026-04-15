@@ -5,12 +5,20 @@ import 'package:smart_home/core/dependencies_injection.dart';
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 
+import '../../../../core/usecase/usecase.dart';
+import '../../../homes/domain/entities/home_entity.dart';
+import '../../../room/domain/entities/room_entity.dart';
+import '../../domain/usecase/disconnect_from_esp_wifi_usecase.dart';
+import '../../domain/usecase/register_device_usecase.dart';
 import '../bloc/add_device_bloc.dart';
 import '../bloc/add_device_event.dart';
 import '../bloc/add_device_state.dart';
 
 class AddDevicePage extends StatefulWidget {
-  const AddDevicePage({super.key});
+  final HomeEntity home;
+  final List<RoomEntity> rooms;
+
+  const AddDevicePage({super.key, required this.home, required this.rooms});
 
   @override
   State<AddDevicePage> createState() => _AddDevicePageState();
@@ -18,10 +26,10 @@ class AddDevicePage extends StatefulWidget {
 
 class _AddDevicePageState extends State<AddDevicePage> {
   final TextEditingController _deviceNameController = TextEditingController();
-  final TextEditingController _roomController = TextEditingController();
+
   final TextEditingController _ssidController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-
+  RoomEntity? _selectedRoom;
   bool _espWifiConnected = false;
   bool _espChecked = false;
   DeviceEntity? _checkedDevice;
@@ -29,7 +37,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
   @override
   void dispose() {
     _deviceNameController.dispose();
-    _roomController.dispose();
+
     _ssidController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -38,9 +46,12 @@ class _AddDevicePageState extends State<AddDevicePage> {
   AddDeviceInputModel _buildInputModel() {
     return AddDeviceInputModel(
       deviceName: _deviceNameController.text.trim(),
-      roomName: _roomController.text.trim(),
+      roomName: _selectedRoom?.name ?? '',
+      roomId: _selectedRoom?.id ?? '',
       homeWifiSsid: _ssidController.text.trim(),
       homeWifiPassword: _passwordController.text.trim(),
+      homeId: widget.home.id,
+      homeName: widget.home.name,
     );
   }
 
@@ -49,10 +60,17 @@ class _AddDevicePageState extends State<AddDevicePage> {
       _showMessage('Please enter device name');
       return false;
     }
+
+    if (_selectedRoom == null) {
+      _showMessage('Please select a room');
+      return false;
+    }
+
     if (_ssidController.text.trim().isEmpty) {
       _showMessage('Please enter home Wi-Fi name');
       return false;
     }
+
     return true;
   }
 
@@ -68,7 +86,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
     return BlocProvider(
       create: (_) => getItInstance<AddDeviceBloc>(),
       child: BlocConsumer<AddDeviceBloc, AddDeviceState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           state.whenOrNull(
             espWifiConnected: () {
               _espWifiConnected = true;
@@ -83,21 +101,44 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 _checkedDevice = device;
               });
               _showMessage(
-                'ESP found: ${device.type ?? ''} (${device.deviceMacAddress ?? ''})',
+                'ESP found: ${device.type} (${device.deviceMacAddress})',
               );
             },
-            wifiProvisioned: (device) {
+            wifiProvisioned: (device) async {
               _showMessage('Wi-Fi sent to device');
+
+              try {
+                await getItInstance<DisconnectFromEspWifiUseCase>().call(
+                  params: NoParams(),
+                );
+              } catch (_) {}
+
+              await Future.delayed(const Duration(seconds: 3));
+
+              if (!mounted || _checkedDevice == null) return;
+
+              context.read<AddDeviceBloc>().add(
+                AddDeviceEvent.registerDevice(
+                  params: RegisterDeviceParams(
+                    input: _buildInputModel(),
+                    device: _checkedDevice!,
+                  ),
+                ),
+              );
             },
             deviceRegistered: (device) {
               _showMessage('Device registered');
+
+              context.read<AddDeviceBloc>().add(
+                AddDeviceEvent.saveDeviceLocally(device: device),
+              );
             },
             deviceSavedLocally: (device) {
               _showMessage('Device saved locally');
             },
             success: (device) {
               _showMessage('Device added successfully');
-              Navigator.pop(context, device);
+              Navigator.pop(context, true);
             },
             error: (message) {
               _showMessage(message);
@@ -198,12 +239,23 @@ class _AddDevicePageState extends State<AddDevicePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextField(
-                      controller: _roomController,
+                    DropdownButtonFormField<RoomEntity>(
+                      value: _selectedRoom,
                       decoration: const InputDecoration(
                         labelText: 'Room',
                         border: OutlineInputBorder(),
                       ),
+                      items: widget.rooms.map((room) {
+                        return DropdownMenuItem(
+                          value: room,
+                          child: Text(room.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedRoom = value;
+                        });
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextField(
@@ -244,6 +296,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                                 context.read<AddDeviceBloc>().add(
                                   AddDeviceEvent.completeAddDevice(
                                     input: _buildInputModel(),
+                                    device: _checkedDevice!,
                                   ),
                                 );
                               },

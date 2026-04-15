@@ -131,42 +131,7 @@ class AddDeviceBloc extends Bloc<AddDeviceEvent, AddDeviceState> {
       return;
     }
 
-    final provisionedDevice = provisionResult.data!;
-
-    final registerResult = await _registerDeviceUseCase.call(
-      params: RegisterDeviceParams(
-        input: event.input,
-        device: provisionedDevice,
-      ),
-    );
-
-    if (registerResult is! DataSuccess<DeviceEntity>) {
-      emit(
-        AddDeviceState.error(
-          message:
-              registerResult.error?.toString() ?? 'Failed to register device',
-        ),
-      );
-      return;
-    }
-
-    final registeredDevice = registerResult.data!;
-
-    final saveResult = await _saveDeviceLocallyUseCase.call(
-      params: registeredDevice,
-    );
-
-    if (saveResult is! DataSuccess<DeviceEntity>) {
-      emit(
-        AddDeviceState.error(
-          message:
-              saveResult.error?.toString() ?? 'Failed to save device locally',
-        ),
-      );
-      return;
-    }
-
-    emit(AddDeviceState.success(device: saveResult.data!));
+    emit(AddDeviceState.wifiProvisioned(device: provisionResult.data!));
   }
 
   void _onReset(Reset event, Emitter<AddDeviceState> emit) {

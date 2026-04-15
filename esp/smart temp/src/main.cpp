@@ -41,7 +41,7 @@ String savedPass;
 
 // ---------------- BACKEND ----------------
 
-String backendBaseUrl = "http://192.168.1.193:3000";
+String backendBaseUrl = "http://192.168.1.93:3000";
 
 String registeredDeviceId = "";
 String deviceType = "water_heater_controller";
@@ -548,7 +548,7 @@ void handleSaveWiFi() {
   res["deviceType"] = "water_heater_controller";
   sendJson(200, res);
 
-  delay(1000);
+  delay(3000);
   ESP.restart();
 }
 

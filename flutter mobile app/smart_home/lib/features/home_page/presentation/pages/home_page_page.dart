@@ -43,7 +43,22 @@ class HomePagePage extends StatelessWidget {
                     }
                   }
                 } else if (value == 'device') {
-                  context.push(RoutesPath.addDevicePage);
+                  final state = context.read<DashboardBloc>().state;
+                  if (state is DashboardLoaded) {
+                    final created = await context.push<bool>(
+                      RoutesPath.addDevicePage,
+                      extra: {
+                        'home': state.selectedHome,
+                        'rooms': state.rooms.data ?? [],
+                      },
+                    );
+
+                    if (created == true && context.mounted) {
+                      context.read<DashboardBloc>().add(
+                        DashboardEvent.selectHome(home: state.selectedHome),
+                      );
+                    }
+                  }
                 }
               },
               itemBuilder: (_) => const [

@@ -143,8 +143,12 @@ GoRouter goRouter = GoRouter(
               path: RoutesPath.addDevicePage,
               name: RoutesName.addDevicePage,
               pageBuilder: (context, state) {
+                final extra = state.extra as Map<String, dynamic>;
                 return _customTransitionPage(
-                  child: AddDevicePage(),
+                  child: AddDevicePage(
+                    home: extra['home'],
+                    rooms: extra['rooms'],
+                  ),
                   state: state,
                 );
               },

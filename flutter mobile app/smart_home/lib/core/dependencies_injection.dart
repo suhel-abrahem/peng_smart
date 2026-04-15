@@ -15,6 +15,7 @@ import '../features/add_device/data/repository/add_device_repository_impl.dart';
 import '../features/add_device/domain/repository/add_device_repository.dart';
 import '../features/add_device/domain/usecase/check_esp_device_usecase.dart';
 import '../features/add_device/domain/usecase/connect_to_esp_wifi_usecase.dart';
+import '../features/add_device/domain/usecase/disconnect_from_esp_wifi_usecase.dart';
 import '../features/add_device/domain/usecase/get_devices_by_home_id_usecase.dart';
 import '../features/add_device/domain/usecase/get_devices_by_room_id_usecase.dart';
 import '../features/add_device/domain/usecase/provision_device_wifi_usecase.dart';
@@ -138,10 +139,13 @@ Future<void> initDependencies() async {
   getItInstance.registerLazySingleton(
     () => SaveDeviceLocallyUseCase(getItInstance<AddDeviceRepository>()),
   );
+
   getItInstance.registerLazySingleton<WifiOnboardingService>(
     () => WifiOnboardingServiceImpl(),
   );
-
+  getItInstance.registerLazySingleton(
+    () => DisconnectFromEspWifiUseCase(getItInstance<WifiOnboardingService>()),
+  );
   getItInstance.registerLazySingleton(
     () => ConnectToEspWifiUseCase(getItInstance<WifiOnboardingService>()),
   );

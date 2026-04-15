@@ -4,4 +4,6 @@ abstract class WifiOnboardingService {
     String? password,
     bool isOpen = false,
   });
+
+  Future<void> disconnectFromEspNetwork();
 }

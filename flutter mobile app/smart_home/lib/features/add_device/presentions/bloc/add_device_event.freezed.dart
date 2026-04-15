@@ -137,14 +137,14 @@ return connectToEspWifi(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  checkEspDevice,TResult Function( AddDeviceInputModel input)?  provisionDeviceWifi,TResult Function( RegisterDeviceParams params)?  registerDevice,TResult Function( DeviceEntity device)?  saveDeviceLocally,TResult Function( AddDeviceInputModel input)?  completeAddDevice,TResult Function()?  reset,TResult Function()?  connectToEspWifi,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  checkEspDevice,TResult Function( AddDeviceInputModel input)?  provisionDeviceWifi,TResult Function( RegisterDeviceParams params)?  registerDevice,TResult Function( DeviceEntity device)?  saveDeviceLocally,TResult Function( AddDeviceInputModel input,  DeviceEntity device)?  completeAddDevice,TResult Function()?  reset,TResult Function()?  connectToEspWifi,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case CheckEspDevice() when checkEspDevice != null:
 return checkEspDevice();case ProvisionDeviceWifi() when provisionDeviceWifi != null:
 return provisionDeviceWifi(_that.input);case RegisterDevice() when registerDevice != null:
 return registerDevice(_that.params);case SaveDeviceLocally() when saveDeviceLocally != null:
 return saveDeviceLocally(_that.device);case CompleteAddDevice() when completeAddDevice != null:
-return completeAddDevice(_that.input);case Reset() when reset != null:
+return completeAddDevice(_that.input,_that.device);case Reset() when reset != null:
 return reset();case ConnectToEspWifi() when connectToEspWifi != null:
 return connectToEspWifi();case _:
   return orElse();
@@ -164,14 +164,14 @@ return connectToEspWifi();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  checkEspDevice,required TResult Function( AddDeviceInputModel input)  provisionDeviceWifi,required TResult Function( RegisterDeviceParams params)  registerDevice,required TResult Function( DeviceEntity device)  saveDeviceLocally,required TResult Function( AddDeviceInputModel input)  completeAddDevice,required TResult Function()  reset,required TResult Function()  connectToEspWifi,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  checkEspDevice,required TResult Function( AddDeviceInputModel input)  provisionDeviceWifi,required TResult Function( RegisterDeviceParams params)  registerDevice,required TResult Function( DeviceEntity device)  saveDeviceLocally,required TResult Function( AddDeviceInputModel input,  DeviceEntity device)  completeAddDevice,required TResult Function()  reset,required TResult Function()  connectToEspWifi,}) {final _that = this;
 switch (_that) {
 case CheckEspDevice():
 return checkEspDevice();case ProvisionDeviceWifi():
 return provisionDeviceWifi(_that.input);case RegisterDevice():
 return registerDevice(_that.params);case SaveDeviceLocally():
 return saveDeviceLocally(_that.device);case CompleteAddDevice():
-return completeAddDevice(_that.input);case Reset():
+return completeAddDevice(_that.input,_that.device);case Reset():
 return reset();case ConnectToEspWifi():
 return connectToEspWifi();case _:
   throw StateError('Unexpected subclass');
@@ -190,14 +190,14 @@ return connectToEspWifi();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  checkEspDevice,TResult? Function( AddDeviceInputModel input)?  provisionDeviceWifi,TResult? Function( RegisterDeviceParams params)?  registerDevice,TResult? Function( DeviceEntity device)?  saveDeviceLocally,TResult? Function( AddDeviceInputModel input)?  completeAddDevice,TResult? Function()?  reset,TResult? Function()?  connectToEspWifi,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  checkEspDevice,TResult? Function( AddDeviceInputModel input)?  provisionDeviceWifi,TResult? Function( RegisterDeviceParams params)?  registerDevice,TResult? Function( DeviceEntity device)?  saveDeviceLocally,TResult? Function( AddDeviceInputModel input,  DeviceEntity device)?  completeAddDevice,TResult? Function()?  reset,TResult? Function()?  connectToEspWifi,}) {final _that = this;
 switch (_that) {
 case CheckEspDevice() when checkEspDevice != null:
 return checkEspDevice();case ProvisionDeviceWifi() when provisionDeviceWifi != null:
 return provisionDeviceWifi(_that.input);case RegisterDevice() when registerDevice != null:
 return registerDevice(_that.params);case SaveDeviceLocally() when saveDeviceLocally != null:
 return saveDeviceLocally(_that.device);case CompleteAddDevice() when completeAddDevice != null:
-return completeAddDevice(_that.input);case Reset() when reset != null:
+return completeAddDevice(_that.input,_that.device);case Reset() when reset != null:
 return reset();case ConnectToEspWifi() when connectToEspWifi != null:
 return connectToEspWifi();case _:
   return null;
@@ -468,10 +468,11 @@ $DeviceEntityCopyWith<$Res> get device {
 
 
 class CompleteAddDevice implements AddDeviceEvent {
-  const CompleteAddDevice({required this.input});
+  const CompleteAddDevice({required this.input, required this.device});
   
 
  final  AddDeviceInputModel input;
+ final  DeviceEntity device;
 
 /// Create a copy of AddDeviceEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -483,16 +484,16 @@ $CompleteAddDeviceCopyWith<CompleteAddDevice> get copyWith => _$CompleteAddDevic
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CompleteAddDevice&&(identical(other.input, input) || other.input == input));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CompleteAddDevice&&(identical(other.input, input) || other.input == input)&&(identical(other.device, device) || other.device == device));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,input);
+int get hashCode => Object.hash(runtimeType,input,device);
 
 @override
 String toString() {
-  return 'AddDeviceEvent.completeAddDevice(input: $input)';
+  return 'AddDeviceEvent.completeAddDevice(input: $input, device: $device)';
 }
 
 
@@ -503,11 +504,11 @@ abstract mixin class $CompleteAddDeviceCopyWith<$Res> implements $AddDeviceEvent
   factory $CompleteAddDeviceCopyWith(CompleteAddDevice value, $Res Function(CompleteAddDevice) _then) = _$CompleteAddDeviceCopyWithImpl;
 @useResult
 $Res call({
- AddDeviceInputModel input
+ AddDeviceInputModel input, DeviceEntity device
 });
 
 
-$AddDeviceInputModelCopyWith<$Res> get input;
+$AddDeviceInputModelCopyWith<$Res> get input;$DeviceEntityCopyWith<$Res> get device;
 
 }
 /// @nodoc
@@ -520,10 +521,11 @@ class _$CompleteAddDeviceCopyWithImpl<$Res>
 
 /// Create a copy of AddDeviceEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? input = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? input = null,Object? device = null,}) {
   return _then(CompleteAddDevice(
 input: null == input ? _self.input : input // ignore: cast_nullable_to_non_nullable
-as AddDeviceInputModel,
+as AddDeviceInputModel,device: null == device ? _self.device : device // ignore: cast_nullable_to_non_nullable
+as DeviceEntity,
   ));
 }
 
@@ -535,6 +537,15 @@ $AddDeviceInputModelCopyWith<$Res> get input {
   
   return $AddDeviceInputModelCopyWith<$Res>(_self.input, (value) {
     return _then(_self.copyWith(input: value));
+  });
+}/// Create a copy of AddDeviceEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeviceEntityCopyWith<$Res> get device {
+  
+  return $DeviceEntityCopyWith<$Res>(_self.device, (value) {
+    return _then(_self.copyWith(device: value));
   });
 }
 }

@@ -10,7 +10,10 @@ import 'add_device_remote_data_source.dart';
 class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
   final CommonService _commonService;
 
-  const AddDeviceRemoteDataSourceImpl(this._commonService);
+  const AddDeviceRemoteDataSourceImpl(
+    this._commonService,
+   
+  );
 
   @override
   Future<DeviceModel> registerDevice({

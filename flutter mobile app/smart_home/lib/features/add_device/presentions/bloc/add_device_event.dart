@@ -23,6 +23,7 @@ abstract class AddDeviceEvent with _$AddDeviceEvent {
 
   const factory AddDeviceEvent.completeAddDevice({
     required AddDeviceInputModel input,
+    required DeviceEntity device,
   }) = CompleteAddDevice;
 
   const factory AddDeviceEvent.reset() = Reset;
