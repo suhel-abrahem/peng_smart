@@ -11,13 +11,13 @@ abstract class RuleEntity with _$RuleEntity {
   const factory RuleEntity({
     @Default("") String id,
     @Default("") String name,
+    @Default("") String source, // "time", "tempSensor"
     NextRuleConditionEnum? conditionForNextRule,
     @Default(false) bool enabled,
-     String? activeFrom,
-     String? activeTo,
-    ActionLinkEntity? actionLink,
+    String? activeFrom,
+    String? activeTo,
     required ActionEnum action,
-    required String value,
+    String? value,
     required RuleConditionEnum condition,
   }) = _RuleEntity;
 

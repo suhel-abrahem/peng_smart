@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RuleEntity {
 
- String get id; String get name; NextRuleConditionEnum? get conditionForNextRule; bool get enabled; String? get activeFrom; String? get activeTo; ActionLinkEntity? get actionLink; ActionEnum get action; String get value; RuleConditionEnum get condition;
+ String get id; String get name; String get source;// "time", "tempSensor"
+ NextRuleConditionEnum? get conditionForNextRule; bool get enabled; String? get activeFrom; String? get activeTo; ActionEnum get action; String? get value; RuleConditionEnum get condition;
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $RuleEntityCopyWith<RuleEntity> get copyWith => _$RuleEntityCopyWithImpl<RuleEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.actionLink, actionLink) || other.actionLink == actionLink)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,conditionForNextRule,enabled,activeFrom,activeTo,actionLink,action,value,condition);
+int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,action,value,condition);
 
 @override
 String toString() {
-  return 'RuleEntity(id: $id, name: $name, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, actionLink: $actionLink, action: $action, value: $value, condition: $condition)';
+  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, action: $action, value: $value, condition: $condition)';
 }
 
 
@@ -48,11 +49,11 @@ abstract mixin class $RuleEntityCopyWith<$Res>  {
   factory $RuleEntityCopyWith(RuleEntity value, $Res Function(RuleEntity) _then) = _$RuleEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionLinkEntity? actionLink, ActionEnum action, String value, RuleConditionEnum condition
+ String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionEnum action, String? value, RuleConditionEnum condition
 });
 
 
-$ActionLinkEntityCopyWith<$Res>? get actionLink;
+
 
 }
 /// @nodoc
@@ -65,34 +66,22 @@ class _$RuleEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? actionLink = freezed,Object? action = null,Object? value = null,Object? condition = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? action = null,Object? value = freezed,Object? condition = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as String,conditionForNextRule: freezed == conditionForNextRule ? _self.conditionForNextRule : conditionForNextRule // ignore: cast_nullable_to_non_nullable
 as NextRuleConditionEnum?,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as String?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
-as String?,actionLink: freezed == actionLink ? _self.actionLink : actionLink // ignore: cast_nullable_to_non_nullable
-as ActionLinkEntity?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ActionEnum,value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
-as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
+as String?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as ActionEnum,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String?,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as RuleConditionEnum,
   ));
 }
-/// Create a copy of RuleEntity
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ActionLinkEntityCopyWith<$Res>? get actionLink {
-    if (_self.actionLink == null) {
-    return null;
-  }
 
-  return $ActionLinkEntityCopyWith<$Res>(_self.actionLink!, (value) {
-    return _then(_self.copyWith(actionLink: value));
-  });
-}
 }
 
 
@@ -174,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionLinkEntity? actionLink,  ActionEnum action,  String value,  RuleConditionEnum condition)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RuleEntity() when $default != null:
-return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.actionLink,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
   return orElse();
 
 }
@@ -195,10 +184,10 @@ return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionLinkEntity? actionLink,  ActionEnum action,  String value,  RuleConditionEnum condition)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)  $default,) {final _that = this;
 switch (_that) {
 case _RuleEntity():
-return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.actionLink,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +204,10 @@ return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionLinkEntity? actionLink,  ActionEnum action,  String value,  RuleConditionEnum condition)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)?  $default,) {final _that = this;
 switch (_that) {
 case _RuleEntity() when $default != null:
-return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.actionLink,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
   return null;
 
 }
@@ -230,18 +219,19 @@ return $default(_that.id,_that.name,_that.conditionForNextRule,_that.enabled,_th
 @JsonSerializable()
 
 class _RuleEntity implements RuleEntity {
-  const _RuleEntity({this.id = "", this.name = "", this.conditionForNextRule, this.enabled = false, this.activeFrom, this.activeTo, this.actionLink, required this.action, required this.value, required this.condition});
+  const _RuleEntity({this.id = "", this.name = "", this.source = "", this.conditionForNextRule, this.enabled = false, this.activeFrom, this.activeTo, required this.action, this.value, required this.condition});
   factory _RuleEntity.fromJson(Map<String, dynamic> json) => _$RuleEntityFromJson(json);
 
 @override@JsonKey() final  String id;
 @override@JsonKey() final  String name;
+@override@JsonKey() final  String source;
+// "time", "tempSensor"
 @override final  NextRuleConditionEnum? conditionForNextRule;
 @override@JsonKey() final  bool enabled;
 @override final  String? activeFrom;
 @override final  String? activeTo;
-@override final  ActionLinkEntity? actionLink;
 @override final  ActionEnum action;
-@override final  String value;
+@override final  String? value;
 @override final  RuleConditionEnum condition;
 
 /// Create a copy of RuleEntity
@@ -257,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.actionLink, actionLink) || other.actionLink == actionLink)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,conditionForNextRule,enabled,activeFrom,activeTo,actionLink,action,value,condition);
+int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,action,value,condition);
 
 @override
 String toString() {
-  return 'RuleEntity(id: $id, name: $name, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, actionLink: $actionLink, action: $action, value: $value, condition: $condition)';
+  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, action: $action, value: $value, condition: $condition)';
 }
 
 
@@ -277,11 +267,11 @@ abstract mixin class _$RuleEntityCopyWith<$Res> implements $RuleEntityCopyWith<$
   factory _$RuleEntityCopyWith(_RuleEntity value, $Res Function(_RuleEntity) _then) = __$RuleEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionLinkEntity? actionLink, ActionEnum action, String value, RuleConditionEnum condition
+ String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionEnum action, String? value, RuleConditionEnum condition
 });
 
 
-@override $ActionLinkEntityCopyWith<$Res>? get actionLink;
+
 
 }
 /// @nodoc
@@ -294,35 +284,23 @@ class __$RuleEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? actionLink = freezed,Object? action = null,Object? value = null,Object? condition = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? action = null,Object? value = freezed,Object? condition = null,}) {
   return _then(_RuleEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,source: null == source ? _self.source : source // ignore: cast_nullable_to_non_nullable
 as String,conditionForNextRule: freezed == conditionForNextRule ? _self.conditionForNextRule : conditionForNextRule // ignore: cast_nullable_to_non_nullable
 as NextRuleConditionEnum?,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as String?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
-as String?,actionLink: freezed == actionLink ? _self.actionLink : actionLink // ignore: cast_nullable_to_non_nullable
-as ActionLinkEntity?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ActionEnum,value: null == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
-as String,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
+as String?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
+as ActionEnum,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String?,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
 as RuleConditionEnum,
   ));
 }
 
-/// Create a copy of RuleEntity
-/// with the given fields replaced by the non-null parameter values.
-@override
-@pragma('vm:prefer-inline')
-$ActionLinkEntityCopyWith<$Res>? get actionLink {
-    if (_self.actionLink == null) {
-    return null;
-  }
 
-  return $ActionLinkEntityCopyWith<$Res>(_self.actionLink!, (value) {
-    return _then(_self.copyWith(actionLink: value));
-  });
-}
 }
 
 // dart format on

@@ -174,4 +174,40 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
       components: status.components,
     );
   }
+
+  @override
+  Future<DataState<DeviceEntity>> updateDeviceRules({
+    required String deviceId,
+    required RulesEntity rules,
+  }) async {
+    try {
+      final result = await _addDeviceRemoteDataSource.updateDeviceRules(
+        deviceId: deviceId,
+        rules: rules,
+      );
+
+      return DataSuccess(data: result.toEntity());
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<DeviceEntity>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<DeviceEntity>> getDeviceById({
+    required String deviceId,
+  }) async {
+    try {
+      final result = await _addDeviceRemoteDataSource.getDeviceById(
+        deviceId: deviceId,
+      );
+
+      return DataSuccess(data: result.toEntity());
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<DeviceEntity>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
 }

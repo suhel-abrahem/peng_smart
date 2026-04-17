@@ -8,11 +8,10 @@ abstract class ActionLinkEntity with _$ActionLinkEntity {
   const factory ActionLinkEntity({
     @Default("") String id,
     @Default("") String name,
-
+    @Default("component") String targetType,
     @Default("") String targetDeviceId,
     @Default("") String targetDeviceName,
-    @Default("") String targetComponentId, // relay1, relay2, pumpRelay
-
+    @Default("") String targetComponentId,
     required ActionEnum action,
   }) = _ActionLinkEntity;
 

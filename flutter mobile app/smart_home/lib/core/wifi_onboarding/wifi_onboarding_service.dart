@@ -5,5 +5,11 @@ abstract class WifiOnboardingService {
     bool isOpen = false,
   });
 
+  Future<void> connectToHomeNetwork({
+    required String ssid,
+    String? password,
+    bool isOpen = false,
+  });
+
   Future<void> disconnectFromEspNetwork();
 }

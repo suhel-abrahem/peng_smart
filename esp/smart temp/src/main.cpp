@@ -128,23 +128,29 @@ void saveDeviceInfo(const String& deviceName, const String& room) {
 // ---------------- TEMP ----------------
 float readTemperatureC() {
   int adc = analogRead(PIN_NTC);
+Serial.print("Raw ADC: ");
+  Serial.println(adc);
 
   if (adc <= 0 || adc >= 4095) {
     return NAN;
   }
 
   float vo = adc * (VCC / ADC_MAX);
-
+Serial.print("Voltage: ");
+  Serial.println(vo, 4);
   if (vo <= 0.01f || vo >= (VCC - 0.01f)) {
     return NAN;
   }
 
-  float rt = SERIES_RESISTOR * vo / (VCC - vo);
-
+  float rt = (SERIES_RESISTOR/vo)*VCC -SERIES_RESISTOR;
+Serial.print("Calculated Resistance: ");
+  Serial.println(rt, 2);
   float invT = (1.0f / NOMINAL_TEMPERATURE) +
-               ((1.0f / BETA_COEFFICIENT) * log(rt / NOMINAL_RESISTANCE));
+               (1.0f / BETA_COEFFICIENT) * log(rt / NOMINAL_RESISTANCE);
 
   float tk = 1.0f / invT;
+  Serial.print("Temperature (K): ");
+  Serial.println(tk, 2);
   float tc = tk - 273.15f;
 
   lastTemperature = (int)round(tc);
@@ -158,10 +164,20 @@ void setRelayByComponent(const String& componentId, const String& action) {
 
   if (!turnOn && !turnOff) return;
 
+  Serial.println("== setRelayByComponent ==");
+  Serial.print("componentId: ");
+  Serial.println(componentId);
+  Serial.print("action: ");
+  Serial.println(action);
+
   if (componentId == "relay1") {
     digitalWrite(PIN_LOWER_RELAY, turnOn ? LOW : HIGH); // active LOW
+    Serial.print("PIN_LOWER_RELAY state: ");
+    Serial.println(digitalRead(PIN_LOWER_RELAY));
   } else if (componentId == "relay2") {
     digitalWrite(PIN_UPPER_RELAY, turnOn ? LOW : HIGH); // active LOW
+    Serial.print("PIN_UPPER_RELAY state: ");
+    Serial.println(digitalRead(PIN_UPPER_RELAY));
   }
 }
 
@@ -180,18 +196,19 @@ bool executePendingCommand(const JsonVariantConst& command) {
   if (command.isNull()) return false;
 
   String action = command["action"] | "";
-  String targetType = command["targetType"] | "device";
+  String targetType = command["targetType"] | "";
   String targetComponentId = command["targetComponentId"] | "";
 
   if (action.isEmpty()) return false;
 
-  if (targetType == "device") {
-    setWholeDeviceAction(action);
+  // If component id exists, treat it as component even if targetType is missing
+  if (!targetComponentId.isEmpty()) {
+    setRelayByComponent(targetComponentId, action);
     return true;
   }
 
-  if (targetType == "component" && !targetComponentId.isEmpty()) {
-    setRelayByComponent(targetComponentId, action);
+  if (targetType == "device" || targetType.isEmpty()) {
+    setWholeDeviceAction(action);
     return true;
   }
 
@@ -199,12 +216,72 @@ bool executePendingCommand(const JsonVariantConst& command) {
 }
 
 // ---------------- RULE ENGINE ----------------
+bool isTimeReady() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    return false;
+  }
+
+  // basic sanity check
+  return timeinfo.tm_year > (2024 - 1900);
+}
+bool isCurrentTimeBetween(const String& from, const String& to) {
+  if (!isTimeReady()) {
+    Serial.println("Time not ready yet");
+    return false;
+  }
+
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("getLocalTime failed");
+    return false;
+  }
+
+  int currentMinutes = timeinfo.tm_hour * 60 + timeinfo.tm_min;
+
+  int fromHour = from.substring(0, 2).toInt();
+  int fromMinute = from.substring(3, 5).toInt();
+  int toHour = to.substring(0, 2).toInt();
+  int toMinute = to.substring(3, 5).toInt();
+
+  int fromTotal = fromHour * 60 + fromMinute;
+  int toTotal = toHour * 60 + toMinute;
+
+  bool matched = currentMinutes >= fromTotal && currentMinutes < toTotal;
+
+  Serial.printf(
+    "Current: %02d:%02d | Window: %s -> %s | Match: %s\n",
+    timeinfo.tm_hour,
+    timeinfo.tm_min,
+    from.c_str(),
+    to.c_str(),
+    matched ? "YES" : "NO"
+  );
+
+  return matched;
+}
 bool evaluateSingleRule(const JsonVariantConst& rule, float tempC) {
   if ((rule["enabled"] | true) == false) return false;
+
+  String activeFrom = rule["activeFrom"] | "";
+  String activeTo = rule["activeTo"] | "";
+
+  if (!activeFrom.isEmpty() && !activeTo.isEmpty()) {
+    Serial.println("Evaluating time rule...");
+    return isCurrentTimeBetween(activeFrom, activeTo);
+  }
 
   String source = rule["source"] | "";
   String condition = rule["condition"] | "";
   String valueStr = rule["value"] | "";
+
+  Serial.println("Evaluating sensor rule...");
+  Serial.print("source: ");
+  Serial.println(source);
+  Serial.print("condition: ");
+  Serial.println(condition);
+  Serial.print("value: ");
+  Serial.println(valueStr);
 
   if (source != "tempSensor") return false;
   if (isnan(tempC)) return false;
@@ -219,7 +296,6 @@ bool evaluateSingleRule(const JsonVariantConst& rule, float tempC) {
 
   return false;
 }
-
 bool evaluateGroup(const JsonVariantConst& group, float tempC) {
   if ((group["enabled"] | true) == false) return false;
 
@@ -264,7 +340,7 @@ void executeGroupActions(const JsonVariantConst& group) {
 
 void applyRules(float tempC) {
   if (rulesJsonString.isEmpty()) {
-    // Safe fallback: both OFF
+    Serial.println("No rulesJsonString -> both relays OFF");
     digitalWrite(PIN_LOWER_RELAY, HIGH);
     digitalWrite(PIN_UPPER_RELAY, HIGH);
     return;
@@ -281,27 +357,34 @@ void applyRules(float tempC) {
 
   JsonArrayConst groups = doc["groups"].as<JsonArrayConst>();
   if (groups.isNull()) {
+    Serial.println("No groups found -> both relays OFF");
     digitalWrite(PIN_LOWER_RELAY, HIGH);
     digitalWrite(PIN_UPPER_RELAY, HIGH);
     return;
   }
 
   bool anyMatched = false;
+  int index = 0;
 
   for (JsonVariantConst group : groups) {
+    Serial.print("Checking group #");
+    Serial.println(index++);
+
     if (evaluateGroup(group, tempC)) {
+      Serial.println("Group matched -> executing actions");
       executeGroupActions(group);
       anyMatched = true;
+    } else {
+      Serial.println("Group not matched");
     }
   }
 
   if (!anyMatched) {
-    // Safe fallback if no rules matched
+    Serial.println("No groups matched -> both relays OFF");
     digitalWrite(PIN_LOWER_RELAY, HIGH);
     digitalWrite(PIN_UPPER_RELAY, HIGH);
   }
 }
-
 // ---------------- BACKEND ----------------
 bool syncDeviceWithBackend() {
   if (WiFi.status() != WL_CONNECTED) return false;
@@ -613,6 +696,18 @@ bool tryConnectWiFi(const String& ssid, const String& pass, unsigned long timeou
     Serial.println("WiFi connected");
     Serial.print("IP: ");
     Serial.println(WiFi.localIP());
+    configTime(3 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+
+Serial.println("Waiting for NTP time...");
+for (int i = 0; i < 20; i++) {
+  if (isTimeReady()) {
+    Serial.println("NTP time ready");
+    break;
+  }
+  delay(500);
+  Serial.print(".");
+}
+Serial.println();
   } else {
     Serial.println("WiFi connect failed");
   }
@@ -748,4 +843,18 @@ void loop() {
       sendTelemetry(currentTemp);
     }
   }
+  static unsigned long lastTimeDebug = 0;
+if (millis() - lastTimeDebug >= 5000) {
+  lastTimeDebug = millis();
+
+  struct tm timeinfo;
+  if (getLocalTime(&timeinfo)) {
+    Serial.printf("NTP Time: %02d:%02d:%02d\n",
+                  timeinfo.tm_hour,
+                  timeinfo.tm_min,
+                  timeinfo.tm_sec);
+  } else {
+    Serial.println("NTP Time not available yet");
+  }
+}
 }

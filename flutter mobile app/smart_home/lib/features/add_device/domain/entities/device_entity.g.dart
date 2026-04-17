@@ -55,4 +55,5 @@ const _$DeviceStatusEnumEnumMap = {
   DeviceStatusEnum.on: 'on',
   DeviceStatusEnum.off: 'off',
   DeviceStatusEnum.offline: 'offline',
+  DeviceStatusEnum.online: 'online',
 };

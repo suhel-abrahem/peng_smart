@@ -16,7 +16,9 @@ class MainActivity : FlutterActivity() {
 
     private var connectivityManager: ConnectivityManager? = null
     private var espNetworkCallback: ConnectivityManager.NetworkCallback? = null
+    private var homeNetworkCallback: ConnectivityManager.NetworkCallback? = null
     private var espNetwork: Network? = null
+    private var homeNetwork: Network? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -33,8 +35,14 @@ class MainActivity : FlutterActivity() {
                     val ssid = call.argument<String>("ssid") ?: ""
                     val password = call.argument<String>("password")
                     val isOpen = call.argument<Boolean>("isOpen") ?: false
-
                     connectToEspNetwork(ssid, password, isOpen, result)
+                }
+
+                "connectToHomeNetwork" -> {
+                    val ssid = call.argument<String>("ssid") ?: ""
+                    val password = call.argument<String>("password")
+                    val isOpen = call.argument<Boolean>("isOpen") ?: false
+                    connectToHomeNetwork(ssid, password, isOpen, result)
                 }
 
                 "disconnectFromEspNetwork" -> {
@@ -58,7 +66,6 @@ class MainActivity : FlutterActivity() {
         }
 
         try {
-            // release old callback first
             espNetworkCallback?.let {
                 connectivityManager?.unregisterNetworkCallback(it)
             }
@@ -103,6 +110,67 @@ class MainActivity : FlutterActivity() {
             }
 
             espNetworkCallback = callback
+            connectivityManager?.requestNetwork(request, callback)
+        } catch (e: Exception) {
+            result.error("CONNECT_FAILED", e.message, null)
+        }
+    }
+
+    private fun connectToHomeNetwork(
+        ssid: String,
+        password: String?,
+        isOpen: Boolean,
+        result: MethodChannel.Result
+    ) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            result.error("UNSUPPORTED", "Android 10+ required", null)
+            return
+        }
+
+        try {
+            homeNetworkCallback?.let {
+                connectivityManager?.unregisterNetworkCallback(it)
+            }
+            homeNetworkCallback = null
+            homeNetwork = null
+
+            val specifierBuilder = WifiNetworkSpecifier.Builder()
+                .setSsid(ssid)
+
+            if (!isOpen && !password.isNullOrEmpty()) {
+                specifierBuilder.setWpa2Passphrase(password)
+            }
+
+            val specifier = specifierBuilder.build()
+
+            val request = NetworkRequest.Builder()
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .setNetworkSpecifier(specifier)
+                .build()
+
+            val callback = object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    super.onAvailable(network)
+                    homeNetwork = network
+                    connectivityManager?.bindProcessToNetwork(network)
+                    result.success(true)
+                }
+
+                override fun onUnavailable() {
+                    super.onUnavailable()
+                    result.error("UNAVAILABLE", "Home network unavailable", null)
+                }
+
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                    if (homeNetwork == network) {
+                        homeNetwork = null
+                        connectivityManager?.bindProcessToNetwork(null)
+                    }
+                }
+            }
+
+            homeNetworkCallback = callback
             connectivityManager?.requestNetwork(request, callback)
         } catch (e: Exception) {
             result.error("CONNECT_FAILED", e.message, null)

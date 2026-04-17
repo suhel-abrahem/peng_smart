@@ -10,7 +10,7 @@ _DeviceModel _$DeviceModelFromJson(Map<String, dynamic> json) => _DeviceModel(
   id: json['id'] as String? ?? '',
   name: json['name'] as String? ?? '',
   type: json['type'] as String? ?? '',
-  room: json['room'] as String? ?? '',
+  room: _readRoomName(json, 'room') as String? ?? '',
   homeId: json['homeId'] as String? ?? '',
   homeName: json['homeName'] as String? ?? '',
   deviceMacAddress: json['macAddress'] as String? ?? '',
@@ -53,4 +53,5 @@ const _$DeviceStatusEnumEnumMap = {
   DeviceStatusEnum.on: 'on',
   DeviceStatusEnum.off: 'off',
   DeviceStatusEnum.offline: 'offline',
+  DeviceStatusEnum.online: 'online',
 };

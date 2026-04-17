@@ -4,10 +4,15 @@ import 'package:smart_home/core/dependencies_injection.dart';
 
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
+import 'package:wifi_scan/wifi_scan.dart';
 
+import '../../../../core/network/common_service.dart';
+import '../../../../core/resource/custom_widget/snake_bar_widget/snake_bar_widget.dart';
 import '../../../../core/usecase/usecase.dart';
+import '../../../../core/wifi_scan/wifi_scan_service.dart';
 import '../../../homes/domain/entities/home_entity.dart';
 import '../../../room/domain/entities/room_entity.dart';
+import '../../domain/usecase/connect_to_home_wifi_usecase.dart';
 import '../../domain/usecase/disconnect_from_esp_wifi_usecase.dart';
 import '../../domain/usecase/register_device_usecase.dart';
 import '../bloc/add_device_bloc.dart';
@@ -33,6 +38,14 @@ class _AddDevicePageState extends State<AddDevicePage> {
   bool _espWifiConnected = false;
   bool _espChecked = false;
   DeviceEntity? _checkedDevice;
+  List<WiFiAccessPoint> _wifiNetworks = [];
+  WiFiAccessPoint? _selectedWifi;
+  bool _isScanningWifi = false;
+  @override
+  void initState() {
+    super.initState();
+    _scanWifiNetworks();
+  }
 
   @override
   void dispose() {
@@ -43,12 +56,54 @@ class _AddDevicePageState extends State<AddDevicePage> {
     super.dispose();
   }
 
+  Future<void> _scanWifiNetworks() async {
+    setState(() {
+      _isScanningWifi = true;
+    });
+
+    try {
+      final results = await getItInstance<WifiScanService>()
+          .scan24GHzNetworks();
+
+      if (!mounted) return;
+
+      setState(() {
+        _wifiNetworks = results;
+
+        if (_selectedWifi != null) {
+          final match = results.where((e) => e.ssid == _selectedWifi!.ssid);
+          _selectedWifi = match.isNotEmpty ? match.first : null;
+        }
+
+        if (_selectedWifi != null) {
+          _ssidController.text = _selectedWifi!.ssid;
+        }
+      });
+
+      if (results.isEmpty) {
+        showMessage(
+          message: 'No 2.4 GHz Wi-Fi networks found',
+          context: context,
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showMessage(message: e.toString(), context: context);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isScanningWifi = false;
+        });
+      }
+    }
+  }
+
   AddDeviceInputModel _buildInputModel() {
     return AddDeviceInputModel(
       deviceName: _deviceNameController.text.trim(),
       roomName: _selectedRoom?.name ?? '',
       roomId: _selectedRoom?.id ?? '',
-      homeWifiSsid: _ssidController.text.trim(),
+      homeWifiSsid: _selectedWifi?.ssid ?? _ssidController.text.trim(),
       homeWifiPassword: _passwordController.text.trim(),
       homeId: widget.home.id,
       homeName: widget.home.name,
@@ -57,28 +112,46 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
   bool _validateForm() {
     if (_deviceNameController.text.trim().isEmpty) {
-      _showMessage('Please enter device name');
+      showMessage(message: 'Please enter device name', context: context);
       return false;
     }
-
     if (_selectedRoom == null) {
-      _showMessage('Please select a room');
+      showMessage(message: 'Please select a room', context: context);
       return false;
     }
-
-    if (_ssidController.text.trim().isEmpty) {
-      _showMessage('Please enter home Wi-Fi name');
+    if ((_selectedWifi?.ssid ?? _ssidController.text.trim()).isEmpty) {
+      showMessage(message: 'Please select home Wi-Fi', context: context);
       return false;
     }
-
     return true;
   }
 
-  void _showMessage(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+  bool get _canAddDevice {
+    return !_isScanningWifi &&
+        _espWifiConnected &&
+        _espChecked &&
+        _checkedDevice != null &&
+        _deviceNameController.text.trim().isNotEmpty &&
+        _selectedRoom != null &&
+        ((_selectedWifi?.ssid ?? _ssidController.text.trim()).isNotEmpty) &&
+        _passwordController.text.trim().isNotEmpty;
+  }
+
+  Future<bool> _waitForBackendReachable({required Duration timeout}) async {
+    final end = DateTime.now().add(timeout);
+
+    while (DateTime.now().isBefore(end)) {
+      try {
+        final response = await getItInstance<CommonService>().get('/');
+        if (response != null && response.statusCode == 200) {
+          return true;
+        }
+      } catch (_) {}
+
+      await Future.delayed(const Duration(seconds: 1));
+    }
+
+    return false;
   }
 
   @override
@@ -90,7 +163,10 @@ class _AddDevicePageState extends State<AddDevicePage> {
           state.whenOrNull(
             espWifiConnected: () {
               _espWifiConnected = true;
-              _showMessage('Connected to ESP network');
+              showMessage(
+                message: 'Connected to ESP network',
+                context: context,
+              );
               context.read<AddDeviceBloc>().add(
                 const AddDeviceEvent.checkEspDevice(),
               );
@@ -100,12 +176,14 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 _espChecked = true;
                 _checkedDevice = device;
               });
-              _showMessage(
-                'ESP found: ${device.type} (${device.deviceMacAddress})',
+              showMessage(
+                message:
+                    'ESP found: ${device.type} (${device.deviceMacAddress})',
+                context: context,
               );
             },
             wifiProvisioned: (device) async {
-              _showMessage('Wi-Fi sent to device');
+              showMessage(message: 'Wi-Fi sent to device', context: context);
 
               try {
                 await getItInstance<DisconnectFromEspWifiUseCase>().call(
@@ -113,7 +191,34 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 );
               } catch (_) {}
 
-              await Future.delayed(const Duration(seconds: 3));
+              try {
+                await getItInstance<ConnectToHomeWifiUseCase>().call(
+                  params: ConnectToHomeWifiParams(
+                    ssid: _buildInputModel().homeWifiSsid,
+                    password: _buildInputModel().homeWifiPassword,
+                    isOpen: false,
+                  ),
+                );
+              } catch (e) {
+                showMessage(
+                  message: 'Failed to connect to selected home Wi-Fi',
+                  context: context,
+                );
+                return;
+              }
+
+              final reachable = await _waitForBackendReachable(
+                timeout: const Duration(seconds: 30),
+              );
+
+              if (!reachable) {
+                showMessage(
+                  message: 'Failed to reconnect to backend within 30 seconds',
+                  context: context,
+                );
+
+                return;
+              }
 
               if (!mounted || _checkedDevice == null) return;
 
@@ -127,21 +232,23 @@ class _AddDevicePageState extends State<AddDevicePage> {
               );
             },
             deviceRegistered: (device) {
-              _showMessage('Device registered');
-
+              showMessage(message: 'Device registered', context: context);
               context.read<AddDeviceBloc>().add(
                 AddDeviceEvent.saveDeviceLocally(device: device),
               );
             },
             deviceSavedLocally: (device) {
-              _showMessage('Device saved locally');
+              showMessage(message: 'Device saved locally', context: context);
             },
             success: (device) {
-              _showMessage('Device added successfully');
+              showMessage(
+                message: 'Device added successfully',
+                context: context,
+              );
               Navigator.pop(context, true);
             },
             error: (message) {
-              _showMessage(message);
+              showMessage(message: message, context: context);
             },
           );
         },
@@ -233,6 +340,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                     const SizedBox(height: 16),
                     TextField(
                       controller: _deviceNameController,
+                      onChanged: (_) => setState(() {}),
                       decoration: const InputDecoration(
                         labelText: 'Device Name',
                         border: OutlineInputBorder(),
@@ -258,10 +366,55 @@ class _AddDevicePageState extends State<AddDevicePage> {
                       },
                     ),
                     const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<WiFiAccessPoint>(
+                            value: _selectedWifi,
+                            decoration: const InputDecoration(
+                              labelText: 'Home Wi-Fi SSID (2.4 GHz)',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _wifiNetworks.map((wifi) {
+                              return DropdownMenuItem(
+                                value: wifi,
+                                child: Text(
+                                  '${wifi.ssid} (${wifi.level} dBm)',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedWifi = value;
+                                _ssidController.text = value?.ssid ?? '';
+                              });
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        SizedBox(
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: _isScanningWifi
+                                ? null
+                                : _scanWifiNetworks,
+                            child: Text(_isScanningWifi ? '...' : 'Scan'),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (_selectedWifi != null) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        'Selected: ${_selectedWifi!.ssid} • ${_selectedWifi!.frequency} MHz',
+                      ),
+                    ],
                     TextField(
                       controller: _ssidController,
+                      onChanged: (_) => setState(() {}),
                       decoration: const InputDecoration(
-                        labelText: 'Home Wi-Fi SSID',
+                        labelText: 'Or enter SSID manually',
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -269,6 +422,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                     TextField(
                       controller: _passwordController,
                       obscureText: true,
+                      onChanged: (_) => setState(() {}),
                       decoration: const InputDecoration(
                         labelText: 'Home Wi-Fi Password',
                         border: OutlineInputBorder(),
@@ -278,17 +432,9 @@ class _AddDevicePageState extends State<AddDevicePage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: isLoading
+                        onPressed: (isLoading || !_canAddDevice)
                             ? null
                             : () {
-                                if (!_espWifiConnected) {
-                                  _showMessage('Please connect to ESP first');
-                                  return;
-                                }
-                                if (!_espChecked) {
-                                  _showMessage('Please check ESP device first');
-                                  return;
-                                }
                                 if (!_validateForm()) {
                                   return;
                                 }

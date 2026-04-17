@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DeviceModel {
 
- String get id; String get name; String get type; String get room; String get homeId; String get homeName;@JsonKey(name: 'macAddress') String get deviceMacAddress;@JsonKey(name: 'rulesJson') RulesEntity? get rules; DeviceStatusEnum get status;@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> get components;@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? get telemetry;
+ String get id; String get name; String get type;@JsonKey(readValue: _readRoomName) String get room; String get homeId; String get homeName;@JsonKey(name: 'macAddress') String get deviceMacAddress;@JsonKey(name: 'rulesJson') RulesEntity? get rules; DeviceStatusEnum get status;@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> get components;@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? get telemetry;
 /// Create a copy of DeviceModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $DeviceModelCopyWith<$Res>  {
   factory $DeviceModelCopyWith(DeviceModel value, $Res Function(DeviceModel) _then) = _$DeviceModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String type, String room, String homeId, String homeName,@JsonKey(name: 'macAddress') String deviceMacAddress,@JsonKey(name: 'rulesJson') RulesEntity? rules, DeviceStatusEnum status,@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> components,@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry
+ String id, String name, String type,@JsonKey(readValue: _readRoomName) String room, String homeId, String homeName,@JsonKey(name: 'macAddress') String deviceMacAddress,@JsonKey(name: 'rulesJson') RulesEntity? rules, DeviceStatusEnum status,@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> components,@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry
 });
 
 
@@ -187,7 +187,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type, @JsonKey(readValue: _readRoomName)  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeviceModel() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
@@ -208,7 +208,7 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type, @JsonKey(readValue: _readRoomName)  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)  $default,) {final _that = this;
 switch (_that) {
 case _DeviceModel():
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
@@ -228,7 +228,7 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type, @JsonKey(readValue: _readRoomName)  String room,  String homeId,  String homeName, @JsonKey(name: 'macAddress')  String deviceMacAddress, @JsonKey(name: 'rulesJson')  RulesEntity? rules,  DeviceStatusEnum status, @JsonKey(name: 'componentsJson')  List<DeviceComponentEntity> components, @JsonKey(name: 'lastTelemetryJson')  DeviceTelemetryEntity? telemetry)?  $default,) {final _that = this;
 switch (_that) {
 case _DeviceModel() when $default != null:
 return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.homeName,_that.deviceMacAddress,_that.rules,_that.status,_that.components,_that.telemetry);case _:
@@ -243,13 +243,13 @@ return $default(_that.id,_that.name,_that.type,_that.room,_that.homeId,_that.hom
 @JsonSerializable()
 
 class _DeviceModel implements DeviceModel {
-  const _DeviceModel({this.id = '', this.name = '', this.type = '', this.room = '', this.homeId = '', this.homeName = '', @JsonKey(name: 'macAddress') this.deviceMacAddress = '', @JsonKey(name: 'rulesJson') this.rules, this.status = DeviceStatusEnum.offline, @JsonKey(name: 'componentsJson') final  List<DeviceComponentEntity> components = const [], @JsonKey(name: 'lastTelemetryJson') this.telemetry}): _components = components;
+  const _DeviceModel({this.id = '', this.name = '', this.type = '', @JsonKey(readValue: _readRoomName) this.room = '', this.homeId = '', this.homeName = '', @JsonKey(name: 'macAddress') this.deviceMacAddress = '', @JsonKey(name: 'rulesJson') this.rules, this.status = DeviceStatusEnum.offline, @JsonKey(name: 'componentsJson') final  List<DeviceComponentEntity> components = const [], @JsonKey(name: 'lastTelemetryJson') this.telemetry}): _components = components;
   factory _DeviceModel.fromJson(Map<String, dynamic> json) => _$DeviceModelFromJson(json);
 
 @override@JsonKey() final  String id;
 @override@JsonKey() final  String name;
 @override@JsonKey() final  String type;
-@override@JsonKey() final  String room;
+@override@JsonKey(readValue: _readRoomName) final  String room;
 @override@JsonKey() final  String homeId;
 @override@JsonKey() final  String homeName;
 @override@JsonKey(name: 'macAddress') final  String deviceMacAddress;
@@ -297,7 +297,7 @@ abstract mixin class _$DeviceModelCopyWith<$Res> implements $DeviceModelCopyWith
   factory _$DeviceModelCopyWith(_DeviceModel value, $Res Function(_DeviceModel) _then) = __$DeviceModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String type, String room, String homeId, String homeName,@JsonKey(name: 'macAddress') String deviceMacAddress,@JsonKey(name: 'rulesJson') RulesEntity? rules, DeviceStatusEnum status,@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> components,@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry
+ String id, String name, String type,@JsonKey(readValue: _readRoomName) String room, String homeId, String homeName,@JsonKey(name: 'macAddress') String deviceMacAddress,@JsonKey(name: 'rulesJson') RulesEntity? rules, DeviceStatusEnum status,@JsonKey(name: 'componentsJson') List<DeviceComponentEntity> components,@JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry
 });
 
 

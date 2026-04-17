@@ -4,11 +4,13 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_home/features/add_device/presentions/page/water_heater/water_heater_schedule_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/login_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/register_page.dart';
 import 'package:smart_home/features/home_page/presentation/pages/home_page_page.dart';
 import 'package:smart_home/features/homes/presentation/pages/home_gate_page.dart';
 
+import '../../features/add_device/domain/entities/device_entity.dart';
 import '../../features/add_device/presentions/page/add_device_page.dart';
 import '../../features/homes/domain/entities/home_entity.dart';
 import '../../features/homes/presentation/pages/create_home_page.dart';
@@ -34,6 +36,7 @@ class RoutesName {
   static String otpPage = "otpPage";
   static String resetPasswordPage = "resetPasswordPage";
   static String addRoomPage = "addRoomPage";
+  static String deviceDetailPage = "deviceDetailPage";
 }
 
 class RoutesPath {
@@ -47,6 +50,7 @@ class RoutesPath {
   static String otpPage = '/otp';
   static String resetPasswordPage = '/reset-password';
   static String addRoomPage = '/addRoom';
+  static String deviceDetailPage = '/deviceDetail';
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -149,6 +153,17 @@ GoRouter goRouter = GoRouter(
                     home: extra['home'],
                     rooms: extra['rooms'],
                   ),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.deviceDetailPage,
+              name: RoutesName.deviceDetailPage,
+              pageBuilder: (context, state) {
+                final device = state.extra as DeviceEntity;
+                return _customTransitionPage(
+                  child: WaterHeaterSchedulePage(device: device),
                   state: state,
                 );
               },

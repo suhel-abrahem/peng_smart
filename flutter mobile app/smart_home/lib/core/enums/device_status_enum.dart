@@ -1,1 +1,1 @@
-enum DeviceStatusEnum { on, off, offline }
+enum DeviceStatusEnum { on, off, offline, online }

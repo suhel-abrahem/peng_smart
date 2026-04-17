@@ -2,12 +2,25 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_home/core/enums/device_status_enum.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_component_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
+import 'package:smart_home/features/add_device/domain/entities/device_telemetry_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
-
-import '../../domain/entities/device_telemetry_entity.dart';
 
 part 'device_model.freezed.dart';
 part 'device_model.g.dart';
+
+String _readRoomName(Map json, String key) {
+  final room = json['room'];
+
+  if (room is String) {
+    return room;
+  }
+
+  if (room is Map<String, dynamic>) {
+    return room['name']?.toString() ?? '';
+  }
+
+  return '';
+}
 
 @freezed
 abstract class DeviceModel with _$DeviceModel {
@@ -15,20 +28,15 @@ abstract class DeviceModel with _$DeviceModel {
     @Default('') String id,
     @Default('') String name,
     @Default('') String type,
-    @Default('') String room,
+    @JsonKey(readValue: _readRoomName) @Default('') String room,
     @Default('') String homeId,
     @Default('') String homeName,
-
     @JsonKey(name: 'macAddress') @Default('') String deviceMacAddress,
-
     @JsonKey(name: 'rulesJson') RulesEntity? rules,
-
     @Default(DeviceStatusEnum.offline) DeviceStatusEnum status,
-
     @JsonKey(name: 'componentsJson')
     @Default([])
     List<DeviceComponentEntity> components,
-
     @JsonKey(name: 'lastTelemetryJson') DeviceTelemetryEntity? telemetry,
   }) = _DeviceModel;
 
@@ -36,9 +44,9 @@ abstract class DeviceModel with _$DeviceModel {
       _$DeviceModelFromJson(json);
 }
 
-extension DeviceEntityMapper on DeviceEntity {
-  DeviceModel toModel() {
-    return DeviceModel(
+extension DeviceModelMapper on DeviceModel {
+  DeviceEntity toEntity() {
+    return DeviceEntity(
       id: id,
       name: name,
       type: type,
@@ -49,13 +57,14 @@ extension DeviceEntityMapper on DeviceEntity {
       rules: rules,
       status: status,
       components: components,
+      telemetry: telemetry,
     );
   }
 }
 
-extension DeviceModelMapper on DeviceModel {
-  DeviceEntity toEntity() {
-    return DeviceEntity(
+extension DeviceEntityMapper on DeviceEntity {
+  DeviceModel toModel() {
+    return DeviceModel(
       id: id,
       name: name,
       type: type,

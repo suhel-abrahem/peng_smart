@@ -143,11 +143,31 @@ class HomePagePage extends StatelessWidget {
                               )
                             : ListView.separated(
                                 scrollDirection: Axis.horizontal,
-                                itemCount: rooms.data?.length ?? 0,
+                                itemCount: (rooms.data?.length ?? 0) + 1,
                                 separatorBuilder: (_, __) =>
                                     const SizedBox(width: 8),
                                 itemBuilder: (context, index) {
-                                  final room = rooms.data?[index];
+                                  if (index == 0) {
+                                    final isSelected = selectedRoom == null;
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        context.read<DashboardBloc>().add(
+                                          const DashboardEvent.selectRoom(
+                                            roomId: null,
+                                          ),
+                                        );
+                                      },
+                                      child: Chip(
+                                        label: const Text('All'),
+                                        backgroundColor: isSelected
+                                            ? Colors.blue
+                                            : Colors.grey[300],
+                                      ),
+                                    );
+                                  }
+
+                                  final room = rooms.data?[index - 1];
                                   final isSelected = room?.id == selectedRoom;
 
                                   return GestureDetector(
@@ -205,32 +225,46 @@ class HomePagePage extends StatelessWidget {
                           final relay1 = device.telemetry?.relay1 ?? false;
                           final relay2 = device.telemetry?.relay2 ?? false;
 
-                          return Card(
-                            child: ListTile(
-                              title: Text(
-                                device.name,
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
-                                      fontFamily: FontConstants.fontFamily(
-                                        context.locale,
-                                      ),
-                                    ),
-                              ),
-                              subtitle: Text(
-                                '${device.type} • ${device.status.name}'
-                                '${temp != null ? ' • ${temp.toStringAsFixed(1)}°C' : ''}'
-                                ' • R1:${relay1 ? 'ON' : 'OFF'}'
-                                ' • R2:${relay2 ? 'ON' : 'OFF'}',
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(
-                                      fontFamily: FontConstants.fontFamily(
-                                        context.locale,
-                                      ),
-                                    ),
-                              ),
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () {},
-                            ),
+                          return Builder(
+                            builder: (bC) {
+                              return Card(
+                                color: Theme.of(context).cardColor,
+                                child: ListTile(
+                                  title: Text(
+                                    device.name,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          fontFamily: FontConstants.fontFamily(
+                                            context.locale,
+                                          ),
+                                        ),
+                                  ),
+                                  subtitle: Text(
+                                    '${device.type} • ${device.status.name}'
+                                    '${temp != null ? ' • ${temp.toStringAsFixed(1)}°C' : ''}'
+                                    ' • R1:${relay1 ? 'ON' : 'OFF'}'
+                                    ' • R2:${relay2 ? 'ON' : 'OFF'}',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(
+                                          fontFamily: FontConstants.fontFamily(
+                                            context.locale,
+                                          ),
+                                        ),
+                                  ),
+                                  trailing: const Icon(Icons.chevron_right),
+                                  onTap: () {
+                                    context.push(
+                                      RoutesPath.deviceDetailPage,
+                                      extra: device,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
                           );
                         }),
                     ],

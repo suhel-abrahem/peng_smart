@@ -3,6 +3,7 @@ import 'package:smart_home/core/constants/api_constant.dart';
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
 import 'package:smart_home/features/add_device/data/model/device_model.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
+import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
 
 import '../../../../core/network/common_service.dart';
 import 'add_device_remote_data_source.dart';
@@ -10,10 +11,7 @@ import 'add_device_remote_data_source.dart';
 class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
   final CommonService _commonService;
 
-  const AddDeviceRemoteDataSourceImpl(
-    this._commonService,
-   
-  );
+  const AddDeviceRemoteDataSourceImpl(this._commonService);
 
   @override
   Future<DeviceModel> registerDevice({
@@ -97,5 +95,38 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     return rawList
         .map((e) => DeviceModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();
+  }
+
+  @override
+  Future<DeviceModel> updateDeviceRules({
+    required String deviceId,
+    required RulesEntity rules,
+  }) async {
+    final endpoint = '/devices/$deviceId/rules';
+
+    final response = await _commonService.put(
+      endpoint,
+      data: {'rules': rules.toJson()},
+    );
+
+    if (response == null || response.data == null) {
+      throw Exception('Empty update rules response');
+    }
+
+    final dynamic rawData = response.data['data'] ?? response.data;
+
+    return DeviceModel.fromJson(Map<String, dynamic>.from(rawData));
+  }
+
+  @override
+  Future<DeviceModel> getDeviceById({required String deviceId}) async {
+    final response = await _commonService.get('/devices/$deviceId');
+
+    if (response == null || response.data == null) {
+      throw Exception('Empty device details response');
+    }
+
+    final rawData = response.data['data'] ?? response.data;
+    return DeviceModel.fromJson(Map<String, dynamic>.from(rawData));
   }
 }

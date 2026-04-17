@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home/core/network/auth_interceptor.dart';
 import 'package:smart_home/core/network/common_service.dart';
+import 'package:smart_home/features/add_device/domain/usecase/get_device_by_id_usecase.dart';
 
 import '../config/app/app_preferences.dart';
 
@@ -15,13 +16,16 @@ import '../features/add_device/data/repository/add_device_repository_impl.dart';
 import '../features/add_device/domain/repository/add_device_repository.dart';
 import '../features/add_device/domain/usecase/check_esp_device_usecase.dart';
 import '../features/add_device/domain/usecase/connect_to_esp_wifi_usecase.dart';
+import '../features/add_device/domain/usecase/connect_to_home_wifi_usecase.dart';
 import '../features/add_device/domain/usecase/disconnect_from_esp_wifi_usecase.dart';
 import '../features/add_device/domain/usecase/get_devices_by_home_id_usecase.dart';
 import '../features/add_device/domain/usecase/get_devices_by_room_id_usecase.dart';
 import '../features/add_device/domain/usecase/provision_device_wifi_usecase.dart';
 import '../features/add_device/domain/usecase/register_device_usecase.dart';
 import '../features/add_device/domain/usecase/save_device_locally_usecase.dart';
+import '../features/add_device/domain/usecase/update_device_rules_usecase.dart';
 import '../features/add_device/presentions/bloc/add_device_bloc.dart';
+import '../features/add_device/presentions/bloc/heater_schedule_bloc.dart';
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
@@ -51,6 +55,7 @@ import 'network/token_manager.dart';
 import 'resource/connectivity/check_connectivity.dart';
 import 'wifi_onboarding/wifi_onboarding_service.dart';
 import 'wifi_onboarding/wifi_onboarding_service_impl.dart';
+import 'wifi_scan/wifi_scan_service.dart';
 
 GetIt getItInstance = GetIt.instance;
 Future<void> initDependencies() async {
@@ -59,6 +64,7 @@ Future<void> initDependencies() async {
     () => AppPreferences(sharedPreferences),
   );
   //common services and utilities
+  getItInstance.registerLazySingleton(() => WifiScanService());
   getItInstance.registerLazySingleton(
     () => Dio(
       BaseOptions(
@@ -149,6 +155,15 @@ Future<void> initDependencies() async {
   getItInstance.registerLazySingleton(
     () => ConnectToEspWifiUseCase(getItInstance<WifiOnboardingService>()),
   );
+  getItInstance.registerLazySingleton(
+    () => ConnectToHomeWifiUseCase(getItInstance<WifiOnboardingService>()),
+  );
+  getItInstance.registerLazySingleton(
+    () => UpdateDeviceRulesUseCase(getItInstance<AddDeviceRepository>()),
+  );
+  getItInstance.registerLazySingleton(
+    () => GetDeviceByIdUseCase(getItInstance<AddDeviceRepository>()),
+  );
   getItInstance.registerFactory(
     () => AddDeviceBloc(
       getItInstance<CheckEspDeviceUseCase>(),
@@ -156,6 +171,12 @@ Future<void> initDependencies() async {
       getItInstance<RegisterDeviceUseCase>(),
       getItInstance<SaveDeviceLocallyUseCase>(),
       getItInstance<ConnectToEspWifiUseCase>(),
+    ),
+  );
+  getItInstance.registerFactory(
+    () => HeaterScheduleBloc(
+      getItInstance<UpdateDeviceRulesUseCase>(),
+      getItInstance<GetDeviceByIdUseCase>(),
     ),
   );
   // end of add device
