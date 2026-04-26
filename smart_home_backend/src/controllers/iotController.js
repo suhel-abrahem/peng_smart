@@ -58,9 +58,7 @@ async function telemetry(req, res) {
     }
 
     const device = await prisma.device.findUnique({
-      where: {
-        id: deviceId,
-      },
+      where: { id: deviceId },
     });
 
     if (!device) {
@@ -69,32 +67,43 @@ async function telemetry(req, res) {
       });
     }
 
-    const telemetryPayload = payload || {};
+    const telemetryPayload = {
+      temperature:
+        temperature ?? payload?.temperature ?? payload?.tempSensor ?? null,
+      tempSensor: payload?.tempSensor ?? temperature ?? null,
+
+      pressureBar: payload?.pressureBar ?? null,
+
+      voltage: payload?.voltage ?? null,
+      current: payload?.current ?? null,
+      power: payload?.power ?? null,
+      energyKwh: payload?.energyKwh ?? null,
+
+      relay1: payload?.relay1 ?? false,
+      relay2: payload?.relay2 ?? false,
+
+      updatedAt: new Date().toISOString(),
+    };
 
     await prisma.device.update({
-      where: {
-        id: deviceId,
-      },
+      where: { id: deviceId },
       data: {
         status: "online",
-        lastTelemetryJson: {
-          temperature: temperature ?? null,
-          ...telemetryPayload,
-          updatedAt: new Date().toISOString(),
-        },
+        lastTelemetryJson: telemetryPayload,
       },
     });
 
     await prisma.deviceTelemetry.create({
       data: {
         deviceId,
-        temperature: temperature ?? null,
+        temperature: telemetryPayload.temperature,
         payloadJson: telemetryPayload,
       },
     });
 
     return res.status(200).json({
       message: "Telemetry saved successfully",
+      data: telemetryPayload,
     });
   } catch (e) {
     return res.status(500).json({

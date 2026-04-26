@@ -5,18 +5,31 @@
 #include <ArduinoJson.h>
 #include <math.h>
 #include <HTTPClient.h>
-
+#include <SPI.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_ST7735.h>
+#include <PZEM004Tv30.h>
 Preferences preferences;
 WebServer server(80);
 
 // ---------------- PINS ----------------
 static const int PIN_NTC = 4;
 static const int PIN_BUTTON = 5;
-static const int PIN_LED_WIFI = 6;
-static const int PIN_LED_GREEN_BATTERY = 7;
+static const int PIN_LED_WIFI = 2;
+
 static const int PIN_LOWER_RELAY = 15;
 static const int PIN_UPPER_RELAY = 16;
-
+#define TFT_CS    14
+#define TFT_DC    27
+#define TFT_RST   33
+#define TFT_MOSI  23
+#define TFT_SCLK  18
+#define PIN_PRESSURE 34
+#define PZEM_RX_PIN 19
+#define PZEM_TX_PIN 21
+Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+HardwareSerial pzemSerial(2);
+PZEM004Tv30 pzem(pzemSerial, PZEM_RX_PIN, PZEM_TX_PIN);
 // ---------------- NTC CONFIG ----------------
 static const float SERIES_RESISTOR = 10000.0f;
 static const float NOMINAL_RESISTANCE = 10000.0f;
@@ -36,9 +49,33 @@ unsigned long buttonPressStart = 0;
 bool longPressHandled = false;
 bool apModeStarted = false;
 int lastTemperature = 0;
+float lastPressure = 0.0f;
 String savedSsid;
 String savedPass;
+struct PowerData {
+  float voltage;
+  float current;
+  float power;
+  float energy;
+};
+enum ScreenMode {
+  SCREEN_ALL,
+  SCREEN_TEMP,
+  SCREEN_PRESSURE,
+  SCREEN_POWER,
+};
 
+ScreenMode currentScreenMode = SCREEN_ALL;
+ScreenMode lastScreenMode = SCREEN_ALL;
+unsigned long lastScreenSwitchMs = 0;
+static const unsigned long SCREEN_SWITCH_INTERVAL_MS = 5000;
+static const float MAX_SAFE_TEMP_C = 60.0f;
+static const float MAX_SAFE_PRESSURE_BAR = 7.0f;
+
+bool safetyTripped = false;
+String safetyMessage = "";
+
+PowerData lastPowerData = {0, 0, 0, 0};
 // ---------------- BACKEND ----------------
 
 String backendBaseUrl = "http://192.168.1.93:3000";
@@ -72,7 +109,7 @@ void setWholeDeviceAction(const String& action);
 bool executePendingCommand(const JsonVariantConst& command);
 
 bool syncDeviceWithBackend();
-void sendTelemetry(float tempC);
+void sendTelemetry(float tempC, float pressureBar, PowerData powerData);
 void reportCommandResult(bool success, const String& resultMessage);
 
 bool evaluateSingleRule(const JsonVariantConst& rule, float tempC);
@@ -156,8 +193,349 @@ Serial.print("Calculated Resistance: ");
   lastTemperature = (int)round(tc);
   return tc;
 }
+PowerData readPowerSensor() {
+  PowerData data;
 
+  data.voltage = pzem.voltage();
+  data.current = pzem.current();
+  data.power   = pzem.power();
+  data.energy  = pzem.energy();
+
+  if (isnan(data.voltage)) data.voltage = 0;
+  if (isnan(data.current)) data.current = 0;
+  if (isnan(data.power))   data.power   = 0;
+  if (isnan(data.energy))  data.energy  = 0;
+
+  Serial.print("V: "); Serial.print(data.voltage);
+  Serial.print("  I: "); Serial.print(data.current);
+  Serial.print("  P: "); Serial.print(data.power);
+  Serial.print("  E: "); Serial.println(data.energy);
+
+  return data;
+}
+float readPressure() {
+  int raw = analogRead(PIN_PRESSURE);
+
+  float espVoltage = raw * (3.3 / 4095.0); 
+  float sensorVoltage = espVoltage * 2.0; // بسبب 10k + 10k divider
+
+  float pressureBar = (sensorVoltage - 0.5) * (12.0 / 4.0);
+
+  if (pressureBar < 0) pressureBar = 0;
+
+  Serial.print("Raw: ");
+  Serial.print(raw);
+  Serial.print(" SensorV: ");
+  Serial.print(sensorVoltage, 3);
+  Serial.print(" Pressure: ");
+  Serial.println(pressureBar, 2);
+
+  return pressureBar;
+}
+void showBootScreen() {
+  tft.fillScreen(ST77XX_BLACK);
+
+  tft.setTextWrap(false);
+
+  tft.setTextColor(ST77XX_CYAN, ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(10, 12);
+  tft.print("Peng Smart");
+
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+  tft.setTextSize(1);
+  tft.setCursor(18, 40);
+  tft.print("Water Heater");
+
+  tft.drawLine(0, 58, 127, 58, ST77XX_WHITE);
+
+  tft.setCursor(8, 72);
+  tft.print("Starting ESP...");
+
+  delay(700);
+
+  tft.fillRect(8, 90, 112, 12, ST77XX_BLACK);
+  tft.setCursor(8, 90);
+  tft.print("Loading sensors...");
+
+  delay(700);
+
+  tft.fillRect(8, 90, 112, 12, ST77XX_BLACK);
+  tft.setCursor(8, 90);
+  tft.print("Checking WiFi...");
+
+  delay(700);
+}
+void showBootStatus(const String& message) {
+  tft.fillRect(0, 90, 128, 25, ST77XX_BLACK);
+
+  tft.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  tft.setTextSize(1);
+  tft.setCursor(8, 92);
+  tft.print(message);
+}
+// ---------------- SCREEN MODES ----------------
+
+
+
+void clearScreen() {
+  tft.fillScreen(ST77XX_BLACK);
+}
+
+void drawHeader(const char* title) {
+  tft.setTextWrap(false);
+  tft.setTextColor(ST77XX_CYAN, ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(6, 6);
+  tft.print(title);
+  tft.drawLine(0, 28, 127, 28, ST77XX_WHITE);
+}
+
+// ---------------- STATIC SCREENS ----------------
+
+void drawAllStatic() {
+  clearScreen();
+  drawHeader("Heater");
+
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+
+  tft.setCursor(8, 38);
+  tft.print("Temp:");
+
+  tft.setCursor(8, 58);
+  tft.print("Press:");
+
+  tft.setCursor(8, 78);
+  tft.print("Power:");
+
+  tft.setCursor(8, 98);
+  tft.print("Energy:");
+}
+
+void drawTempStatic() {
+  clearScreen();
+  drawHeader("Temp");
+
+  tft.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(8, 48);
+  tft.print("Water:");
+}
+
+void drawPressureStatic() {
+  clearScreen();
+  drawHeader("Pressure");
+
+  tft.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(8, 48);
+  tft.print("Pipe:");
+}
+
+void drawPowerStatic() {
+  clearScreen();
+  drawHeader("Power");
+
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+
+  tft.setCursor(8, 38);
+  tft.print("Voltage:");
+
+  tft.setCursor(8, 58);
+  tft.print("Current:");
+
+  tft.setCursor(8, 78);
+  tft.print("Power:");
+
+  tft.setCursor(8, 98);
+  tft.print("Energy:");
+}
+
+void drawCurrentScreenStatic() {
+  if (currentScreenMode == SCREEN_ALL) {
+    drawAllStatic();
+  } else if (currentScreenMode == SCREEN_TEMP) {
+    drawTempStatic();
+  } else if (currentScreenMode == SCREEN_PRESSURE) {
+    drawPressureStatic();
+  } else if (currentScreenMode == SCREEN_POWER) {
+    drawPowerStatic();
+  }
+}
+void drawSafetyScreen() {
+  tft.fillScreen(ST77XX_BLACK);
+
+  tft.setTextWrap(false);
+
+  tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
+  tft.setTextSize(2);
+  tft.setCursor(8, 8);
+  tft.print("SYSTEM OFF");
+
+  tft.drawLine(0, 30, 127, 30, ST77XX_WHITE);
+
+  tft.setTextColor(ST77XX_YELLOW, ST77XX_BLACK);
+  tft.setTextSize(1);
+  tft.setCursor(8, 45);
+  tft.print("Safety rule active");
+
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+  tft.setCursor(8, 65);
+  tft.print("Reason:");
+
+  tft.setTextColor(ST77XX_RED, ST77XX_BLACK);
+  tft.setCursor(8, 80);
+  tft.print(safetyMessage);
+
+  tft.setTextColor(ST77XX_WHITE, ST77XX_BLACK);
+  tft.setCursor(8, 105);
+  tft.print("Relays are OFF");
+}
+void updateScreenMode() {
+  if (millis() - lastScreenSwitchMs >= SCREEN_SWITCH_INTERVAL_MS) {
+    lastScreenSwitchMs = millis();
+
+    if (currentScreenMode == SCREEN_ALL) {
+      currentScreenMode = SCREEN_TEMP;
+    } else if (currentScreenMode == SCREEN_TEMP) {
+      currentScreenMode = SCREEN_PRESSURE;
+    } else if (currentScreenMode == SCREEN_PRESSURE) {
+      currentScreenMode = SCREEN_POWER;
+    } else {
+      currentScreenMode = SCREEN_ALL;
+    }
+
+    drawCurrentScreenStatic();
+  }
+}
+// ---------------- VALUE UPDATES ONLY ----------------
+
+void updateAllValues(float tempC, float pressureBar, PowerData p) {
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
+
+  tft.fillRect(65, 38, 62, 10, ST77XX_BLACK);
+  tft.setCursor(65, 38);
+  if (isnan(tempC)) {
+    tft.print("N/A");
+  } else {
+    tft.print(tempC, 1);
+    tft.print(" C");
+  }
+
+  tft.fillRect(65, 58, 62, 10, ST77XX_BLACK);
+  tft.setCursor(65, 58);
+  tft.print(pressureBar, 2);
+  tft.print(" bar");
+
+  tft.fillRect(65, 78, 62, 10, ST77XX_BLACK);
+  tft.setCursor(65, 78);
+  tft.print(p.power, 0);
+  tft.print(" W");
+
+  tft.fillRect(65, 98, 62, 10, ST77XX_BLACK);
+  tft.setCursor(65, 98);
+  tft.print(p.energy, 2);
+  tft.print(" kWh");
+}
+
+void updateTempValue(float tempC) {
+  tft.fillRect(8, 78, 120, 32, ST77XX_BLACK);
+
+  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
+  tft.setTextSize(3);
+  tft.setCursor(8, 78);
+
+  if (isnan(tempC)) {
+    tft.print("N/A");
+  } else {
+    tft.print(tempC, 1);
+    tft.setTextSize(2);
+    tft.print(" C");
+  }
+}
+
+void updatePressureValue(float pressureBar) {
+  tft.fillRect(8, 78, 120, 32, ST77XX_BLACK);
+
+  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
+  tft.setTextSize(3);
+  tft.setCursor(8, 78);
+  tft.print(pressureBar, 2);
+
+  tft.setTextSize(2);
+  tft.print(" bar");
+}
+
+void updatePowerValues(PowerData p) {
+  tft.setTextSize(1);
+  tft.setTextColor(ST77XX_BLUE, ST77XX_BLACK);
+
+  tft.fillRect(75, 38, 53, 10, ST77XX_BLACK);
+  tft.setCursor(75, 38);
+  tft.print(p.voltage, 1);
+  tft.print(" V");
+
+  tft.fillRect(75, 58, 53, 10, ST77XX_BLACK);
+  tft.setCursor(75, 58);
+  tft.print(p.current, 2);
+  tft.print(" A");
+
+  tft.fillRect(75, 78, 53, 10, ST77XX_BLACK);
+  tft.setCursor(75, 78);
+  tft.print(p.power, 0);
+  tft.print(" W");
+
+  tft.fillRect(75, 98, 53, 10, ST77XX_BLACK);
+  tft.setCursor(75, 98);
+  tft.print(p.energy, 2);
+  tft.print(" kWh");
+}
+
+void updateCurrentScreenValues(float tempC, float pressureBar, PowerData p) {
+  if (currentScreenMode == SCREEN_ALL) {
+    updateAllValues(tempC, pressureBar, p);
+  } else if (currentScreenMode == SCREEN_TEMP) {
+    updateTempValue(tempC);
+  } else if (currentScreenMode == SCREEN_PRESSURE) {
+    updatePressureValue(pressureBar);
+  } else if (currentScreenMode == SCREEN_POWER) {
+    updatePowerValues(p);
+  }
+}
 // ---------------- RELAY ACTIONS ----------------
+void turnBothRelaysOff() {
+  digitalWrite(PIN_LOWER_RELAY, HIGH);
+  digitalWrite(PIN_UPPER_RELAY, HIGH);
+}
+
+bool checkSafety(float tempC, float pressureBar) {
+  safetyTripped = false;
+  safetyMessage = "";
+
+  if (!isnan(tempC) && tempC >= MAX_SAFE_TEMP_C) {
+    safetyTripped = true;
+    safetyMessage = "HIGH TEMP";
+  }
+
+  if (!isnan(pressureBar) && pressureBar >= MAX_SAFE_PRESSURE_BAR) {
+    safetyTripped = true;
+    safetyMessage = "HIGH PRESSURE";
+  }
+
+  if (safetyTripped) {
+    turnBothRelaysOff();
+
+    Serial.print("SAFETY TRIPPED: ");
+    Serial.println(safetyMessage);
+
+    return false;
+  }
+
+  return true;
+}
 void setRelayByComponent(const String& componentId, const String& action) {
   bool turnOn = action == "turnOn";
   bool turnOff = action == "turnOff";
@@ -446,7 +824,7 @@ bool syncDeviceWithBackend() {
   return true;
 }
 
-void sendTelemetry(float tempC) {
+void sendTelemetry(float tempC, float pressureBar, PowerData powerData) {
   if (WiFi.status() != WL_CONNECTED) return;
   if (registeredDeviceId.isEmpty()) return;
 
@@ -466,14 +844,27 @@ void sendTelemetry(float tempC) {
   }
 
   JsonObject payload = req["payload"].to<JsonObject>();
+
   payload["relay1"] = digitalRead(PIN_LOWER_RELAY) == LOW;
   payload["relay2"] = digitalRead(PIN_UPPER_RELAY) == LOW;
 
   if (isnan(tempC)) {
+    payload["temperature"] = nullptr;
     payload["tempSensor"] = nullptr;
   } else {
+    payload["temperature"] = tempC;
     payload["tempSensor"] = tempC;
   }
+
+  payload["pressureBar"] = pressureBar;
+
+  payload["voltage"] = powerData.voltage;
+  payload["current"] = powerData.current;
+  payload["power"] = powerData.power;
+  payload["energyKwh"] = powerData.energy;
+
+  payload["safetyTripped"] = safetyTripped;
+  payload["safetyMessage"] = safetyMessage;
 
   String body;
   serializeJson(req, body);
@@ -481,6 +872,7 @@ void sendTelemetry(float tempC) {
   int httpCode = http.POST(body);
   Serial.print("telemetry code: ");
   Serial.println(httpCode);
+
   if (httpCode > 0) {
     Serial.println(http.getString());
   }
@@ -758,9 +1150,14 @@ void handleButton() {
 void setup() {
   Serial.begin(115200);
   delay(1000);
-
+ SPI.begin(TFT_SCLK, -1, TFT_MOSI, -1);
+ delay(100);
+tft.initR(INITR_144GREENTAB);
+tft.setRotation(1);
+ tft.fillScreen(ST77XX_BLACK);
+showBootScreen();
   pinMode(PIN_BUTTON, INPUT_PULLUP);
-  pinMode(PIN_LED_GREEN_BATTERY, OUTPUT);
+
   pinMode(PIN_LED_WIFI, OUTPUT);
   pinMode(PIN_NTC, INPUT);
   pinMode(PIN_LOWER_RELAY, OUTPUT);
@@ -768,7 +1165,7 @@ void setup() {
 
   digitalWrite(PIN_LOWER_RELAY, HIGH); // active LOW => off
   digitalWrite(PIN_UPPER_RELAY, HIGH); // active LOW => off
-  digitalWrite(PIN_LED_GREEN_BATTERY, LOW);
+  
   digitalWrite(PIN_LED_WIFI, LOW);
 
   analogReadResolution(12);
@@ -778,17 +1175,42 @@ void setup() {
 
   loadWiFiCredentials();
 
-  if (!savedSsid.isEmpty()) {
-    wifiConnected = tryConnectWiFi(savedSsid, savedPass, 15000);
-    if (!wifiConnected) {
-      Serial.println("Falling back to AP mode");
-      startProvisionAP();
-    } else {
-      syncDeviceWithBackend();
-    }
-  } else {
+if (!savedSsid.isEmpty()) {
+  showBootStatus("Connecting WiFi...");
+
+  wifiConnected = tryConnectWiFi(savedSsid, savedPass, 15000);
+
+  if (!wifiConnected) {
+    showBootStatus("AP Mode Started");
+    delay(800);
+
+    Serial.println("Falling back to AP mode");
     startProvisionAP();
+  } else {
+    showBootStatus("WiFi Connected");
+    delay(800);
+
+    showBootStatus("Syncing backend...");
+    syncDeviceWithBackend();
+
+    showBootStatus("Ready");
+    delay(800);
   }
+} else {
+  showBootStatus("No WiFi saved");
+  delay(800);
+
+  showBootStatus("AP Mode Started");
+  delay(800);
+
+  startProvisionAP();
+}
+ tft.fillScreen(ST77XX_BLACK);
+
+currentScreenMode = SCREEN_ALL;
+
+drawCurrentScreenStatic();
+
 }
 
 // ---------------- LOOP ----------------
@@ -808,7 +1230,7 @@ void loop() {
   if (millis() - lastTempRead >= 1000) {
     lastTempRead = millis();
     currentTemp = readTemperatureC();
-
+    lastPressure = readPressure();
     Serial.print("Temp = ");
     if (isnan(currentTemp)) {
       Serial.println("NAN");
@@ -817,7 +1239,20 @@ void loop() {
       Serial.println(" C");
     }
 
+float energyKwh = 0.0f;
+PowerData p = readPowerSensor();
+lastPowerData = p;
+ energyKwh = p.energy;
+     bool safe = checkSafety(currentTemp, lastPressure);
+
+  if (safe) {
     applyRules(currentTemp);
+
+    updateScreenMode();
+    updateCurrentScreenValues(currentTemp, lastPressure, lastPowerData);
+  } else {
+    drawSafetyScreen();
+  }
   }
 
   bool nowConnected = (WiFi.getMode() == WIFI_STA && WiFi.status() == WL_CONNECTED);
@@ -840,7 +1275,7 @@ void loop() {
 
     if (millis() - lastTelemetryMs >= TELEMETRY_INTERVAL_MS) {
       lastTelemetryMs = millis();
-      sendTelemetry(currentTemp);
+      sendTelemetry(currentTemp,lastPressure,lastPowerData);
     }
   }
   static unsigned long lastTimeDebug = 0;
