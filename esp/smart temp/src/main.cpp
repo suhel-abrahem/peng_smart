@@ -9,11 +9,12 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
 #include <PZEM004Tv30.h>
+#include <Adafruit_MAX31865.h>
 Preferences preferences;
 WebServer server(80);
 
 // ---------------- PINS ----------------
-static const int PIN_NTC = 4;
+
 static const int PIN_BUTTON = 5;
 static const int PIN_LED_WIFI = 2;
 
@@ -27,6 +28,17 @@ static const int PIN_UPPER_RELAY = 16;
 #define PIN_PRESSURE 34
 #define PZEM_RX_PIN 19
 #define PZEM_TX_PIN 21
+#define MAX31865_CS   4
+#define MAX31865_MISO 32
+#define MAX31865_MOSI 23
+#define MAX31865_CLK  18
+
+Adafruit_MAX31865 max31865 = Adafruit_MAX31865(
+  MAX31865_CS,
+  MAX31865_MOSI,
+  MAX31865_MISO,
+  MAX31865_CLK
+);
 Adafruit_ST7735 tft = Adafruit_ST7735(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
 HardwareSerial pzemSerial(2);
 PZEM004Tv30 pzem(pzemSerial, PZEM_RX_PIN, PZEM_TX_PIN);
@@ -50,6 +62,7 @@ bool longPressHandled = false;
 bool apModeStarted = false;
 int lastTemperature = 0;
 float lastPressure = 0.0f;
+
 String savedSsid;
 String savedPass;
 struct PowerData {
@@ -164,34 +177,36 @@ void saveDeviceInfo(const String& deviceName, const String& room) {
 
 // ---------------- TEMP ----------------
 float readTemperatureC() {
-  int adc = analogRead(PIN_NTC);
-Serial.print("Raw ADC: ");
-  Serial.println(adc);
+  uint16_t rtd = max31865.readRTD();
+  uint8_t fault = max31865.readFault();
 
-  if (adc <= 0 || adc >= 4095) {
+  Serial.print("RTD raw: ");
+  Serial.println(rtd);
+
+  if (fault) {
+    Serial.print("MAX31865 Fault: 0x");
+    Serial.println(fault, HEX);
+
+    if (fault & MAX31865_FAULT_HIGHTHRESH) Serial.println("RTD High Threshold");
+    if (fault & MAX31865_FAULT_LOWTHRESH)  Serial.println("RTD Low Threshold");
+    if (fault & MAX31865_FAULT_REFINLOW)   Serial.println("REFIN- low");
+    if (fault & MAX31865_FAULT_REFINHIGH)  Serial.println("REFIN- high");
+    if (fault & MAX31865_FAULT_RTDINLOW)   Serial.println("RTDIN- low");
+    if (fault & MAX31865_FAULT_OVUV)       Serial.println("Over/Under voltage");
+
+    max31865.clearFault();
     return NAN;
   }
 
-  float vo = adc * (VCC / ADC_MAX);
-Serial.print("Voltage: ");
-  Serial.println(vo, 4);
-  if (vo <= 0.01f || vo >= (VCC - 0.01f)) {
+  float tempC = max31865.temperature(100.0, 430.0);
+
+  if (tempC < -50 || tempC > 150) {
+    Serial.print("Invalid temp ignored: ");
+    Serial.println(tempC);
     return NAN;
   }
 
-  float rt = (SERIES_RESISTOR/vo)*VCC -SERIES_RESISTOR;
-Serial.print("Calculated Resistance: ");
-  Serial.println(rt, 2);
-  float invT = (1.0f / NOMINAL_TEMPERATURE) +
-               (1.0f / BETA_COEFFICIENT) * log(rt / NOMINAL_RESISTANCE);
-
-  float tk = 1.0f / invT;
-  Serial.print("Temperature (K): ");
-  Serial.println(tk, 2);
-  float tc = tk - 273.15f;
-
-  lastTemperature = (int)round(tc);
-  return tc;
+  return tempC;
 }
 PowerData readPowerSensor() {
   PowerData data;
@@ -511,7 +526,7 @@ void turnBothRelaysOff() {
   digitalWrite(PIN_UPPER_RELAY, HIGH);
 }
 
-bool checkSafety(float tempC, float pressureBar) {
+bool checkSafety(float tempC, float pressureBar, PowerData powerData) {
   safetyTripped = false;
   safetyMessage = "";
 
@@ -524,6 +539,18 @@ bool checkSafety(float tempC, float pressureBar) {
     safetyTripped = true;
     safetyMessage = "HIGH PRESSURE";
   }
+if (!isnan(powerData.voltage) && powerData.voltage >= 245.0)
+{
+  safetyTripped = true;
+  safetyMessage = "HIGH VOLTAGE";
+}
+if (!isnan(powerData.current)&& powerData.current >= 20.0)
+{
+  safetyTripped = true;
+  safetyMessage = "HIGH CURRENT";
+}
+
+
 
   if (safetyTripped) {
     turnBothRelaysOff();
@@ -1159,7 +1186,7 @@ showBootScreen();
   pinMode(PIN_BUTTON, INPUT_PULLUP);
 
   pinMode(PIN_LED_WIFI, OUTPUT);
-  pinMode(PIN_NTC, INPUT);
+  // pinMode(MAX31865_CS, INPUT);
   pinMode(PIN_LOWER_RELAY, OUTPUT);
   pinMode(PIN_UPPER_RELAY, OUTPUT);
 
@@ -1206,7 +1233,13 @@ if (!savedSsid.isEmpty()) {
   startProvisionAP();
 }
  tft.fillScreen(ST77XX_BLACK);
+pinMode(MAX31865_CS, OUTPUT);
+digitalWrite(MAX31865_CS, HIGH);
 
+pinMode(TFT_CS, OUTPUT);
+digitalWrite(TFT_CS, HIGH);
+
+max31865.begin(MAX31865_2WIRE);
 currentScreenMode = SCREEN_ALL;
 
 drawCurrentScreenStatic();
@@ -1243,7 +1276,8 @@ float energyKwh = 0.0f;
 PowerData p = readPowerSensor();
 lastPowerData = p;
  energyKwh = p.energy;
-     bool safe = checkSafety(currentTemp, lastPressure);
+
+     bool safe = checkSafety(currentTemp, lastPressure, lastPowerData);
 
   if (safe) {
     applyRules(currentTemp);
