@@ -10,6 +10,13 @@ abstract class DeviceTelemetryEntity with _$DeviceTelemetryEntity {
     @Default(false) bool relay2,
     double? temperature,
     double? tempSensor,
+    double? pressureBar,
+    double? voltage,
+    double? current,
+    double? power,
+    double? energyKwh,
+    @Default(false) bool safetyTripped,
+    String? safetyMessage,
     String? updatedAt,
   }) = _DeviceTelemetryEntity;
 

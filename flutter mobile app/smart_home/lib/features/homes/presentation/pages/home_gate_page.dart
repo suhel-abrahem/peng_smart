@@ -17,6 +17,7 @@ class HomeGatePage extends StatelessWidget {
           getItInstance<HomeBloc>()..add(const HomeEvent.getMyHomes()),
       child: BlocListener<HomeBloc, HomeState>(
         listener: (context, state) {
+          print("HomeGatePage: $state");
           state.whenOrNull(
             homesLoaded: (homes) {
               if (homes.isEmpty) {

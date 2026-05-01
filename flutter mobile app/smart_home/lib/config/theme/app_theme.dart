@@ -33,25 +33,25 @@ ThemeData darkTheme() {
         fontFamily: FontConstants.mirzaFontFamily,
         fontSize: 16.sp,
         fontWeight: FontWeight.w800,
-        color: ColorManager.darkSecondaryTextColor,
+        color: ColorManager.darkTextColor,
       ),
       bodyLarge: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
         fontSize: 18.sp,
         fontWeight: FontWeight.w600,
-        color: ColorManager.darkSecondaryTextColor,
+        color: ColorManager.darkTextColor,
       ),
       bodyMedium: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
         fontSize: 16.sp,
         fontWeight: FontWeight.w500,
-        color: ColorManager.darkSecondaryTextColor,
+        color: ColorManager.darkTextColor,
       ),
       bodySmall: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
-        color: ColorManager.darkSecondaryTextColor,
+        color: ColorManager.darkTextColor,
       ),
       labelLarge: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
@@ -139,10 +139,10 @@ ThemeData darkTheme() {
       shadowColor: ColorManager.shadowColor,
       backgroundColor: ColorManager.cardColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.r),
-        side: const BorderSide(
+        borderRadius: BorderRadius.circular(30.r),
+        side: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
       ),
@@ -163,13 +163,13 @@ ThemeData darkTheme() {
         fontFamily: FontConstants.mirzaFontFamily,
         fontWeight: FontWeight.w600,
         fontSize: 16.sp,
-        color: ColorManager.textColor,
+        color: ColorManager.darkTextColor,
       ),
       dataTextStyle: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
         fontWeight: FontWeight.w500,
         fontSize: 14,
-        color: ColorManager.secondaryTextColor,
+        color: ColorManager.darkTextColor,
       ),
       dividerThickness: 1,
     ),
@@ -185,18 +185,17 @@ ThemeData darkTheme() {
       // surface: ColorManager.surfaceColor,
       primaryContainer: ColorManager.darkPrimaryContainerColor,
     ),
-
     inputDecorationTheme: InputDecorationTheme(
       contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
       filled: true,
-      fillColor: ColorManager.backgroundColor,
-      hoverColor: ColorManager.primarySwatch.shade100,
+      fillColor: ColorManager.darkPrimaryContainerColor.withValues(alpha: 0.33),
+      hoverColor: ColorManager.primarySwatch.shade300,
       focusColor: ColorManager.surfaceColor,
       labelStyle: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
-        color: ColorManager.secondaryTextColor,
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
+        color: ColorManager.darkTextColor,
       ),
       errorStyle: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
@@ -214,77 +213,77 @@ ThemeData darkTheme() {
         fontFamily: FontConstants.mirzaFontFamily,
         fontSize: 16.sp,
         fontWeight: FontWeight.w600,
-        color: ColorManager.error,
+        color: ColorManager.darkTextColor,
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.focusColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       errorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.error,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       border: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       disabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.disabledColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.r)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
         ),
         side: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.disabledColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           } else if (states.contains(WidgetState.error)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.error,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           } else if (states.contains(WidgetState.focused)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.focusColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           }
-          return const BorderSide(
+          return BorderSide(
             color: ColorManager.borderColor,
-            width: 1,
+            width: 2.w,
             style: BorderStyle.solid,
           );
         }),
@@ -303,7 +302,7 @@ ThemeData darkTheme() {
             return ColorManager.textColor;
           }
 
-          return ColorManager.textColor;
+          return ColorManager.darkTextColor;
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
@@ -360,8 +359,12 @@ ThemeData darkTheme() {
         foregroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
             return ColorManager.disabledTextColor;
+          } else if (states.contains(WidgetState.pressed)) {
+            return ColorManager.textColor;
+          } else if (states.contains(WidgetState.hovered)) {
+            return ColorManager.textColor;
           }
-          return ColorManager.textColor;
+          return ColorManager.darkTextColor;
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.hovered)) {
@@ -374,21 +377,21 @@ ThemeData darkTheme() {
         shape: WidgetStateProperty.resolveWith<OutlinedBorder>((states) {
           if (states.contains(WidgetState.disabled)) {
             return RoundedRectangleBorder(
-              side: const BorderSide(
+              side: BorderSide(
                 color: ColorManager.disabledColor,
-                width: 1,
+                width: 2.w,
                 style: BorderStyle.solid,
               ),
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(30.r),
             );
           }
           return RoundedRectangleBorder(
-            side: const BorderSide(
+            side: BorderSide(
               color: ColorManager.borderColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             ),
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(30.r),
           );
         }),
         padding: WidgetStateProperty.resolveWith<EdgeInsetsGeometry>((states) {
@@ -401,22 +404,22 @@ ThemeData darkTheme() {
           if (states.contains(WidgetState.pressed)) {
             return TextStyle(
               fontFamily: FontConstants.mirzaFontFamily,
-              fontSize: 22.sp,
+              fontSize: 16.sp,
               color: ColorManager.textColor,
               fontWeight: FontWeight.w500,
             );
           } else if (states.contains(WidgetState.hovered)) {
             return TextStyle(
               fontFamily: FontConstants.mirzaFontFamily,
-              fontSize: 22.sp,
+              fontSize: 16.sp,
               color: ColorManager.textColor,
               fontWeight: FontWeight.w500,
             );
           }
           return TextStyle(
             fontFamily: FontConstants.mirzaFontFamily,
-            fontSize: 20.sp,
-            color: ColorManager.textColor,
+            fontSize: 14.sp,
+            color: ColorManager.darkTextColor,
             fontWeight: FontWeight.w500,
           );
         }),
@@ -464,9 +467,10 @@ ThemeData darkTheme() {
             return ColorManager.disabledColor;
           } else if (states.contains(WidgetState.pressed)) {
             return ColorManager.textColor;
+          } else if (states.contains(WidgetState.hovered)) {
+            return ColorManager.textColor;
           }
-
-          return ColorManager.textColor;
+          return ColorManager.darkTextColor;
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
@@ -512,7 +516,6 @@ ThemeData darkTheme() {
 
 ThemeData lightTheme() {
   return ThemeData(
-    disabledColor: ColorManager.disabledColor,
     colorScheme: const ColorScheme(
       primaryContainer: ColorManager.primaryContainerColor,
       brightness: Brightness.light,
@@ -525,7 +528,6 @@ ThemeData lightTheme() {
       shadow: ColorManager.lightShadowColor,
       surface: ColorManager.backgroundColor,
       onSurface: ColorManager.primaryContainerColor,
-
       // surface: ColorManager.surfaceColor,
       // onSurface: ColorManager.disabledColor
     ),
@@ -538,13 +540,13 @@ ThemeData lightTheme() {
     cardColor: ColorManager.cardColor,
     cardTheme: CardThemeData(
       color: ColorManager.cardColor,
-      shadowColor: ColorManager.shadowColor,
+      shadowColor: ColorManager.lightShadowColor,
       elevation: 2,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(9.r),
-        side: const BorderSide(
+        borderRadius: BorderRadius.circular(30.r),
+        side: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
       ),
@@ -552,12 +554,12 @@ ThemeData lightTheme() {
     dialogTheme: DialogThemeData(
       backgroundColor: ColorManager.surfaceColor,
       elevation: 2,
-      shadowColor: ColorManager.shadowColor,
+      shadowColor: ColorManager.lightShadowColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(9.r),
-        side: const BorderSide(
+        borderRadius: BorderRadius.circular(30.r),
+        side: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
       ),
@@ -690,21 +692,21 @@ ThemeData lightTheme() {
     inputDecorationTheme: InputDecorationTheme(
       contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
       filled: true,
-      fillColor: ColorManager.backgroundColor,
+      fillColor: ColorManager.primaryContainerColor.withValues(alpha: 0.33),
       focusColor: ColorManager.focusColor,
       hoverColor: ColorManager.primarySwatch.shade100,
       border: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       labelStyle: TextStyle(
         fontFamily: FontConstants.mirzaFontFamily,
-        fontSize: 16.sp,
-        fontWeight: FontWeight.w600,
+        fontSize: 14.sp,
+        fontWeight: FontWeight.w400,
         color: ColorManager.secondaryTextColor,
       ),
       errorStyle: TextStyle(
@@ -714,36 +716,36 @@ ThemeData lightTheme() {
         color: ColorManager.error,
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.focusColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       errorBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.error,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       enabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
       disabledBorder: OutlineInputBorder(
-        borderSide: const BorderSide(
+        borderSide: BorderSide(
           color: ColorManager.disabledColor,
-          width: 1,
+          width: 2.w,
           style: BorderStyle.solid,
         ),
-        borderRadius: BorderRadius.circular(9.r),
+        borderRadius: BorderRadius.circular(30.r),
       ),
     ),
     dataTableTheme: DataTableThemeData(
@@ -770,36 +772,36 @@ ThemeData lightTheme() {
         fontSize: 14,
         color: ColorManager.secondaryTextColor,
       ),
-      dividerThickness: 1,
+      dividerThickness: 2.w,
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
         shape: WidgetStatePropertyAll(
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.r)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.r)),
         ),
         side: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.disabledColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           } else if (states.contains(WidgetState.error)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.error,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           } else if (states.contains(WidgetState.focused)) {
-            return const BorderSide(
+            return BorderSide(
               color: ColorManager.focusColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             );
           }
-          return const BorderSide(
+          return BorderSide(
             color: ColorManager.borderColor,
-            width: 1,
+            width: 2.w,
             style: BorderStyle.solid,
           );
         }),
@@ -861,7 +863,9 @@ ThemeData lightTheme() {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ButtonStyle(
-        shadowColor: const WidgetStatePropertyAll(ColorManager.shadowColor),
+        shadowColor: const WidgetStatePropertyAll(
+          ColorManager.lightShadowColor,
+        ),
         backgroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) {
             return ColorManager.primarySwatch.shade900;
@@ -875,8 +879,12 @@ ThemeData lightTheme() {
         foregroundColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.disabled)) {
             return ColorManager.disabledTextColor;
+          } else if (states.contains(WidgetState.pressed)) {
+            return ColorManager.textColor;
+          } else if (states.contains(WidgetState.hovered)) {
+            return ColorManager.textColor;
           }
-          return ColorManager.textColor;
+          return ColorManager.darkTextColor;
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.hovered)) {
@@ -889,21 +897,21 @@ ThemeData lightTheme() {
         shape: WidgetStateProperty.resolveWith<OutlinedBorder>((states) {
           if (states.contains(WidgetState.disabled)) {
             return RoundedRectangleBorder(
-              side: const BorderSide(
+              side: BorderSide(
                 color: ColorManager.disabledColor,
-                width: 1,
+                width: 2.w,
                 style: BorderStyle.solid,
               ),
-              borderRadius: BorderRadius.circular(12.r),
+              borderRadius: BorderRadius.circular(30.r),
             );
           }
           return RoundedRectangleBorder(
-            side: const BorderSide(
+            side: BorderSide(
               color: ColorManager.borderColor,
-              width: 1,
+              width: 2.w,
               style: BorderStyle.solid,
             ),
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(30.r),
           );
         }),
         padding: WidgetStateProperty.resolveWith<EdgeInsetsGeometry>((states) {
@@ -916,22 +924,22 @@ ThemeData lightTheme() {
           if (states.contains(WidgetState.pressed)) {
             return TextStyle(
               fontFamily: FontConstants.mirzaFontFamily,
-              fontSize: 22.sp,
+              fontSize: 16.sp,
               color: ColorManager.textColor,
               fontWeight: FontWeight.w500,
             );
           } else if (states.contains(WidgetState.hovered)) {
             return TextStyle(
               fontFamily: FontConstants.mirzaFontFamily,
-              fontSize: 22.sp,
+              fontSize: 16.sp,
               color: ColorManager.textColor,
               fontWeight: FontWeight.w500,
             );
           }
           return TextStyle(
             fontFamily: FontConstants.mirzaFontFamily,
-            fontSize: 20.sp,
-            color: ColorManager.textColor,
+            fontSize: 14.sp,
+            color: ColorManager.darkTextColor,
             fontWeight: FontWeight.w500,
           );
         }),
@@ -939,7 +947,9 @@ ThemeData lightTheme() {
     ),
     iconButtonTheme: IconButtonThemeData(
       style: ButtonStyle(
-        shadowColor: const WidgetStatePropertyAll(ColorManager.shadowColor),
+        shadowColor: const WidgetStatePropertyAll(
+          ColorManager.lightShadowColor,
+        ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(9.r)),
         ),
@@ -979,8 +989,9 @@ ThemeData lightTheme() {
             return ColorManager.disabledColor;
           } else if (states.contains(WidgetState.pressed)) {
             return ColorManager.textColor;
+          } else if (states.contains(WidgetState.hovered)) {
+            return ColorManager.textColor;
           }
-
           return ColorManager.textColor;
         }),
         overlayColor: WidgetStateProperty.resolveWith((states) {
@@ -1027,7 +1038,7 @@ ThemeData lightTheme() {
 
 extension ElevatedButtonThemeExtension on ThemeData {
   ButtonStyle get cardColorButton => ButtonStyle(
-    shadowColor: const WidgetStatePropertyAll(ColorManager.shadowColor),
+    shadowColor: const WidgetStatePropertyAll(ColorManager.lightShadowColor),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.pressed)) {
         return ColorManager.primarySwatch.shade900;
@@ -1103,7 +1114,7 @@ extension ElevatedButtonThemeExtension on ThemeData {
     }),
   );
   ButtonStyle get redColorButton => ButtonStyle(
-    shadowColor: const WidgetStatePropertyAll(ColorManager.shadowColor),
+    shadowColor: const WidgetStatePropertyAll(ColorManager.lightShadowColor),
     backgroundColor: WidgetStateProperty.resolveWith((states) {
       if (states.contains(WidgetState.pressed)) {
         return ColorManager.error;
@@ -1184,29 +1195,29 @@ extension BorderThemeExtension on ThemeData {
   BorderSide get defaultBorderSide => (isDark)
       ? const BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2,
           style: BorderStyle.solid,
         )
       : const BorderSide(
           color: ColorManager.borderColor,
-          width: 1,
+          width: 2,
           style: BorderStyle.solid,
         );
 
   BorderSide get defaultBorderSideError => const BorderSide(
     color: ColorManager.error,
-    width: 1,
+    width: 2,
     style: BorderStyle.solid,
   );
 
   BorderSide get defaultBorderSideShadow => const BorderSide(
-    color: ColorManager.shadowColor,
-    width: 1,
+    color: ColorManager.lightShadowColor,
+    width: 2,
     style: BorderStyle.solid,
   );
   BorderSide get defaultBorderSideDisable => const BorderSide(
     color: ColorManager.disabledColor,
-    width: 1,
+    width: 2,
     style: BorderStyle.solid,
   );
   BorderSide get defaultBorderSideFocus => const BorderSide(

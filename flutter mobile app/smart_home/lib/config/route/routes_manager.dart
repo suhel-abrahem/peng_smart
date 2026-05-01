@@ -4,6 +4,7 @@ import 'package:animated_theme_switcher/animated_theme_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_home/features/add_device/presentions/page/water_heater/device_details_page.dart';
 import 'package:smart_home/features/add_device/presentions/page/water_heater/water_heater_schedule_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/login_page.dart';
 import 'package:smart_home/features/auth/presentation/pages/register_page.dart';
@@ -37,6 +38,7 @@ class RoutesName {
   static String resetPasswordPage = "resetPasswordPage";
   static String addRoomPage = "addRoomPage";
   static String deviceDetailPage = "deviceDetailPage";
+  static String waterHeaterSchedulePage = "waterHeaterSchedulePage";
 }
 
 class RoutesPath {
@@ -51,6 +53,7 @@ class RoutesPath {
   static String resetPasswordPage = '/reset-password';
   static String addRoomPage = '/addRoom';
   static String deviceDetailPage = '/deviceDetail';
+  static String waterHeaterSchedulePage = '/deviceDetail/schedule';
 }
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -160,6 +163,17 @@ GoRouter goRouter = GoRouter(
             GoRoute(
               path: RoutesPath.deviceDetailPage,
               name: RoutesName.deviceDetailPage,
+              pageBuilder: (context, state) {
+                final device = state.extra as DeviceEntity;
+                return _customTransitionPage(
+                  child: DeviceDetailsPage(device: device),
+                  state: state,
+                );
+              },
+            ),
+            GoRoute(
+              path: RoutesPath.waterHeaterSchedulePage,
+              name: RoutesName.waterHeaterSchedulePage,
               pageBuilder: (context, state) {
                 final device = state.extra as DeviceEntity;
                 return _customTransitionPage(

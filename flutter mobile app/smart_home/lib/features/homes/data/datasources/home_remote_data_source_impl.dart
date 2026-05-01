@@ -17,7 +17,9 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
     if (response == null || response.data == null) {
       throw Exception('Empty homes response');
     }
-
+    print(
+      'Raw response data: ${response.data}',
+    ); // Debug print to check the raw response structure
     final List<dynamic> rawList = response.data['data'] ?? [];
     print(
       'Raw homes data: $rawList',

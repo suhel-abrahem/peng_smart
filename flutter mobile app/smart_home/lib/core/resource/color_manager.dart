@@ -19,9 +19,9 @@ class ColorManager {
   // Primary Colors
   static const Color primaryColor = Color.fromARGB(
     255,
-    243,
-    94,
-    114,
+    4,
+    206,
+    233,
   ); // Vibrant Red
   static Color primaryColorLight = primaryColor.withValues(alpha: 0.25);
 
@@ -81,7 +81,7 @@ class ColorManager {
   ); // Soft Disabled Text
 
   // Dark Mode Colors
-  static const Color darkBackground = Color(0xFF121212); // Dark
+  static const Color darkBackground = Color.fromARGB(255, 31, 30, 30); // Dark
   static const Color darkCardColor = Color(0xFF1E1E1E); // Dark Card
   static const Color darkSurfaceColor = Color(0xFF2C2C2C); // Dark Surface
   static const Color darkTextColor = Color(0xFFF5F5F5); // dark Text

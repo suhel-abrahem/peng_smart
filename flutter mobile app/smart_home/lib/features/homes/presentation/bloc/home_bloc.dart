@@ -32,6 +32,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final result = await _getMyHomesUseCase.call(params: NoParams());
 
     if (result is DataSuccess<List<HomeEntity>>) {
+     
       emit(HomeState.homesLoaded(homes: result.data ?? []));
     } else {
       emit(

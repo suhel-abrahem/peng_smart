@@ -27,7 +27,10 @@ class ImagesName {
   static String loginImage = 'loginImage.svg';
 }
 
-class IconsName {}
+class IconsName {
+  static String bolt = "bolt.png";
+  static String tower = "tower.png";
+}
 
 String getAssetsPath({
   required String assetsName,

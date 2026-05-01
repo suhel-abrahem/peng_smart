@@ -39,7 +39,7 @@ class HomePagePage extends StatelessWidget {
                     if (created == true && context.mounted) {
                       context.read<DashboardBloc>().add(
                         DashboardEvent.selectHome(home: state.selectedHome),
-                      );
+                      );  
                     }
                   }
                 } else if (value == 'device') {

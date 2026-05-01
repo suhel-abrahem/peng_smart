@@ -133,7 +133,8 @@ class _WaterHeaterSchedulePageState extends State<WaterHeaterSchedulePage> {
                                 subtitle: Text(
                                   "Relay1: ${s.relay1Minutes}m | Relay2: ${s.relay2Minutes}m",
                                   style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(fontFamily: FontConstants.fontFamily(
+                                      ?.copyWith(
+                                        fontFamily: FontConstants.fontFamily(
                                           context.locale,
                                         ),
                                       ),
