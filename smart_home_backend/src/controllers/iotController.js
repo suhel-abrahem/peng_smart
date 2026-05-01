@@ -88,6 +88,7 @@ async function telemetry(req, res) {
     await prisma.device.update({
       where: { id: deviceId },
       data: {
+        lastSeenAt: new Date(),
         status: "online",
         lastTelemetryJson: telemetryPayload,
       },

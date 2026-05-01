@@ -1,5 +1,13 @@
 const prisma = require("../lib/prisma");
+function addMinutes(time, minutes) {
+  const [h, m] = time.split(":").map(Number);
 
+  const date = new Date();
+  date.setHours(h);
+  date.setMinutes(m + minutes);
+
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+}
 async function registerDevice(req, res) {
   try {
     const userId = req.user.userId;
@@ -233,18 +241,16 @@ async function updateDeviceRules(req, res) {
   try {
     const userId = req.user.userId;
     const { deviceId } = req.params;
-    const { rules } = req.body;
+    const { sessions } = req.body;
 
-    if (!rules) {
+    if (!sessions || !Array.isArray(sessions)) {
       return res.status(400).json({
-        message: "rules are required",
+        message: "sessions array is required",
       });
     }
 
     const device = await prisma.device.findUnique({
-      where: {
-        id: deviceId,
-      },
+      where: { id: deviceId },
     });
 
     if (!device) {
@@ -266,12 +272,55 @@ async function updateDeviceRules(req, res) {
       });
     }
 
+    const groups = [];
+
+    sessions.forEach((s, index) => {
+      const r1End = addMinutes(s.start, s.r1);
+      const r2Start = r1End;
+
+      // 🔴 Relay 1
+      groups.push({
+        name: `R1-${index}`,
+        rules: [
+          {
+            activeFrom: s.start,
+            activeTo: r1End,
+            days: s.days ?? [],
+            source: "tempSensor",
+            operator: s.operator || "lessThan",
+            value: String(s.temp ?? 60),
+          },
+        ],
+        actions: [
+          { targetComponentId: "relay1", action: "turnOn" },
+          { targetComponentId: "relay2", action: "turnOff" },
+        ],
+      });
+
+      // 🔵 Relay 2
+      groups.push({
+        name: `R2-${index}`,
+        rules: [
+          {
+            activeFrom: r2Start,
+            activeTo: s.end,
+            days: s.days ?? [],
+            source: "tempSensor",
+            operator: s.operator || "lessThan",
+            value: String(s.temp ?? 60),
+          },
+        ],
+        actions: [
+          { targetComponentId: "relay1", action: "turnOff" },
+          { targetComponentId: "relay2", action: "turnOn" },
+        ],
+      });
+    });
+
     const updatedDevice = await prisma.device.update({
-      where: {
-        id: deviceId,
-      },
+      where: { id: deviceId },
       data: {
-        rulesJson: rules,
+        rulesJson: groups,
       },
     });
 

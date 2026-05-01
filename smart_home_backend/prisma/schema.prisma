@@ -76,7 +76,7 @@ model Device {
   homeId            String
   roomId            String?
   createdAt         DateTime @default(now())
-
+  lastSeenAt        DateTime?
   home              Home     @relation(fields: [homeId], references: [id])
   room              Room?    @relation(fields: [roomId], references: [id])
 
