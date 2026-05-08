@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$RuleEntity {
 
  String get id; String get name; String get source;// "time", "tempSensor"
- NextRuleConditionEnum? get conditionForNextRule; bool get enabled; String? get activeFrom; String? get activeTo; ActionEnum get action; String? get value; RuleConditionEnum get condition;
+ NextRuleConditionEnum? get conditionForNextRule; bool get enabled; String? get activeFrom; String? get activeTo; String? get value; List get days;
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $RuleEntityCopyWith<RuleEntity> get copyWith => _$RuleEntityCopyWithImpl<RuleEnt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.value, value) || other.value == value)&&const DeepCollectionEquality().equals(other.days, days));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,action,value,condition);
+int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,value,const DeepCollectionEquality().hash(days));
 
 @override
 String toString() {
-  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, action: $action, value: $value, condition: $condition)';
+  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, value: $value, days: $days)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $RuleEntityCopyWith<$Res>  {
   factory $RuleEntityCopyWith(RuleEntity value, $Res Function(RuleEntity) _then) = _$RuleEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionEnum action, String? value, RuleConditionEnum condition
+ String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, String? value, List days
 });
 
 
@@ -66,7 +66,7 @@ class _$RuleEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? action = null,Object? value = freezed,Object? condition = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? value = freezed,Object? days = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -75,10 +75,9 @@ as String,conditionForNextRule: freezed == conditionForNextRule ? _self.conditio
 as NextRuleConditionEnum?,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as String?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
-as String?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ActionEnum,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
-as String?,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
-as RuleConditionEnum,
+as String?,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String?,days: null == days ? _self.days : days // ignore: cast_nullable_to_non_nullable
+as List,
   ));
 }
 
@@ -163,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  String? value,  List days)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RuleEntity() when $default != null:
-return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.value,_that.days);case _:
   return orElse();
 
 }
@@ -184,10 +183,10 @@ return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  String? value,  List days)  $default,) {final _that = this;
 switch (_that) {
 case _RuleEntity():
-return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.value,_that.days);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +203,10 @@ return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  ActionEnum action,  String? value,  RuleConditionEnum condition)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String source,  NextRuleConditionEnum? conditionForNextRule,  bool enabled,  String? activeFrom,  String? activeTo,  String? value,  List days)?  $default,) {final _that = this;
 switch (_that) {
 case _RuleEntity() when $default != null:
-return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.action,_that.value,_that.condition);case _:
+return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_that.enabled,_that.activeFrom,_that.activeTo,_that.value,_that.days);case _:
   return null;
 
 }
@@ -219,7 +218,7 @@ return $default(_that.id,_that.name,_that.source,_that.conditionForNextRule,_tha
 @JsonSerializable()
 
 class _RuleEntity implements RuleEntity {
-  const _RuleEntity({this.id = "", this.name = "", this.source = "", this.conditionForNextRule, this.enabled = false, this.activeFrom, this.activeTo, required this.action, this.value, required this.condition});
+  const _RuleEntity({this.id = "", this.name = "", this.source = "", this.conditionForNextRule, this.enabled = false, this.activeFrom, this.activeTo, this.value, final  List days = const []}): _days = days;
   factory _RuleEntity.fromJson(Map<String, dynamic> json) => _$RuleEntityFromJson(json);
 
 @override@JsonKey() final  String id;
@@ -230,9 +229,14 @@ class _RuleEntity implements RuleEntity {
 @override@JsonKey() final  bool enabled;
 @override final  String? activeFrom;
 @override final  String? activeTo;
-@override final  ActionEnum action;
 @override final  String? value;
-@override final  RuleConditionEnum condition;
+ final  List _days;
+@override@JsonKey() List get days {
+  if (_days is EqualUnmodifiableListView) return _days;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_days);
+}
+
 
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
@@ -247,16 +251,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.action, action) || other.action == action)&&(identical(other.value, value) || other.value == value)&&(identical(other.condition, condition) || other.condition == condition));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.source, source) || other.source == source)&&(identical(other.conditionForNextRule, conditionForNextRule) || other.conditionForNextRule == conditionForNextRule)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.activeFrom, activeFrom) || other.activeFrom == activeFrom)&&(identical(other.activeTo, activeTo) || other.activeTo == activeTo)&&(identical(other.value, value) || other.value == value)&&const DeepCollectionEquality().equals(other._days, _days));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,action,value,condition);
+int get hashCode => Object.hash(runtimeType,id,name,source,conditionForNextRule,enabled,activeFrom,activeTo,value,const DeepCollectionEquality().hash(_days));
 
 @override
 String toString() {
-  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, action: $action, value: $value, condition: $condition)';
+  return 'RuleEntity(id: $id, name: $name, source: $source, conditionForNextRule: $conditionForNextRule, enabled: $enabled, activeFrom: $activeFrom, activeTo: $activeTo, value: $value, days: $days)';
 }
 
 
@@ -267,7 +271,7 @@ abstract mixin class _$RuleEntityCopyWith<$Res> implements $RuleEntityCopyWith<$
   factory _$RuleEntityCopyWith(_RuleEntity value, $Res Function(_RuleEntity) _then) = __$RuleEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, ActionEnum action, String? value, RuleConditionEnum condition
+ String id, String name, String source, NextRuleConditionEnum? conditionForNextRule, bool enabled, String? activeFrom, String? activeTo, String? value, List days
 });
 
 
@@ -284,7 +288,7 @@ class __$RuleEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? action = null,Object? value = freezed,Object? condition = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? source = null,Object? conditionForNextRule = freezed,Object? enabled = null,Object? activeFrom = freezed,Object? activeTo = freezed,Object? value = freezed,Object? days = null,}) {
   return _then(_RuleEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -293,10 +297,9 @@ as String,conditionForNextRule: freezed == conditionForNextRule ? _self.conditio
 as NextRuleConditionEnum?,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,activeFrom: freezed == activeFrom ? _self.activeFrom : activeFrom // ignore: cast_nullable_to_non_nullable
 as String?,activeTo: freezed == activeTo ? _self.activeTo : activeTo // ignore: cast_nullable_to_non_nullable
-as String?,action: null == action ? _self.action : action // ignore: cast_nullable_to_non_nullable
-as ActionEnum,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
-as String?,condition: null == condition ? _self.condition : condition // ignore: cast_nullable_to_non_nullable
-as RuleConditionEnum,
+as String?,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
+as String?,days: null == days ? _self._days : days // ignore: cast_nullable_to_non_nullable
+as List,
   ));
 }
 

@@ -13,4 +13,8 @@ abstract class HeaterScheduleEvent with _$HeaterScheduleEvent {
   const factory HeaterScheduleEvent.loadDeviceRules({
     required String deviceId,
   }) = LoadDeviceRulesEvent;
+  const factory HeaterScheduleEvent.deleteRulesGroup({
+    required DeleteRulesGroupsModel model,
+    
+  }) = DeleteRulesGroupEvent;
 }

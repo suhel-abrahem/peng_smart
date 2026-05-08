@@ -36,6 +36,7 @@ class MainPage extends StatefulWidget {
   final ValueChanged<bool>? onAnimationComplete;
   final List<Widget>? actions;
   final PreferredSizeWidget? bottom;
+  final VoidCallback? onRefresh;
   const MainPage({
     super.key,
     required this.body,
@@ -50,6 +51,7 @@ class MainPage extends StatefulWidget {
     this.appBar,
     this.bottom,
     this.onAnimationComplete,
+    this.onRefresh,
   });
 
   @override
@@ -120,8 +122,8 @@ class _MainPageState extends State<MainPage> {
                   animationDone = false;
                 });
 
-                if (context.canPop()) {
-                  context.pop();
+                if (widget.onRefresh != null) {
+                  widget.onRefresh!();
                 }
 
                 setState(() {

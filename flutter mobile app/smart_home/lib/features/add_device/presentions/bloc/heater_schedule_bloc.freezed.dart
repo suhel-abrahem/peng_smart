@@ -55,13 +55,14 @@ extension HeaterScheduleEventPatterns on HeaterScheduleEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SetSessionsEvent value)?  setSessions,TResult Function( SaveSessionsEvent value)?  saveSessions,TResult Function( LoadDeviceRulesEvent value)?  loadDeviceRules,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SetSessionsEvent value)?  setSessions,TResult Function( SaveSessionsEvent value)?  saveSessions,TResult Function( LoadDeviceRulesEvent value)?  loadDeviceRules,TResult Function( DeleteRulesGroupEvent value)?  deleteRulesGroup,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case SetSessionsEvent() when setSessions != null:
 return setSessions(_that);case SaveSessionsEvent() when saveSessions != null:
 return saveSessions(_that);case LoadDeviceRulesEvent() when loadDeviceRules != null:
-return loadDeviceRules(_that);case _:
+return loadDeviceRules(_that);case DeleteRulesGroupEvent() when deleteRulesGroup != null:
+return deleteRulesGroup(_that);case _:
   return orElse();
 
 }
@@ -79,13 +80,14 @@ return loadDeviceRules(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SetSessionsEvent value)  setSessions,required TResult Function( SaveSessionsEvent value)  saveSessions,required TResult Function( LoadDeviceRulesEvent value)  loadDeviceRules,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SetSessionsEvent value)  setSessions,required TResult Function( SaveSessionsEvent value)  saveSessions,required TResult Function( LoadDeviceRulesEvent value)  loadDeviceRules,required TResult Function( DeleteRulesGroupEvent value)  deleteRulesGroup,}){
 final _that = this;
 switch (_that) {
 case SetSessionsEvent():
 return setSessions(_that);case SaveSessionsEvent():
 return saveSessions(_that);case LoadDeviceRulesEvent():
-return loadDeviceRules(_that);case _:
+return loadDeviceRules(_that);case DeleteRulesGroupEvent():
+return deleteRulesGroup(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -102,13 +104,14 @@ return loadDeviceRules(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SetSessionsEvent value)?  setSessions,TResult? Function( SaveSessionsEvent value)?  saveSessions,TResult? Function( LoadDeviceRulesEvent value)?  loadDeviceRules,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SetSessionsEvent value)?  setSessions,TResult? Function( SaveSessionsEvent value)?  saveSessions,TResult? Function( LoadDeviceRulesEvent value)?  loadDeviceRules,TResult? Function( DeleteRulesGroupEvent value)?  deleteRulesGroup,}){
 final _that = this;
 switch (_that) {
 case SetSessionsEvent() when setSessions != null:
 return setSessions(_that);case SaveSessionsEvent() when saveSessions != null:
 return saveSessions(_that);case LoadDeviceRulesEvent() when loadDeviceRules != null:
-return loadDeviceRules(_that);case _:
+return loadDeviceRules(_that);case DeleteRulesGroupEvent() when deleteRulesGroup != null:
+return deleteRulesGroup(_that);case _:
   return null;
 
 }
@@ -125,12 +128,13 @@ return loadDeviceRules(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<HeaterSessionEntity> sessions)?  setSessions,TResult Function( String deviceId,  List<HeaterSessionEntity> sessions)?  saveSessions,TResult Function( String deviceId)?  loadDeviceRules,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<HeaterSessionEntity> sessions)?  setSessions,TResult Function( String deviceId,  List<HeaterSessionEntity> sessions)?  saveSessions,TResult Function( String deviceId)?  loadDeviceRules,TResult Function( DeleteRulesGroupsModel model)?  deleteRulesGroup,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SetSessionsEvent() when setSessions != null:
 return setSessions(_that.sessions);case SaveSessionsEvent() when saveSessions != null:
 return saveSessions(_that.deviceId,_that.sessions);case LoadDeviceRulesEvent() when loadDeviceRules != null:
-return loadDeviceRules(_that.deviceId);case _:
+return loadDeviceRules(_that.deviceId);case DeleteRulesGroupEvent() when deleteRulesGroup != null:
+return deleteRulesGroup(_that.model);case _:
   return orElse();
 
 }
@@ -148,12 +152,13 @@ return loadDeviceRules(_that.deviceId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<HeaterSessionEntity> sessions)  setSessions,required TResult Function( String deviceId,  List<HeaterSessionEntity> sessions)  saveSessions,required TResult Function( String deviceId)  loadDeviceRules,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<HeaterSessionEntity> sessions)  setSessions,required TResult Function( String deviceId,  List<HeaterSessionEntity> sessions)  saveSessions,required TResult Function( String deviceId)  loadDeviceRules,required TResult Function( DeleteRulesGroupsModel model)  deleteRulesGroup,}) {final _that = this;
 switch (_that) {
 case SetSessionsEvent():
 return setSessions(_that.sessions);case SaveSessionsEvent():
 return saveSessions(_that.deviceId,_that.sessions);case LoadDeviceRulesEvent():
-return loadDeviceRules(_that.deviceId);case _:
+return loadDeviceRules(_that.deviceId);case DeleteRulesGroupEvent():
+return deleteRulesGroup(_that.model);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -170,12 +175,13 @@ return loadDeviceRules(_that.deviceId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<HeaterSessionEntity> sessions)?  setSessions,TResult? Function( String deviceId,  List<HeaterSessionEntity> sessions)?  saveSessions,TResult? Function( String deviceId)?  loadDeviceRules,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<HeaterSessionEntity> sessions)?  setSessions,TResult? Function( String deviceId,  List<HeaterSessionEntity> sessions)?  saveSessions,TResult? Function( String deviceId)?  loadDeviceRules,TResult? Function( DeleteRulesGroupsModel model)?  deleteRulesGroup,}) {final _that = this;
 switch (_that) {
 case SetSessionsEvent() when setSessions != null:
 return setSessions(_that.sessions);case SaveSessionsEvent() when saveSessions != null:
 return saveSessions(_that.deviceId,_that.sessions);case LoadDeviceRulesEvent() when loadDeviceRules != null:
-return loadDeviceRules(_that.deviceId);case _:
+return loadDeviceRules(_that.deviceId);case DeleteRulesGroupEvent() when deleteRulesGroup != null:
+return deleteRulesGroup(_that.model);case _:
   return null;
 
 }
@@ -393,6 +399,81 @@ as String,
 }
 
 
+}
+
+/// @nodoc
+
+
+class DeleteRulesGroupEvent implements HeaterScheduleEvent {
+  const DeleteRulesGroupEvent({required this.model});
+  
+
+ final  DeleteRulesGroupsModel model;
+
+/// Create a copy of HeaterScheduleEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$DeleteRulesGroupEventCopyWith<DeleteRulesGroupEvent> get copyWith => _$DeleteRulesGroupEventCopyWithImpl<DeleteRulesGroupEvent>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeleteRulesGroupEvent&&(identical(other.model, model) || other.model == model));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,model);
+
+@override
+String toString() {
+  return 'HeaterScheduleEvent.deleteRulesGroup(model: $model)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $DeleteRulesGroupEventCopyWith<$Res> implements $HeaterScheduleEventCopyWith<$Res> {
+  factory $DeleteRulesGroupEventCopyWith(DeleteRulesGroupEvent value, $Res Function(DeleteRulesGroupEvent) _then) = _$DeleteRulesGroupEventCopyWithImpl;
+@useResult
+$Res call({
+ DeleteRulesGroupsModel model
+});
+
+
+$DeleteRulesGroupsModelCopyWith<$Res> get model;
+
+}
+/// @nodoc
+class _$DeleteRulesGroupEventCopyWithImpl<$Res>
+    implements $DeleteRulesGroupEventCopyWith<$Res> {
+  _$DeleteRulesGroupEventCopyWithImpl(this._self, this._then);
+
+  final DeleteRulesGroupEvent _self;
+  final $Res Function(DeleteRulesGroupEvent) _then;
+
+/// Create a copy of HeaterScheduleEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? model = null,}) {
+  return _then(DeleteRulesGroupEvent(
+model: null == model ? _self.model : model // ignore: cast_nullable_to_non_nullable
+as DeleteRulesGroupsModel,
+  ));
+}
+
+/// Create a copy of HeaterScheduleEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$DeleteRulesGroupsModelCopyWith<$Res> get model {
+  
+  return $DeleteRulesGroupsModelCopyWith<$Res>(_self.model, (value) {
+    return _then(_self.copyWith(model: value));
+  });
+}
 }
 
 /// @nodoc

@@ -7,6 +7,7 @@ const {
   getDevicesByRoomId,
   getDeviceById,
   updateDeviceRules,
+  deleteDeviceRules,
   getDeviceTelemetry,
   getDeviceCurrentState,
   controlDevice,
@@ -17,6 +18,11 @@ router.get("/home/:homeId", authMiddleware, getHomeDevices);
 router.get("/room/:roomId", authMiddleware, getDevicesByRoomId);
 router.get("/:deviceId", authMiddleware, getDeviceById);
 router.put("/:deviceId/rules", authMiddleware, updateDeviceRules);
+router.delete(
+  "/:deviceId/groups/:ruleGroupId/rules",
+  authMiddleware,
+  deleteDeviceRules,
+);
 router.put("/:deviceId/control", authMiddleware, controlDevice);
 router.get("/:deviceId/telemetry", authMiddleware, getDeviceTelemetry);
 router.get("/:deviceId/current-state", authMiddleware, getDeviceCurrentState);

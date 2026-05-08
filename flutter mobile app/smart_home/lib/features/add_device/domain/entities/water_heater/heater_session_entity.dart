@@ -11,6 +11,7 @@ abstract class HeaterSessionEntity with _$HeaterSessionEntity {
     @Default('') String endTime, // example: 07:00
     @Default(0) int relay1Minutes,
     @Default(0) int relay2Minutes,
+    @Default([]) List days,
     @Default(true) bool enabled,
   }) = _HeaterSessionEntity;
 

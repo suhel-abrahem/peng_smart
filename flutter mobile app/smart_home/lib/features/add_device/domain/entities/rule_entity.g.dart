@@ -17,9 +17,8 @@ _RuleEntity _$RuleEntityFromJson(Map<String, dynamic> json) => _RuleEntity(
   enabled: json['enabled'] as bool? ?? false,
   activeFrom: json['activeFrom'] as String?,
   activeTo: json['activeTo'] as String?,
-  action: $enumDecode(_$ActionEnumEnumMap, json['action']),
   value: json['value'] as String?,
-  condition: $enumDecode(_$RuleConditionEnumEnumMap, json['condition']),
+  days: json['days'] as List<dynamic>? ?? const [],
 );
 
 Map<String, dynamic> _$RuleEntityToJson(_RuleEntity instance) =>
@@ -32,25 +31,11 @@ Map<String, dynamic> _$RuleEntityToJson(_RuleEntity instance) =>
       'enabled': instance.enabled,
       'activeFrom': instance.activeFrom,
       'activeTo': instance.activeTo,
-      'action': _$ActionEnumEnumMap[instance.action]!,
       'value': instance.value,
-      'condition': _$RuleConditionEnumEnumMap[instance.condition]!,
+      'days': instance.days,
     };
 
 const _$NextRuleConditionEnumEnumMap = {
   NextRuleConditionEnum.and: 'and',
   NextRuleConditionEnum.or: 'or',
-};
-
-const _$ActionEnumEnumMap = {
-  ActionEnum.turnOn: 'turnOn',
-  ActionEnum.turnOff: 'turnOff',
-  ActionEnum.setTemperature: 'setTemperature',
-  ActionEnum.setBrightness: 'setBrightness',
-};
-
-const _$RuleConditionEnumEnumMap = {
-  RuleConditionEnum.greaterThan: 'greaterThan',
-  RuleConditionEnum.lessThan: 'lessThan',
-  RuleConditionEnum.equalTo: 'equalTo',
 };

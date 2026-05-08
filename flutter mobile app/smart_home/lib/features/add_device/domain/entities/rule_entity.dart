@@ -16,9 +16,10 @@ abstract class RuleEntity with _$RuleEntity {
     @Default(false) bool enabled,
     String? activeFrom,
     String? activeTo,
-    required ActionEnum action,
+
     String? value,
-    required RuleConditionEnum condition,
+
+    @Default([]) List days,
   }) = _RuleEntity;
 
   factory RuleEntity.fromJson(Map<String, dynamic> json) =>

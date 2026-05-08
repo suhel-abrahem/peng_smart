@@ -41,7 +41,7 @@ class HeaterSessionToRulesMapper {
       // Group 1 => relay1 ON
       groups.add(
         RuleGroupEntity(
-          id: '${session.id}_relay1',
+          id: session.id,
           name: 'Session ${session.startTime}-${session.endTime} Relay1',
           enabled: true,
           rules: [
@@ -53,10 +53,9 @@ class HeaterSessionToRulesMapper {
               conditionForNextRule: null,
               activeFrom: session.startTime,
               activeTo: HeaterScheduleHelper.minutesToTime(relay1End),
-              action: ActionEnum.turnOn,
+              days: session.days,
               value: '',
-              condition: RuleConditionEnum.equalTo,
-            ),
+            ).toJson(),
           ],
           actions: [
             ActionLinkEntity(
@@ -64,13 +63,13 @@ class HeaterSessionToRulesMapper {
               name: 'Relay1 ON',
               targetComponentId: 'relay1',
               action: ActionEnum.turnOn,
-            ),
+            ).toJson(),
             ActionLinkEntity(
               id: '${session.id}_relay2_off',
               name: 'Relay2 OFF',
               targetComponentId: 'relay2',
               action: ActionEnum.turnOff,
-            ),
+            ).toJson(),
           ],
         ),
       );
@@ -78,6 +77,7 @@ class HeaterSessionToRulesMapper {
       // Group 2 => relay2 ON
       groups.add(
         RuleGroupEntity(
+
           id: '${session.id}_relay2',
           name: 'Session ${session.startTime}-${session.endTime} Relay2',
           enabled: true,
@@ -90,10 +90,9 @@ class HeaterSessionToRulesMapper {
               conditionForNextRule: null,
               activeFrom: HeaterScheduleHelper.minutesToTime(relay2Start),
               activeTo: HeaterScheduleHelper.minutesToTime(relay2End),
-              action: ActionEnum.turnOn,
+              days: session.days,
               value: '',
-              condition: RuleConditionEnum.equalTo,
-            ),
+            ).toJson(),
           ],
           actions: [
             ActionLinkEntity(
@@ -101,13 +100,13 @@ class HeaterSessionToRulesMapper {
               name: 'Relay1 OFF',
               targetComponentId: 'relay1',
               action: ActionEnum.turnOff,
-            ),
+            ).toJson(),
             ActionLinkEntity(
               id: '${session.id}_relay2_on',
               name: 'Relay2 ON',
               targetComponentId: 'relay2',
               action: ActionEnum.turnOn,
-            ),
+            ).toJson(),
           ],
         ),
       );

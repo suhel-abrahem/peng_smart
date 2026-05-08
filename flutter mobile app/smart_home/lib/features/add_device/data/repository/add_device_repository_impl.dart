@@ -6,8 +6,10 @@ import 'package:smart_home/features/add_device/data/data_sources/add_device_loca
 import 'package:smart_home/features/add_device/data/data_sources/add_device_remote_data_source.dart';
 import 'package:smart_home/features/add_device/data/data_sources/esp_provision_remote_data_source.dart';
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
+import 'package:smart_home/features/add_device/data/model/delete_rules_groups_model.dart';
 import 'package:smart_home/features/add_device/data/model/device_model.dart';
 import 'package:smart_home/features/add_device/data/model/esp_status_model.dart';
+import 'package:smart_home/features/add_device/domain/entities/action_link_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
 
@@ -97,7 +99,7 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
         homeId: device.homeId,
         homeName: device.homeName,
         deviceMacAddress: device.deviceMacAddress,
-        rules: device.rules ?? const RulesEntity(),
+        rules: device.rules ?? RulesEntity(),
         status: device.status,
         components: device.components,
         telemetry: device.telemetry,
@@ -116,10 +118,11 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
     required String homeId,
   }) async {
     try {
+      print('Fetching devices for homeId: $homeId');
       final result = await _addDeviceRemoteDataSource.getDevicesByHomeId(
         homeId: homeId,
       );
-
+      print("data from repo $result");
       return DataSuccess(data: result.map((e) => e.toEntity()).toList());
     } on DioException catch (e) {
       print(
@@ -188,6 +191,9 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
 
       return DataSuccess(data: result.toEntity());
     } on DioException catch (e) {
+      print(
+        'DioException in updateDeviceRules: ${e.message}, response: ${e.response?.data}',
+      ); // Debug print to check the DioException details
       return mapDioExceptionToDataState<DeviceEntity>(e);
     } catch (e) {
       return DataFailed(error: e.toString());
@@ -205,7 +211,49 @@ class AddDeviceRepositoryImpl implements AddDeviceRepository {
 
       return DataSuccess(data: result.toEntity());
     } on DioException catch (e) {
+      print(
+        'DioException in getDeviceById: ${e.message}, response: ${e.response?.data}',
+      ); // Debug print to check the DioException details
       return mapDioExceptionToDataState<DeviceEntity>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<void>> overrideDeviceActions({
+    required String? deviceId,
+    required ActionLinkEntity? actions,
+  }) async {
+    try {
+      if (deviceId == null || actions == null) {
+        return DataFailed(error: 'Device ID and actions must not be null');
+      }
+      print(
+        "action to override: ${actions.action} for deviceId: $deviceId",
+      ); // Debug print to check the input values
+      await _addDeviceRemoteDataSource.overrideDeviceActions(
+        deviceId: deviceId,
+        actions: actions,
+      );
+
+      return const DataSuccess(data: null);
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<void>(e);
+    } catch (e) {
+      return DataFailed(error: e.toString());
+    }
+  }
+
+  @override
+  Future<DataState<void>> deleteDevice({
+    required DeleteRulesGroupsModel model,
+  }) async {
+    try {
+      await _addDeviceRemoteDataSource.deleteDevice(model: model);
+      return const DataSuccess(data: null);
+    } on DioException catch (e) {
+      return mapDioExceptionToDataState<void>(e);
     } catch (e) {
       return DataFailed(error: e.toString());
     }

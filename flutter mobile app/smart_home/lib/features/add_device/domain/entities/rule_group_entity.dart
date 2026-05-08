@@ -11,8 +11,9 @@ abstract class RuleGroupEntity with _$RuleGroupEntity {
     @Default("") String id,
     @Default("") String name,
     @Default(false) bool enabled,
-    @Default([]) List<RuleEntity> rules,
-    @Default([]) List<ActionLinkEntity> actions,
+    @Default([]) List<Map<String, dynamic>> rules,
+    @Default([]) List<Map<String, dynamic>> actions,
+    @Default([]) List<String> days,
   }) = _RuleGroupEntity;
 
   factory RuleGroupEntity.fromJson(Map<String, dynamic> json) =>

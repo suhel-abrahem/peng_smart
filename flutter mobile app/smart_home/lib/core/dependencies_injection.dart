@@ -3,7 +3,10 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_home/core/network/auth_interceptor.dart';
 import 'package:smart_home/core/network/common_service.dart';
+import 'package:smart_home/features/add_device/domain/usecase/delete_rules_groups_usecase.dart';
 import 'package:smart_home/features/add_device/domain/usecase/get_device_by_id_usecase.dart';
+import 'package:smart_home/features/add_device/domain/usecase/override_device_action_usecase.dart';
+import 'package:smart_home/features/add_device/presentions/bloc/get_device_details_bloc.dart';
 
 import '../config/app/app_preferences.dart';
 
@@ -26,6 +29,7 @@ import '../features/add_device/domain/usecase/save_device_locally_usecase.dart';
 import '../features/add_device/domain/usecase/update_device_rules_usecase.dart';
 import '../features/add_device/presentions/bloc/add_device_bloc.dart';
 import '../features/add_device/presentions/bloc/heater_schedule_bloc.dart';
+import '../features/add_device/presentions/bloc/override_device_action_bloc.dart';
 import '../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../features/auth/data/datasources/auth_remote_data_source_impl.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
@@ -164,6 +168,12 @@ Future<void> initDependencies() async {
   getItInstance.registerLazySingleton(
     () => GetDeviceByIdUseCase(getItInstance<AddDeviceRepository>()),
   );
+  getItInstance.registerLazySingleton(
+    () => OverrideDeviceActionUsecase(getItInstance<AddDeviceRepository>()),
+  );
+  getItInstance.registerLazySingleton(
+    () => DeleteRulesGroupsUsecase(getItInstance<AddDeviceRepository>()),
+  );
   getItInstance.registerFactory(
     () => AddDeviceBloc(
       getItInstance<CheckEspDeviceUseCase>(),
@@ -177,7 +187,15 @@ Future<void> initDependencies() async {
     () => HeaterScheduleBloc(
       getItInstance<UpdateDeviceRulesUseCase>(),
       getItInstance<GetDeviceByIdUseCase>(),
+      getItInstance<DeleteRulesGroupsUsecase>(),
     ),
+  );
+  getItInstance.registerFactory(
+    () =>
+        OverrideDeviceActionBloc(getItInstance<OverrideDeviceActionUsecase>()),
+  );
+  getItInstance.registerFactory(
+    () => GetDeviceDetailsBloc(getItInstance<GetDeviceByIdUseCase>()),
   );
   // end of add device
   // auth

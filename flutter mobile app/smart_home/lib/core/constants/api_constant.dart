@@ -21,4 +21,7 @@ class ApiConstant {
   static const String getDeviceCurrentStateEndpoint =
       "/devices/{deviceId}/current-state";
   static const String controlDeviceEndpoint = "/devices/{deviceId}/control";
+  static const String updateDeviceRulesEndpoint = "/devices/{deviceId}/rules";
+  static const String deleteDeviceEndpoint =
+      "/devices/{deviceId}/groups/{groupId}/rules";
 }

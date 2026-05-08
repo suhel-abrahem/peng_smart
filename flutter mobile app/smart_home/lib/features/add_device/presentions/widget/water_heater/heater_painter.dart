@@ -41,7 +41,10 @@ class HeaterPainter extends CustomPainter {
       ..color = Colors.grey
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    final redOutline = Paint()..color = const Color.fromARGB(255, 121, 10, 10);
+    final redOutline = Paint()
+      ..color = const Color.fromARGB(255, 121, 10, 10)
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
     final upperRect = Rect.fromLTWH(
       0,
       0,

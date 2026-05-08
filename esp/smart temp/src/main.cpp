@@ -62,7 +62,6 @@ bool longPressHandled = false;
 bool apModeStarted = false;
 int lastTemperature = 0;
 float lastPressure = 0.0f;
-
 String savedSsid;
 String savedPass;
 struct PowerData {
@@ -84,14 +83,16 @@ unsigned long lastScreenSwitchMs = 0;
 static const unsigned long SCREEN_SWITCH_INTERVAL_MS = 5000;
 static const float MAX_SAFE_TEMP_C = 60.0f;
 static const float MAX_SAFE_PRESSURE_BAR = 7.0f;
-
+static const float MAX_SAFE_VOLTAGE = 245.0f;
+static const float MIN_SAFE_VOLTAGE = 185.0f;
+static const float MAX_SAFE_CURRENT = 20.0f;
 bool safetyTripped = false;
 String safetyMessage = "";
 
 PowerData lastPowerData = {0, 0, 0, 0};
 bool manualOverride = false;
 String manualAction = ""; // "turnOff" / "turnOn"
-
+tm manualStartTime ;
 // ---------------- BACKEND ----------------
 
 String backendBaseUrl = "http://192.168.1.93:3000";
@@ -107,7 +108,7 @@ unsigned long lastTelemetryMs = 0;
 unsigned long lastCommandPollMs = 0;
 
 static const unsigned long DEVICE_SYNC_INTERVAL_MS = 5UL * 60UL * 1000UL; // 5 min
-static const unsigned long TELEMETRY_INTERVAL_MS   = 30UL * 1000UL;       // 30 sec
+static const unsigned long TELEMETRY_INTERVAL_MS   = 5UL * 1000UL;       // 10 sec
 static const unsigned long COMMAND_POLL_INTERVAL_MS = 5UL * 1000UL;       // 5 sec
 
 // ---------------- FORWARD DECLARATIONS ----------------
@@ -542,12 +543,12 @@ bool checkSafety(float tempC, float pressureBar, PowerData powerData) {
     safetyTripped = true;
     safetyMessage = "HIGH PRESSURE";
   }
-if (!isnan(powerData.voltage) && (powerData.voltage >= 245.0|| powerData.voltage <= 185.0))
+if (!isnan(powerData.voltage) && (powerData.voltage >= MAX_SAFE_VOLTAGE))
 {
   safetyTripped = true;
   safetyMessage = "HIGH VOLTAGE";
 }
-if (!isnan(powerData.current)&& powerData.current >= 20.0)
+if (!isnan(powerData.current)&& powerData.current >= MAX_SAFE_CURRENT)
 {
   safetyTripped = true;
   safetyMessage = "HIGH CURRENT";
@@ -561,11 +562,11 @@ if (!isnan(powerData.current)&& powerData.current >= 20.0)
     Serial.print("SAFETY TRIPPED: ");
     Serial.println(safetyMessage);
 
-    return false;
+    return true;
   }
 
-  return true;
-}
+    return false;
+  }
 
 void setRelayByComponent(const String& componentId, const String& action) {
   bool turnOn = action == "turnOn";
@@ -605,6 +606,7 @@ bool executePendingCommand(const JsonVariantConst& command) {
   if (command.isNull()) return false;
 
   String action = command["action"] | "";
+  String targetType = command["targetType"] | "";
   String targetComponentId = command["targetComponentId"] | "";
 
   if (action.isEmpty()) return false;
@@ -613,6 +615,18 @@ bool executePendingCommand(const JsonVariantConst& command) {
   if (targetComponentId == "manual") {
     manualOverride = true;
     manualAction = action;
+   
+  if (!getLocalTime(&manualStartTime)) {
+    Serial.println("getLocalTime failed");
+    manualStartTime.tm_year = 0; // Set to epoch start if time not available
+    manualStartTime.tm_mon = 0;
+    manualStartTime.tm_mday = 1;
+    manualStartTime.tm_hour = millis() / 3600000; // Use uptime hours as a fallback
+    manualStartTime.tm_min = millis() / 60000; // Use uptime minutes as a fallback
+    manualStartTime.tm_sec = millis() / 1000; // Use uptime seconds as a fallback
+
+  }
+
 
     Serial.println("Manual override activated");
     return true;
@@ -624,9 +638,14 @@ bool executePendingCommand(const JsonVariantConst& command) {
     return true;
   }
 
-  setWholeDeviceAction(action);
-  return true;
+  if (targetType == "device" || targetType.isEmpty()) {
+    setWholeDeviceAction(action);
+    return true;
+  }
+
+  return false;
 }
+
 // ---------------- RULE ENGINE ----------------
 bool isTimeReady() {
   struct tm timeinfo;
@@ -654,6 +673,7 @@ bool isDayMatch(JsonArray days) {
 
   return false;
 }
+
 bool isCurrentTimeBetween(const String& from, const String& to) {
   if (!isTimeReady()) {
     Serial.println("Time not ready yet");
@@ -689,40 +709,31 @@ bool isCurrentTimeBetween(const String& from, const String& to) {
 
   return matched;
 }
-bool isAnyRuleActiveNow(String jsonRules, float temp) {
-  DynamicJsonDocument doc(4096);
-  deserializeJson(doc, jsonRules);
 
-  for (JsonObject group : doc.as<JsonArray>()) {
+// check manual start time against rule active window to prevent override from blocking rules permanently
+bool isManualOverrideExpired(JsonObject rule) {
+ 
 
-    JsonArray rules = group["rules"];
-    bool match = true;
+  String from = rule["activeFrom"] | "";
+  String to = rule["activeTo"] | "";
 
-    for (JsonObject rule : rules) {
+ int currentMinutes = manualStartTime.tm_hour * 60 + manualStartTime.tm_min;
+Serial.print("man start time");
+Serial.print(currentMinutes);
+  int fromHour = from.substring(0, 2).toInt();
+  int fromMinute = from.substring(3, 5).toInt();
+  int toHour = to.substring(0, 2).toInt();
+  int toMinute = to.substring(3, 5).toInt();
 
-      String from = rule["activeFrom"] | "";
-      String to = rule["activeTo"] | "";
+  int fromTotal = fromHour * 60 + fromMinute;
+  int toTotal = toHour * 60 + toMinute;
 
-      if (!isCurrentTimeBetween(from, to)) {
-        match = false;
-        break;
-      }
+  bool matched = currentMinutes >= fromTotal && currentMinutes < toTotal;
 
-      if (!isDayMatch(rule["days"].as<JsonArray>())) {
-        match = false;
-        break;
-      }
+ 
+  return matched;
 
-      if (!checkTempCondition(rule, temp)) {
-        match = false;
-        break;
-      }
-    }
-
-    if (match) return true;
-  }
-
-  return false;
+ 
 }
 bool checkTempCondition(JsonObject rule, float temp) {
   if (!rule.containsKey("source")) return true;
@@ -739,6 +750,48 @@ bool checkTempCondition(JsonObject rule, float temp) {
 
   return true;
 }
+bool isAnyRuleActiveNow(String jsonRules, float temp,tm manualStartTime) {
+  DynamicJsonDocument doc(4096);
+  deserializeJson(doc, jsonRules);
+
+  for (JsonObject group : doc.as<JsonArray>()) {
+
+    JsonArray rules = group["rules"];
+    bool match = true;
+
+    for (JsonObject rule : rules) {
+
+      String from = rule["activeFrom"] | "";
+      String to = rule["activeTo"] | "";
+Serial.println("Checking rule with man:");
+Serial.print(isManualOverrideExpired(rule));
+if(isManualOverrideExpired(rule)){
+  match = false;
+}
+      if (!isCurrentTimeBetween(from, to)) {
+       if (!isDayMatch(rule["days"].as<JsonArray>())) {
+        match = false;
+        break;
+      }
+      }
+
+      if (!isDayMatch(rule["days"].as<JsonArray>())) {
+        match = false;
+        break;
+      }
+
+      // if (!checkTempCondition(rule, temp)) {
+      //   match = false;
+      //   break;
+      // }
+    }
+
+    if (match) return true;
+  }
+
+  return false;
+}
+
 bool evaluateSingleRule(const JsonVariantConst& rule, float tempC) {
   if ((rule["enabled"] | true) == false) return false;
 
@@ -800,29 +853,27 @@ bool evaluateGroup(const JsonVariantConst& group, float tempC) {
   return result;
 }
 
-void executeGroupActions(JsonArray actions) {
-  for (JsonObject action : actions) {
-    String comp = action["targetComponentId"] | "";
-    String act = action["action"] | "";
+void executeGroupActions(const JsonVariantConst& group) {
+  JsonArrayConst actions = group["actions"].as<JsonArrayConst>();
+  if (actions.isNull()) return;
 
-    if (comp == "relay1") {
-      digitalWrite(PIN_LOWER_RELAY, act == "on" ? HIGH : LOW);
-    }
+  for (JsonVariantConst actionObj : actions) {
+    String action = actionObj["action"] | "";
+    String targetType = actionObj["targetType"] | "device";
+    String targetComponentId = actionObj["targetComponentId"] | "";
 
-    if (comp == "relay2") {
-      digitalWrite(PIN_UPPER_RELAY, act == "on" ? HIGH : LOW);
+    if (targetType == "device") {
+      setWholeDeviceAction(action);
+    } else if (targetType == "component") {
+      setRelayByComponent(targetComponentId, action);
     }
   }
 }
 
 void applyRules(String jsonRules, float temp, float pressure, PowerData powerData) {
-  DynamicJsonDocument doc(4096);
-  deserializeJson(doc, jsonRules);
-
-  // ⛔ SAFETY FIRST
   if (checkSafety(temp, pressure, powerData)) {
-    digitalWrite(PIN_LOWER_RELAY, LOW);
-    digitalWrite(PIN_UPPER_RELAY, LOW);
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, HIGH);
 
     Serial.println("🚨 SAFETY TRIGGERED");
     drawSafetyScreen();
@@ -830,8 +881,9 @@ void applyRules(String jsonRules, float temp, float pressure, PowerData powerDat
   }
 // 🔵 MANUAL OVERRIDE LOGIC
 if (manualOverride) {
+Serial.println("Manual override is active, ");
 
-  bool ruleNowActive = isAnyRuleActiveNow(jsonRules, temp);
+  bool ruleNowActive = isAnyRuleActiveNow(jsonRules, temp,manualStartTime);
 
  
   if (ruleNowActive) {
@@ -848,51 +900,52 @@ if (manualOverride) {
     }
 
     return; 
-  }
-}
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) return;
-
-  char buf[6];
-  strftime(buf, sizeof(buf), "%H:%M", &timeinfo);
-  String now = String(buf);
-
-  for (JsonObject group : doc.as<JsonArray>()) {
-    JsonArray rules = group["rules"];
-    JsonArray actions = group["actions"];
-
-    bool match = true;
-
-    for (JsonObject rule : rules) {
-
-      String from = rule["activeFrom"] | "";
-      String to = rule["activeTo"] | "";
-
-      if (!isCurrentTimeBetween( from, to)) {
-        match = false;
-        break;
-      }
-
-      if (!isDayMatch(rule["days"].as<JsonArray>())) {
-        match = false;
-        break;
-      }
-
-      if (!checkTempCondition(rule, temp)) {
-        match = false;
-        break;
-      }
-    }
-
-    if (match) {
-      executeGroupActions(actions);
-      return;
-    }
+  }}
+  if (rulesJsonString.isEmpty()) {
+    Serial.println("No rulesJsonString -> both relays OFF");
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, HIGH);
+    return;
   }
 
-  
-  digitalWrite(PIN_LOWER_RELAY, LOW);
-  digitalWrite(PIN_UPPER_RELAY, LOW);
+  JsonDocument doc;
+  DeserializationError err = deserializeJson(doc, rulesJsonString);
+  if (err) {
+    Serial.println("rules parse failed");
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, HIGH);
+    return;
+  }
+
+  JsonArrayConst groups = doc["groups"].as<JsonArrayConst>();
+  if (groups.isNull()) {
+    Serial.println("No groups found -> both relays OFF");
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, HIGH);
+    return;
+  }
+
+  bool anyMatched = false;
+  int index = 0;
+
+  for (JsonVariantConst group : groups) {
+    Serial.print("Checking group #");
+    Serial.println(index++);
+
+    if (evaluateGroup(group, temp)) {
+      Serial.println("Group matched -> executing actions");
+      executeGroupActions(group);
+      anyMatched = true;
+    } else {
+      Serial.println("Group not matched");
+    }
+  }
+
+  // if (!anyMatched && !manualOverride) {
+  //   Serial.println("No groups matched -> both relays OFF");
+  //   digitalWrite(PIN_LOWER_RELAY, HIGH);
+  //   digitalWrite(PIN_UPPER_RELAY, HIGH);
+  // }
 }
 // ---------------- BACKEND ----------------
 bool syncDeviceWithBackend() {
@@ -1381,11 +1434,15 @@ PowerData p = readPowerSensor();
 lastPowerData = p;
  energyKwh = p.energy;
 
-    
-    applyRules(rulesJsonString, currentTemp, lastPressure, lastPowerData);
+    if(checkSafety(currentTemp, lastPressure, lastPowerData)){
+      clearScreen();
+      drawSafetyScreen();
+    }
+    else{applyRules(rulesJsonString, currentTemp, lastPressure, lastPowerData);
 
     updateScreenMode();
-    updateCurrentScreenValues(currentTemp, lastPressure, lastPowerData);
+    updateCurrentScreenValues(currentTemp, lastPressure, lastPowerData);}
+    
   
   }
 

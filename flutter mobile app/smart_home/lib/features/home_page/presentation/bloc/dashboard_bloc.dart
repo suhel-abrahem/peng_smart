@@ -26,7 +26,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   DashboardBloc(
     this._getMyHomesUseCase,
     this._getRoomsByHomeIdUseCase,
-    this._getDevicesByHomeIdUseCase, this._getDevicesByRoomIdUseCase,
+    this._getDevicesByHomeIdUseCase,
+    this._getDevicesByRoomIdUseCase,
   ) : super(const DashboardState.initial()) {
     on<LoadDashboardEvent>(_onLoad);
     on<SelectHomeEvent>(_onSelectHome);
@@ -138,7 +139,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         params: currentState.selectedHome.id,
       );
 
-      devices = result is DataSuccess<List<DeviceEntity>>
+      devices = result is DataSuccess
           ? DataSuccess(data: result.data ?? [])
           : DataFailed(
               error: result.error?.toString() ?? 'Failed to load devices',

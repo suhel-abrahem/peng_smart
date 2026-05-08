@@ -241,16 +241,72 @@ async function updateDeviceRules(req, res) {
   try {
     const userId = req.user.userId;
     const { deviceId } = req.params;
-    const { sessions } = req.body;
+    const { rules } = req.body;
 
-    if (!sessions || !Array.isArray(sessions)) {
+    if (!rules) {
       return res.status(400).json({
-        message: "sessions array is required",
+        message: "rules are required",
       });
     }
 
     const device = await prisma.device.findUnique({
-      where: { id: deviceId },
+      where: {
+        id: deviceId,
+      },
+    });
+
+    if (!device) {
+      return res.status(404).json({
+        message: "Device not found",
+      });
+    }
+
+    const membership = await prisma.homeMember.findFirst({
+      where: {
+        userId,
+        homeId: device.homeId,
+      },
+    });
+
+    if (!membership) {
+      return res.status(403).json({
+        message: "You do not have access to this device",
+      });
+    }
+    // get the existing rules and merge with the new rules
+    const existingRules = device.rulesJson || { groups: [] };
+    const mergedRules = {
+      groups: [...existingRules.groups, ...(rules.groups || [])],
+    };
+    const updatedDevice = await prisma.device.update({
+      where: {
+        id: deviceId,
+      },
+      data: {
+        rulesJson: mergedRules,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Device rules updated successfully",
+      data: updatedDevice,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      message: e.message,
+    });
+  }
+}
+// delete device rules by rule group id for both relay
+async function deleteDeviceRules(req, res) {
+  try {
+    const userId = req.user.userId;
+    const { deviceId, ruleGroupId } = req.params;
+
+    const device = await prisma.device.findUnique({
+      where: {
+        id: deviceId,
+      },
     });
 
     if (!device) {
@@ -272,60 +328,26 @@ async function updateDeviceRules(req, res) {
       });
     }
 
-    const groups = [];
-
-    sessions.forEach((s, index) => {
-      const r1End = addMinutes(s.start, s.r1);
-      const r2Start = r1End;
-
-      // 🔴 Relay 1
-      groups.push({
-        name: `R1-${index}`,
-        rules: [
-          {
-            activeFrom: s.start,
-            activeTo: r1End,
-            days: s.days ?? [],
-            source: "tempSensor",
-            operator: s.operator || "lessThan",
-            value: String(s.temp ?? 60),
-          },
-        ],
-        actions: [
-          { targetComponentId: "relay1", action: "turnOn" },
-          { targetComponentId: "relay2", action: "turnOff" },
-        ],
-      });
-
-      // 🔵 Relay 2
-      groups.push({
-        name: `R2-${index}`,
-        rules: [
-          {
-            activeFrom: r2Start,
-            activeTo: s.end,
-            days: s.days ?? [],
-            source: "tempSensor",
-            operator: s.operator || "lessThan",
-            value: String(s.temp ?? 60),
-          },
-        ],
-        actions: [
-          { targetComponentId: "relay1", action: "turnOff" },
-          { targetComponentId: "relay2", action: "turnOn" },
-        ],
-      });
-    });
+    // Get the existing rules and filter out the rule group to be deleted
+    const existingRules = device.rulesJson || { groups: [] };
+    const filteredRules = {
+      groups: existingRules.groups.filter(
+        (group) =>
+          group.id !== ruleGroupId && group.id !== (ruleGroupId + "_relay2"),
+      ),
+    };
 
     const updatedDevice = await prisma.device.update({
-      where: { id: deviceId },
+      where: {
+        id: deviceId,
+      },
       data: {
-        rulesJson: groups,
+        rulesJson: filteredRules,
       },
     });
 
     return res.status(200).json({
-      message: "Device rules updated successfully",
+      message: "Device rules deleted successfully",
       data: updatedDevice,
     });
   } catch (e) {
@@ -334,6 +356,7 @@ async function updateDeviceRules(req, res) {
     });
   }
 }
+
 async function getDeviceTelemetry(req, res) {
   try {
     const userId = req.user.userId;
@@ -513,6 +536,7 @@ module.exports = {
   getDeviceById,
   getDevicesByRoomId,
   updateDeviceRules,
+  deleteDeviceRules,
   getDeviceTelemetry,
   getDeviceCurrentState,
   controlDevice,

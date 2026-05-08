@@ -1,10 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:glass/glass.dart';
+import 'package:smart_home/config/theme/app_theme.dart';
 import 'package:smart_home/core/constants/font_constants.dart';
 import 'package:smart_home/core/dependencies_injection.dart';
 import 'package:smart_home/core/resource/main_page/main_page.dart';
+import 'package:smart_home/features/add_device/data/model/delete_rules_groups_model.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
+import 'package:smart_home/features/add_device/presentions/widget/water_heater/days_widget.dart';
 
 import '../../../domain/entities/water_heater/heater_session_entity.dart';
 import '../../../domain/entities/water_heater/rules_to_heater_sessions_mapper.dart';
@@ -62,6 +67,7 @@ class _WaterHeaterSchedulePageState extends State<WaterHeaterSchedulePage> {
   }
 
   void _save() {
+    print("Saving sessions from page: $sessions");
     _heaterScheduleBloc.add(
       HeaterScheduleEvent.saveSessions(
         deviceId: widget.device?.id ?? "",
@@ -75,6 +81,13 @@ class _WaterHeaterSchedulePageState extends State<WaterHeaterSchedulePage> {
     return BlocProvider.value(
       value: _heaterScheduleBloc,
       child: MainPage(
+        onRefresh: () {
+          if ((widget.device?.id ?? '').isNotEmpty) {
+            _heaterScheduleBloc.add(
+              HeaterScheduleEvent.loadDeviceRules(deviceId: widget.device!.id),
+            );
+          }
+        },
         title: "Water Heater Schedule",
         floatingActionButton: FloatingActionButton(
           onPressed: _addSession,
@@ -117,45 +130,117 @@ class _WaterHeaterSchedulePageState extends State<WaterHeaterSchedulePage> {
                           itemCount: sessions.length,
                           itemBuilder: (_, index) {
                             final s = sessions[index];
-
-                            return Card(
-                              margin: const EdgeInsets.all(12),
-                              child: ListTile(
-                                title: Text(
-                                  "${s.startTime} → ${s.endTime}",
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(
-                                        fontFamily: FontConstants.fontFamily(
-                                          context.locale,
-                                        ),
-                                      ),
-                                ),
-                                subtitle: Text(
-                                  "Relay1: ${s.relay1Minutes}m | Relay2: ${s.relay2Minutes}m",
-                                  style: Theme.of(context).textTheme.labelMedium
-                                      ?.copyWith(
-                                        fontFamily: FontConstants.fontFamily(
-                                          context.locale,
-                                        ),
-                                      ),
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: isSaving
-                                      ? null
-                                      : () {
-                                          setState(() {
-                                            sessions.removeAt(index);
-                                          });
-
-                                          _heaterScheduleBloc.add(
-                                            HeaterScheduleEvent.setSessions(
-                                              sessions: List.from(sessions),
-                                            ),
-                                          );
-                                        },
-                                ),
+                            final activeToInMinutes =
+                                s.relay1Minutes + s.relay2Minutes;
+                            final DateTime? startDateTime = DateTime(
+                              0,
+                              0,
+                              0,
+                              int.parse(s.startTime.split(":")[0]),
+                              int.parse(s.startTime.split(":")[1]),
+                            );
+                            print(
+                              "Start time: ${s.startTime}, relay1: ${s.relay1Minutes}m, relay2: ${s.relay2Minutes}m,startDateTime: $startDateTime, activeToInMinutes: $activeToInMinutes",
+                            );
+                            DateTime? activeTo = startDateTime?.add(
+                              Duration(minutes: activeToInMinutes),
+                            );
+                            final activeToString = activeTo != null
+                                ? DateFormat("HH:mm").format(activeTo)
+                                : "--:--";
+                            return Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 12.h,
                               ),
+                              child:
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12.w,
+                                      vertical: 12.h,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Expanded(
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Center(
+                                                child: Text(
+                                                  "${s.startTime} → ${activeToString}",
+
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .labelMedium
+                                                      ?.copyWith(
+                                                        fontFamily:
+                                                            FontConstants.fontFamily(
+                                                              context.locale,
+                                                            ),
+                                                      ),
+                                                ),
+                                              ),
+                                              Text(
+                                                "Relay1: ${s.relay1Minutes}m | Relay2: ${s.relay2Minutes}m",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .labelMedium
+                                                    ?.copyWith(
+                                                      fontFamily:
+                                                          FontConstants.fontFamily(
+                                                            context.locale,
+                                                          ),
+                                                    ),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                  vertical: 8.h,
+                                                ),
+                                                child: SizedBox(
+                                                  height: 30.h,
+                                                  child: DaysWidget(
+                                                    days: s.days,
+                                                    readOnly: true,
+                                                    onChanged: (_) {},
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.delete),
+                                          onPressed: isSaving
+                                              ? null
+                                              : () {
+                                                  _heaterScheduleBloc.add(
+                                                    HeaterScheduleEvent.deleteRulesGroup(
+                                                      model:
+                                                          DeleteRulesGroupsModel(
+                                                            deviceId:
+                                                                widget
+                                                                    .device
+                                                                    ?.id ??
+                                                                '',
+                                                            groupId: s.id,
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                        ),
+                                      ],
+                                    ),
+                                  ).asGlass(
+                                    frosted: true,
+                                    border: Theme.of(context).defaultBorderSide,
+                                    clipBorderRadius:
+                                        BorderRadiusGeometry.circular(12.r),
+                                    blurX: 10,
+                                    blurY: 10,
+                                  ),
                             );
                           },
                         ),

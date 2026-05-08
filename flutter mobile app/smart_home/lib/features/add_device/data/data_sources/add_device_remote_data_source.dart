@@ -1,5 +1,7 @@
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
+import 'package:smart_home/features/add_device/data/model/delete_rules_groups_model.dart';
 import 'package:smart_home/features/add_device/data/model/device_model.dart';
+import 'package:smart_home/features/add_device/domain/entities/action_link_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 
 import '../../domain/entities/rules_entity.dart';
@@ -18,4 +20,9 @@ abstract class AddDeviceRemoteDataSource {
     required RulesEntity rules,
   });
   Future<DeviceModel> getDeviceById({required String deviceId});
+  Future<void> overrideDeviceActions({
+    required String deviceId,
+    required ActionLinkEntity actions,
+  });
+  Future<void> deleteDevice({required DeleteRulesGroupsModel model});
 }

@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:smart_home/core/constants/api_constant.dart';
 import 'package:smart_home/features/add_device/data/model/add_device_input_model.dart';
+import 'package:smart_home/features/add_device/data/model/delete_rules_groups_model.dart';
 import 'package:smart_home/features/add_device/data/model/device_model.dart';
+import 'package:smart_home/features/add_device/domain/entities/action_link_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/device_entity.dart';
 import 'package:smart_home/features/add_device/domain/entities/rules_entity.dart';
 
@@ -70,6 +72,7 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     print(
       'Raw devices data: $rawList',
     ); // Debug print to check the raw data structure
+
     return rawList
         .map((e) => DeviceModel.fromJson(Map<String, dynamic>.from(e)))
         .toList();
@@ -103,12 +106,18 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
     required RulesEntity rules,
   }) async {
     final endpoint = '/devices/$deviceId/rules';
+    RulesEntity rulesGroups = rules;
 
+    print(
+      'Updating rules for deviceId: $deviceId with rules: ${rules.toJson()}',
+    ); // Debug print to check the input parameters
     final response = await _commonService.put(
       endpoint,
       data: {'rules': rules.toJson()},
     );
-
+    print(
+      "updateDeviceRules response: ${response?.statusCode}, data: ${response?.data}",
+    ); // Debug print to check the response
     if (response == null || response.data == null) {
       throw Exception('Empty update rules response');
     }
@@ -128,5 +137,32 @@ class AddDeviceRemoteDataSourceImpl implements AddDeviceRemoteDataSource {
 
     final rawData = response.data['data'] ?? response.data;
     return DeviceModel.fromJson(Map<String, dynamic>.from(rawData));
+  }
+
+  @override
+  Future<void> overrideDeviceActions({
+    required String deviceId,
+    required ActionLinkEntity actions,
+  }) async {
+    print(
+      'Overriding actions for deviceId: $deviceId with actions: ${actions.action.name}, targetType: ${actions.targetType}, targetComponentId: ${actions.targetComponentId}',
+    ); // Debug print to check the input parameters
+    await _commonService.put(
+      ApiConstant.controlDeviceEndpoint.replaceFirst('{deviceId}', deviceId),
+      data: {
+        'action': actions.action.name,
+        "targetType": actions.targetType,
+        "targetComponentId": actions.targetComponentId,
+      },
+    );
+  }
+
+  @override
+  Future<void> deleteDevice({required DeleteRulesGroupsModel model}) async {
+    await _commonService.delete(
+      ApiConstant.deleteDeviceEndpoint
+          .replaceFirst('{deviceId}', model.deviceId)
+          .replaceFirst('{groupId}', model.groupId),
+    );
   }
 }

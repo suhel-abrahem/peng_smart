@@ -13,13 +13,16 @@ _RuleGroupEntity _$RuleGroupEntityFromJson(Map<String, dynamic> json) =>
       enabled: json['enabled'] as bool? ?? false,
       rules:
           (json['rules'] as List<dynamic>?)
-              ?.map((e) => RuleEntity.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
           const [],
       actions:
           (json['actions'] as List<dynamic>?)
-              ?.map((e) => ActionLinkEntity.fromJson(e as Map<String, dynamic>))
+              ?.map((e) => e as Map<String, dynamic>)
               .toList() ??
+          const [],
+      days:
+          (json['days'] as List<dynamic>?)?.map((e) => e as String).toList() ??
           const [],
     );
 
@@ -30,4 +33,5 @@ Map<String, dynamic> _$RuleGroupEntityToJson(_RuleGroupEntity instance) =>
       'enabled': instance.enabled,
       'rules': instance.rules,
       'actions': instance.actions,
+      'days': instance.days,
     };

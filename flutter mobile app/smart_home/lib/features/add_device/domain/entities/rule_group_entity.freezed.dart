@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RuleGroupEntity {
 
- String get id; String get name; bool get enabled; List<RuleEntity> get rules; List<ActionLinkEntity> get actions;
+ String get id; String get name; bool get enabled; List<Map<String, dynamic>> get rules; List<Map<String, dynamic>> get actions; List<String> get days;
 /// Create a copy of RuleGroupEntity
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RuleGroupEntityCopyWith<RuleGroupEntity> get copyWith => _$RuleGroupEntityCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleGroupEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.actions, actions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RuleGroupEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other.rules, rules)&&const DeepCollectionEquality().equals(other.actions, actions)&&const DeepCollectionEquality().equals(other.days, days));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,enabled,const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(actions));
+int get hashCode => Object.hash(runtimeType,id,name,enabled,const DeepCollectionEquality().hash(rules),const DeepCollectionEquality().hash(actions),const DeepCollectionEquality().hash(days));
 
 @override
 String toString() {
-  return 'RuleGroupEntity(id: $id, name: $name, enabled: $enabled, rules: $rules, actions: $actions)';
+  return 'RuleGroupEntity(id: $id, name: $name, enabled: $enabled, rules: $rules, actions: $actions, days: $days)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RuleGroupEntityCopyWith<$Res>  {
   factory $RuleGroupEntityCopyWith(RuleGroupEntity value, $Res Function(RuleGroupEntity) _then) = _$RuleGroupEntityCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, bool enabled, List<RuleEntity> rules, List<ActionLinkEntity> actions
+ String id, String name, bool enabled, List<Map<String, dynamic>> rules, List<Map<String, dynamic>> actions, List<String> days
 });
 
 
@@ -65,14 +65,15 @@ class _$RuleGroupEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleGroupEntity
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? enabled = null,Object? rules = null,Object? actions = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? enabled = null,Object? rules = null,Object? actions = null,Object? days = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,rules: null == rules ? _self.rules : rules // ignore: cast_nullable_to_non_nullable
-as List<RuleEntity>,actions: null == actions ? _self.actions : actions // ignore: cast_nullable_to_non_nullable
-as List<ActionLinkEntity>,
+as List<Map<String, dynamic>>,actions: null == actions ? _self.actions : actions // ignore: cast_nullable_to_non_nullable
+as List<Map<String, dynamic>>,days: null == days ? _self.days : days // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool enabled,  List<RuleEntity> rules,  List<ActionLinkEntity> actions)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  bool enabled,  List<Map<String, dynamic>> rules,  List<Map<String, dynamic>> actions,  List<String> days)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RuleGroupEntity() when $default != null:
-return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);case _:
+return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions,_that.days);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool enabled,  List<RuleEntity> rules,  List<ActionLinkEntity> actions)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  bool enabled,  List<Map<String, dynamic>> rules,  List<Map<String, dynamic>> actions,  List<String> days)  $default,) {final _that = this;
 switch (_that) {
 case _RuleGroupEntity():
-return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);case _:
+return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions,_that.days);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);cas
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool enabled,  List<RuleEntity> rules,  List<ActionLinkEntity> actions)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  bool enabled,  List<Map<String, dynamic>> rules,  List<Map<String, dynamic>> actions,  List<String> days)?  $default,) {final _that = this;
 switch (_that) {
 case _RuleGroupEntity() when $default != null:
-return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);case _:
+return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions,_that.days);case _:
   return null;
 
 }
@@ -213,24 +214,31 @@ return $default(_that.id,_that.name,_that.enabled,_that.rules,_that.actions);cas
 @JsonSerializable()
 
 class _RuleGroupEntity implements RuleGroupEntity {
-  const _RuleGroupEntity({this.id = "", this.name = "", this.enabled = false, final  List<RuleEntity> rules = const [], final  List<ActionLinkEntity> actions = const []}): _rules = rules,_actions = actions;
+  const _RuleGroupEntity({this.id = "", this.name = "", this.enabled = false, final  List<Map<String, dynamic>> rules = const [], final  List<Map<String, dynamic>> actions = const [], final  List<String> days = const []}): _rules = rules,_actions = actions,_days = days;
   factory _RuleGroupEntity.fromJson(Map<String, dynamic> json) => _$RuleGroupEntityFromJson(json);
 
 @override@JsonKey() final  String id;
 @override@JsonKey() final  String name;
 @override@JsonKey() final  bool enabled;
- final  List<RuleEntity> _rules;
-@override@JsonKey() List<RuleEntity> get rules {
+ final  List<Map<String, dynamic>> _rules;
+@override@JsonKey() List<Map<String, dynamic>> get rules {
   if (_rules is EqualUnmodifiableListView) return _rules;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_rules);
 }
 
- final  List<ActionLinkEntity> _actions;
-@override@JsonKey() List<ActionLinkEntity> get actions {
+ final  List<Map<String, dynamic>> _actions;
+@override@JsonKey() List<Map<String, dynamic>> get actions {
   if (_actions is EqualUnmodifiableListView) return _actions;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_actions);
+}
+
+ final  List<String> _days;
+@override@JsonKey() List<String> get days {
+  if (_days is EqualUnmodifiableListView) return _days;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_days);
 }
 
 
@@ -247,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleGroupEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._actions, _actions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RuleGroupEntity&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other._rules, _rules)&&const DeepCollectionEquality().equals(other._actions, _actions)&&const DeepCollectionEquality().equals(other._days, _days));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,enabled,const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_actions));
+int get hashCode => Object.hash(runtimeType,id,name,enabled,const DeepCollectionEquality().hash(_rules),const DeepCollectionEquality().hash(_actions),const DeepCollectionEquality().hash(_days));
 
 @override
 String toString() {
-  return 'RuleGroupEntity(id: $id, name: $name, enabled: $enabled, rules: $rules, actions: $actions)';
+  return 'RuleGroupEntity(id: $id, name: $name, enabled: $enabled, rules: $rules, actions: $actions, days: $days)';
 }
 
 
@@ -267,7 +275,7 @@ abstract mixin class _$RuleGroupEntityCopyWith<$Res> implements $RuleGroupEntity
   factory _$RuleGroupEntityCopyWith(_RuleGroupEntity value, $Res Function(_RuleGroupEntity) _then) = __$RuleGroupEntityCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, bool enabled, List<RuleEntity> rules, List<ActionLinkEntity> actions
+ String id, String name, bool enabled, List<Map<String, dynamic>> rules, List<Map<String, dynamic>> actions, List<String> days
 });
 
 
@@ -284,14 +292,15 @@ class __$RuleGroupEntityCopyWithImpl<$Res>
 
 /// Create a copy of RuleGroupEntity
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? enabled = null,Object? rules = null,Object? actions = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? enabled = null,Object? rules = null,Object? actions = null,Object? days = null,}) {
   return _then(_RuleGroupEntity(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,rules: null == rules ? _self._rules : rules // ignore: cast_nullable_to_non_nullable
-as List<RuleEntity>,actions: null == actions ? _self._actions : actions // ignore: cast_nullable_to_non_nullable
-as List<ActionLinkEntity>,
+as List<Map<String, dynamic>>,actions: null == actions ? _self._actions : actions // ignore: cast_nullable_to_non_nullable
+as List<Map<String, dynamic>>,days: null == days ? _self._days : days // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
