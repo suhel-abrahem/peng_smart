@@ -92,7 +92,7 @@ String safetyMessage = "";
 PowerData lastPowerData = {0, 0, 0, 0};
 bool manualOverride = false;
 String manualAction = ""; // "turnOff" / "turnOn"
-tm manualStartTime ;
+int manualSkipUntilMinute = -1;
 // ---------------- BACKEND ----------------
 
 String backendBaseUrl = "http://192.168.1.93:3000";
@@ -132,7 +132,17 @@ void reportCommandResult(bool success, const String& resultMessage);
 bool evaluateSingleRule(const JsonVariantConst& rule, float tempC);
 bool evaluateGroup(const JsonVariantConst& group, float tempC);
 void executeGroupActions(const JsonVariantConst& group);
-void applyRules(String jsonRules, float temp, float pressure);
+void applyRules(String jsonRules, float temp, float pressure, PowerData powerData);
+
+bool isDayMatch(JsonArrayConst days);
+bool checkTempCondition(JsonObjectConst rule, float temp);
+int timeToMinutes(const String& time);
+int currentMinutesNow();
+bool isMinutesBetween(int nowMin, int fromMin, int toMin);
+bool ruleMatchesNow(JsonVariantConst rule, float temp);
+int findCurrentActiveScheduleEndMinute(String jsonRules, float temp);
+void applyManualAction();
+bool handleManualOverride(String jsonRules, float temp);
 
 void handleStatus();
 void handleSaveWiFi();
@@ -601,7 +611,146 @@ void setWholeDeviceAction(const String& action) {
     digitalWrite(PIN_UPPER_RELAY, HIGH);
   }
 }
+int timeToMinutes(const String& time) {
+  int h = time.substring(0, 2).toInt();
+  int m = time.substring(3, 5).toInt();
+  return h * 60 + m;
+}
 
+int currentMinutesNow() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) return -1;
+  return timeinfo.tm_hour * 60 + timeinfo.tm_min;
+}
+
+bool isMinutesBetween(int nowMin, int fromMin, int toMin) {
+  if (fromMin <= toMin) {
+    return nowMin >= fromMin && nowMin < toMin;
+  }
+
+  return nowMin >= fromMin || nowMin < toMin;
+}
+
+bool ruleMatchesNow(JsonVariantConst rule, float temp) {
+  String from = rule["activeFrom"] | "";
+  String to = rule["activeTo"] | "";
+
+  if (from.isEmpty() || to.isEmpty()) {
+    return false;
+  }
+
+  int nowMin = currentMinutesNow();
+  if (nowMin < 0) {
+    return false;
+  }
+
+  int fromMin = timeToMinutes(from);
+  int toMin = timeToMinutes(to);
+
+  if (!isMinutesBetween(nowMin, fromMin, toMin)) {
+    return false;
+  }
+
+  JsonArrayConst days = rule["days"].as<JsonArrayConst>();
+  if (!isDayMatch(days)) {
+    return false;
+  }
+
+  JsonObjectConst ruleObj = rule.as<JsonObjectConst>();
+  if (!checkTempCondition(ruleObj, temp)) {
+    return false;
+  }
+
+  return true;
+}
+
+int findCurrentActiveScheduleEndMinute(String jsonRules, float temp) {
+  if (jsonRules.isEmpty()) return -1;
+
+  JsonDocument doc;
+  DeserializationError err = deserializeJson(doc, jsonRules);
+  if (err) return -1;
+
+  JsonArrayConst groups;
+
+  if (doc.is<JsonArray>()) {
+    groups = doc.as<JsonArrayConst>();
+  } else {
+    groups = doc["groups"].as<JsonArrayConst>();
+  }
+
+  if (groups.isNull()) return -1;
+
+  for (JsonVariantConst group : groups) {
+    JsonArrayConst rules = group["rules"].as<JsonArrayConst>();
+    if (rules.isNull() || rules.size() == 0) continue;
+
+    bool matched = true;
+    int endMinute = -1;
+
+    for (JsonVariantConst rule : rules) {
+      if (!ruleMatchesNow(rule, temp)) {
+        matched = false;
+        break;
+      }
+
+      String to = rule["activeTo"] | "";
+      endMinute = timeToMinutes(to);
+    }
+
+    if (matched) {
+      return endMinute;
+    }
+  }
+
+  return -1;
+}
+
+void applyManualAction() {
+  if (manualAction == "turnOff") {
+    turnBothRelaysOff();
+  } else if (manualAction == "turnOn") {
+    // manual ON = upper heater only
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, LOW);
+  }
+}
+
+bool handleManualOverride(String jsonRules, float temp) {
+  if (!manualOverride) return false;
+
+  int nowMin = currentMinutesNow();
+
+  if (manualSkipUntilMinute >= 0 && nowMin >= 0) {
+    if (nowMin < manualSkipUntilMinute) {
+      applyManualAction();
+      Serial.println("Manual override active: skipping current schedule");
+      return true;
+    }
+
+    manualOverride = false;
+    manualAction = "";
+    manualSkipUntilMinute = -1;
+
+    Serial.println("Manual override cleared: current schedule ended");
+    return false;
+  }
+
+  int activeEnd = findCurrentActiveScheduleEndMinute(jsonRules, temp);
+
+  if (activeEnd >= 0) {
+    manualOverride = false;
+    manualAction = "";
+    manualSkipUntilMinute = -1;
+
+    Serial.println("Manual override cleared: next schedule started");
+    return false;
+  }
+
+  applyManualAction();
+  Serial.println("Manual override active outside schedule");
+  return true;
+}
 bool executePendingCommand(const JsonVariantConst& command) {
   if (command.isNull()) return false;
 
@@ -613,24 +762,25 @@ bool executePendingCommand(const JsonVariantConst& command) {
 
   
   if (targetComponentId == "manual") {
-    manualOverride = true;
-    manualAction = action;
-   
-  if (!getLocalTime(&manualStartTime)) {
-    Serial.println("getLocalTime failed");
-    manualStartTime.tm_year = 0; // Set to epoch start if time not available
-    manualStartTime.tm_mon = 0;
-    manualStartTime.tm_mday = 1;
-    manualStartTime.tm_hour = millis() / 3600000; // Use uptime hours as a fallback
-    manualStartTime.tm_min = millis() / 60000; // Use uptime minutes as a fallback
-    manualStartTime.tm_sec = millis() / 1000; // Use uptime seconds as a fallback
+  manualOverride = true;
+  manualAction = action;
 
-  }
+  float tempNow = readTemperatureC();
 
+  manualSkipUntilMinute = findCurrentActiveScheduleEndMinute(
+    rulesJsonString,
+    tempNow
+  );
 
-    Serial.println("Manual override activated");
-    return true;
-  }
+  Serial.print("Manual override activated. Action: ");
+  Serial.println(manualAction);
+  Serial.print("Skip until minute: ");
+  Serial.println(manualSkipUntilMinute);
+
+  applyManualAction();
+
+  return true;
+}
 
   // normal commands
   if (!targetComponentId.isEmpty()) {
@@ -656,18 +806,17 @@ bool isTimeReady() {
   // basic sanity check
   return timeinfo.tm_year > (2024 - 1900);
 }
-bool isDayMatch(JsonArray days) {
-  if (days.size() == 0) return true;
+bool isDayMatch(JsonArrayConst days) {
+  if (days.isNull() || days.size() == 0) return true;
 
   struct tm timeinfo;
   if (!getLocalTime(&timeinfo)) return false;
 
   int d = timeinfo.tm_wday; // 0 = Sunday
-
-  const char* mapDays[] = {"sun","mon","tue","wed","thu","fri","sat"};
+  const char* mapDays[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
   String today = mapDays[d];
 
-  for (JsonVariant v : days) {
+  for (JsonVariantConst v : days) {
     if (v.as<String>() == today) return true;
   }
 
@@ -710,86 +859,30 @@ bool isCurrentTimeBetween(const String& from, const String& to) {
   return matched;
 }
 
-// check manual start time against rule active window to prevent override from blocking rules permanently
-bool isManualOverrideExpired(JsonObject rule) {
- 
 
-  String from = rule["activeFrom"] | "";
-  String to = rule["activeTo"] | "";
 
- int currentMinutes = manualStartTime.tm_hour * 60 + manualStartTime.tm_min;
-Serial.print("man start time");
-Serial.print(currentMinutes);
-  int fromHour = from.substring(0, 2).toInt();
-  int fromMinute = from.substring(3, 5).toInt();
-  int toHour = to.substring(0, 2).toInt();
-  int toMinute = to.substring(3, 5).toInt();
-
-  int fromTotal = fromHour * 60 + fromMinute;
-  int toTotal = toHour * 60 + toMinute;
-
-  bool matched = currentMinutes >= fromTotal && currentMinutes < toTotal;
-
- 
-  return matched;
-
- 
-}
-bool checkTempCondition(JsonObject rule, float temp) {
-  if (!rule.containsKey("source")) return true;
-
+bool checkTempCondition(JsonObjectConst rule, float temp) {
   String source = rule["source"] | "";
+
+  // If this is only a time rule, there is no temperature condition.
   if (source != "tempSensor") return true;
 
+  if (isnan(temp)) return false;
+
   String op = rule["operator"] | "";
+  if (op.isEmpty()) {
+    op = rule["condition"] | "";
+  }
+
   float val = String(rule["value"] | "0").toFloat();
 
   if (op == "lessThan") return temp < val;
+  if (op == "lessThanOrEqual") return temp <= val;
   if (op == "greaterThan") return temp > val;
+  if (op == "greaterThanOrEqual") return temp >= val;
   if (op == "equalTo") return abs(temp - val) < 0.5;
 
   return true;
-}
-bool isAnyRuleActiveNow(String jsonRules, float temp,tm manualStartTime) {
-  DynamicJsonDocument doc(4096);
-  deserializeJson(doc, jsonRules);
-
-  for (JsonObject group : doc.as<JsonArray>()) {
-
-    JsonArray rules = group["rules"];
-    bool match = true;
-
-    for (JsonObject rule : rules) {
-
-      String from = rule["activeFrom"] | "";
-      String to = rule["activeTo"] | "";
-Serial.println("Checking rule with man:");
-Serial.print(isManualOverrideExpired(rule));
-if(isManualOverrideExpired(rule)){
-  match = false;
-}
-      if (!isCurrentTimeBetween(from, to)) {
-       if (!isDayMatch(rule["days"].as<JsonArray>())) {
-        match = false;
-        break;
-      }
-      }
-
-      if (!isDayMatch(rule["days"].as<JsonArray>())) {
-        match = false;
-        break;
-      }
-
-      // if (!checkTempCondition(rule, temp)) {
-      //   match = false;
-      //   break;
-      // }
-    }
-
-    if (match) return true;
-  }
-
-  return false;
 }
 
 bool evaluateSingleRule(const JsonVariantConst& rule, float tempC) {
@@ -879,28 +972,11 @@ void applyRules(String jsonRules, float temp, float pressure, PowerData powerDat
     drawSafetyScreen();
     return;
   }
-// 🔵 MANUAL OVERRIDE LOGIC
-if (manualOverride) {
-Serial.println("Manual override is active, ");
 
-  bool ruleNowActive = isAnyRuleActiveNow(jsonRules, temp,manualStartTime);
+  if (handleManualOverride(jsonRules, temp)) {
+    return;
+  }
 
- 
-  if (ruleNowActive) {
-    Serial.println("Rule time reached -> override cleared");
-    manualOverride = false;
-  } else {
-    Serial.println("Manual override active");
-
-    if (manualAction == "turnOff") {
-      turnBothRelaysOff();
-    } else if (manualAction == "turnOn") {
-      digitalWrite(PIN_LOWER_RELAY, HIGH);
-      digitalWrite(PIN_UPPER_RELAY, LOW);
-    }
-
-    return; 
-  }}
   if (rulesJsonString.isEmpty()) {
     Serial.println("No rulesJsonString -> both relays OFF");
     digitalWrite(PIN_LOWER_RELAY, HIGH);
@@ -917,7 +993,14 @@ Serial.println("Manual override is active, ");
     return;
   }
 
-  JsonArrayConst groups = doc["groups"].as<JsonArrayConst>();
+  JsonArrayConst groups;
+
+  if (doc.is<JsonArray>()) {
+    groups = doc.as<JsonArrayConst>();
+  } else {
+    groups = doc["groups"].as<JsonArrayConst>();
+  }
+
   if (groups.isNull()) {
     Serial.println("No groups found -> both relays OFF");
     digitalWrite(PIN_LOWER_RELAY, HIGH);
@@ -941,11 +1024,11 @@ Serial.println("Manual override is active, ");
     }
   }
 
-  // if (!anyMatched && !manualOverride) {
-  //   Serial.println("No groups matched -> both relays OFF");
-  //   digitalWrite(PIN_LOWER_RELAY, HIGH);
-  //   digitalWrite(PIN_UPPER_RELAY, HIGH);
-  // }
+  if (!anyMatched) {
+    Serial.println("No groups matched -> both relays OFF");
+    digitalWrite(PIN_LOWER_RELAY, HIGH);
+    digitalWrite(PIN_UPPER_RELAY, HIGH);
+  }
 }
 // ---------------- BACKEND ----------------
 bool syncDeviceWithBackend() {

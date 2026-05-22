@@ -174,19 +174,21 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage> {
                               builder: (context) {
                                 return ElevatedButton(
                                   onPressed: () {
+                                    final isOn =
+                                        telemetry?.relay1 == true ||
+                                        telemetry?.relay2 == true;
+
                                     context
                                         .read<OverrideDeviceActionBloc>()
                                         .add(
                                           OverrideDeviceActionEvent.override(
                                             deviceId: device.id,
                                             actions: ActionLinkEntity(
-                                              action:
-                                                  (telemetry?.relay1 == true ||
-                                                      telemetry?.relay2 == true)
+                                              action: isOn
                                                   ? ActionEnum.turnOff
                                                   : ActionEnum.turnOn,
-                                              targetComponentId: "relay1",
-                                              targetType: "component",
+                                              targetComponentId: "manual",
+                                              targetType: "manual",
                                             ),
                                           ),
                                         );
@@ -195,7 +197,7 @@ class _DeviceDetailsPageState extends State<DeviceDetailsPage> {
                                       .elevatedButtonTheme
                                       .style
                                       ?.copyWith(
-                                        shape: WidgetStatePropertyAll(
+                                        shape: const WidgetStatePropertyAll(
                                           CircleBorder(),
                                         ),
                                       ),
